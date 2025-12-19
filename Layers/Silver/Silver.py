@@ -146,14 +146,14 @@ if __name__ == "__main__":
     restaurant = pd.read_pickle(r"C:\Users\TUF\OneDrive\Documents\Code\Vs Code\Python_DataWarehouse\layers\silver\crm\restaurant.pkl")
     order['restaurant_id'] = [i if i in restaurant['restaurant_id'].tolist() else None for i in rest_id1]
     # ----- order_datetime
-    datetime1 = orde['order_datetime'].astype('str').apply(lambda x: m.word_cleaning(m.value_cleaning_sc(x)))
+    datetime1 = orde['order_datetime'].astype('str').apply(lambda x: m.word_cleaning(m.value_cleaning_scm(x)))
     datetime2 = [i if len(i) == 19 else None for i in datetime1]
     order['order_datetime'] = pd.to_datetime(datetime2, format= "%Y-%m-%d %H:%M:%S")
     # ----- payment_mode
-    pay_mode = orde['payment_mode'].astype('str').apply(lambda x: m.word_cleaning(m.value_cleaning_sc(x)))
+    pay_mode = orde['payment_mode'].astype('str').apply(lambda x: m.word_cleaning(m.value_cleaning_scm(x)))
     order['payment_mode'] = [i if i in ['Card', 'UPI', 'Cash', 'NetBanking'] else None for i in pay_mode]
     # ----- is_delivery
-    is_deli = orde['is_delivery'].astype('str').apply(lambda x: m.word_cleaning(m.value_cleaning_sc(x)))
+    is_deli = orde['is_delivery'].astype('str').apply(lambda x: m.word_cleaning(m.value_cleaning_scm(x)))
     order['is_delivery'] = [ i if i in ['1','0'] else None for i in is_deli]
     order['is_delivery'] = order['is_delivery'].astype('Int16')
     # ----- delivery_id
@@ -473,11 +473,11 @@ if __name__ == "__main__":
     item_id2 = set(menu_itm['item_id'])
     kitchen_log['item_id'] = [i if i in item_id2 else None for i in item_id1 ]
     # started_at
-    start_at = kic['started_at'].astype('str').apply(lambda x: m.word_cleaning(m.value_cleaning_sc(x)).replace('T',' '))
+    start_at = kic['started_at'].astype('str').apply(lambda x: m.word_cleaning(m.value_cleaning_scm(x)).replace('T',' '))
     start_at2 = [i if len(i) == 19 else None for i in start_at]
     kitchen_log['started_at'] = pd.to_datetime(start_at2, format = "%Y-%m-%d %H:%M:%S")
     # completed_at
-    comple_at = kic['completed_at'].astype('str').apply(lambda x: m.word_cleaning(m.value_cleaning_sc(x)).replace('T',' '))
+    comple_at = kic['completed_at'].astype('str').apply(lambda x: m.word_cleaning(m.value_cleaning_scm(x)).replace('T',' '))
     comple_at2 = [i if len(i) == 19 else None for i in comple_at]
     kitchen_log['completed_at'] = pd.to_datetime(comple_at2, format = "%Y-%m-%d %H:%M:%S")
 
@@ -489,7 +489,7 @@ if __name__ == "__main__":
     chef_id2 = set(emp['emp_id'])
     kitchen_log['chef_id'] = [ i if i in chef_id2 else None for i in chef_id1]
     # stauts
-    status = kic['status'].astype('str').apply(lambda x: m.word_cleaning(m.value_cleaning_sc(x)))
+    status = kic['status'].astype('str').apply(lambda x: m.word_cleaning(m.value_cleaning_scm(x)))
     kitchen_log['status'] = [i if i in ('Completed', 'Started', 'Cancelled') else None for i in status]
 
     kit_log = kitchen_log.dropna(subset= 'kitchen_log_id').drop_duplicates(subset= 'kitchen_log_id').sort_values(by = 'kitchen_log_id').reset_index().drop('index', axis = 1)

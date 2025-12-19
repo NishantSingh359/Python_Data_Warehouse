@@ -1,5 +1,5 @@
 def value_cleaning(value):
-    # replace punctuation characters
+    # Replace punctuation characters
     step1 = value.replace(".","").replace(",","").replace(";","").replace(":","").replace("?","").replace("!","").replace("'","").replace("`","").replace("…","").replace("—","")
     # Mathematical Symbols
     step2 = step1.replace("=", "").replace("+","").replace("-","").replace("<","").replace(">","").replace("%","").replace("∞","").replace("*","").replace("/","").replace("|","")
@@ -15,7 +15,7 @@ def value_cleaning(value):
 
 # ====== To keep space ' '
 def value_cleaning_s(value):
-    # replace punctuation characters
+    # Replace punctuation characters
     step1 = value.replace(".","").replace(",","").replace(";","").replace(":","").replace("?","").replace("!","").replace("'","").replace("`","").replace("…","").replace("—","")
     # Mathematical Symbols
     step2 = step1.replace("=", "").replace("+","").replace("-","").replace("<","").replace(">","").replace("%","").replace("∞","").replace("*","").replace("/","").replace("|","")
@@ -31,7 +31,7 @@ def value_cleaning_s(value):
 
 # ====== To keep '-'
 def value_cleaning_m(value):
-    # replace punctuation characters
+    # Replace punctuation characters
     step1 = value.replace(".","").replace(",","").replace(";","").replace(":","").replace("?","").replace("!","").replace("'","").replace("`","").replace("…","").replace("—","")
     # Mathematical Symbols
     step2 = step1.replace("=", "").replace("+","").replace("<","").replace(">","").replace("%","").replace("∞","").replace("*","").replace("/","").replace("|","")
@@ -46,8 +46,8 @@ def value_cleaning_m(value):
     return step6
 
 # ====== To keep ' ' and '-' and ':'
-def value_cleaning_sc(value):
-    # replace punctuation characters
+def value_cleaning_scm(value):
+    # Replace punctuation characters
     step1 = value.replace(".","").replace(",","").replace(";","").replace("?","").replace("!","").replace("'","").replace("`","").replace("…","").replace("—","")
     # Mathematical Symbols
     step2 = step1.replace("=", "").replace("+","").replace("<","").replace(">","").replace("%","").replace("∞","").replace("*","").replace("/","").replace("|","")
@@ -61,9 +61,9 @@ def value_cleaning_sc(value):
     step6 = step5.replace("\n","").replace("\t","").strip()
     return step6
 
-# ====== To keep '.' '-'
+# ====== To keep '.'
 def value_cleaning_d(value):
-    # replace punctuation characters
+    # Replace punctuation characters
     step1 = value.replace(",","").replace(";","").replace(":","").replace("?","").replace("!","").replace("'","").replace("`","").replace("…","").replace("—","")
     # Mathematical Symbols
     step2 = step1.replace("=", "").replace("+","").replace("-","").replace("<","").replace(">","").replace("%","").replace("∞","").replace("*","").replace("/","").replace("|","")
@@ -77,14 +77,14 @@ def value_cleaning_d(value):
     step6 = step5.replace(" ", "").replace("\n","").replace("\t","").strip()
     return step6
 
-# ====== For word cleaning
+# ====== For word's cleaning
 def word_cleaning(value):
     step1 = value.replace('bbadb','').replace('x1F60A','').replace('ext123','').replace('x160A','').replace('bbab','')
     step2 = step1.replace('x1F0A','').replace('x1F6A','').replace('badb','').replace('1F60A','')
     step3 = step2.replace('xF60A','').replace('bbad','').replace('x1F60','').replace('bbdb','').strip()
     return step3
 
-
+# ====== For letter's cleaning
 def letter_cleaning(value):
     step1 = value.replace('X','').replace('Y','').replace('Z','').strip()
     return step1
