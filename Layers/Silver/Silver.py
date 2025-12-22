@@ -7,7 +7,7 @@ sys.path.append(str(ROOT_DIR))
 
 import os
 import pandas as pd
-
+import numpy as np
 import importlib
 import module as m
 importlib.reload(m) 
@@ -148,7 +148,7 @@ if __name__ == "__main__":
     # ----- order_datetime
     datetime1 = orde['order_datetime'].astype('str').apply(lambda x: m.word_cleaning(m.value_cleaning_scm(x)))
     datetime2 = [i if len(i) == 19 else None for i in datetime1]
-    order['order_datetime'] = pd.to_datetime(datetime2, format= "%Y-%m-%d %H:%M:%S")
+    order['order_datetime'] = pd.to_datetime(datetime2, format= "%Y-%m-%d %H:%M:%S", errors='coerce')
     # ----- payment_mode
     pay_mode = orde['payment_mode'].astype('str').apply(lambda x: m.word_cleaning(m.value_cleaning_scm(x)))
     order['payment_mode'] = [i if i in ['Card', 'UPI', 'Cash', 'NetBanking'] else None for i in pay_mode]
@@ -229,7 +229,6 @@ if __name__ == "__main__":
     order_item = pd.DataFrame()
 
     print("==================== CLEANING order_items.csv")
-    order_item = pd.DataFrame()
     # order_item_id
     ord_itm_id = ord_itm['order_item_id'].astype('str').apply(lambda x: m.letter_cleaning(m.word_cleaning(m.value_cleaning(x))))
     ord_itm_id1 = ['OI0'+i[2::] if len(i) == 8 else i for i in ord_itm_id]
@@ -249,15 +248,30 @@ if __name__ == "__main__":
     order_item['item_id'] = [None if i not in item_id2 else i for i in item_id1]
     # quantity
     qty = ord_itm['quantity'].astype('str').apply(lambda x: m.word_cleaning(m.value_cleaning(x)))
-    order_item['quantity'] = [0 if i in ('nan', 'na', '0') or len(i) > 2 else i for i in qty]
+    order_item['quantity'] = [0 if i in ('nan', 'na','n') else 0 if len(i) >2 else int(i) for i in qty]
     # unit_price
     price = ord_itm['unit_price'].astype('str').apply(lambda x: m.word_cleaning(m.value_cleaning_d(x)))
-    order_item['price'] = [0 if i in ('nan','na','n') or float(i) <= 0 else float(i) for i in price]
+    order_item['price'] = [0 if i in ('nan','na','n','999','999999') else round(float(i),2) for i in price]
+    menu_item = pd.read_pickle("./Layers/silver/crm/menu_item.pkl")
     # line_total
     price = ord_itm['line_total'].astype('str').apply(lambda x: m.word_cleaning(m.value_cleaning_d(x)))
-    order_item['line_total'] = [0 if i in ('nan','na','n') or float(i) <= 0 else float(i) for i in price]
+    order_item['line_total'] = [0 if i in ('nan','na','n','999999','999') else round(float(i),2) for i in price]
 
-    ord_itm = order_item.dropna(subset = 'order_item_id').drop_duplicates(subset = 'order_item_id').sort_values(by = 'order_item_id').reset_index().drop('index', axis = 1)
+    ordd = order_item.dropna(subset = 'order_item_id').drop_duplicates(subset = 'order_item_id').sort_values(by = 'order_item_id').reset_index().drop('index', axis = 1)
+
+    # price cleaning
+    menu_item = pd.read_pickle("./Layers/silver/crm/menu_item.pkl")
+    merg = pd.merge(ordd, menu, on = 'item_id',how= 'left')
+    ordd['price'] = round(merg['price_y']).where(merg['price_x'] == 0, merg['price_x'])
+    ordd['price'] = ordd['price'].fillna(ordd['line_total']/ordd['quantity'])
+    ordd['price'] = ordd['price'].replace(0, np.nan).pipe(pd.to_numeric, errors='coerce')
+    # quantity cleaning
+    ordd['quantity'] = (round(ordd['line_total']/ordd['price'])).where(ordd['quantity'] == 0, ordd['quantity'])
+    ordd['quantity'] = ordd['quantity'].fillna(0).astype(int)
+    ordd['quantity'] = ordd['quantity'].replace(0, np.nan)
+    # line_total_cleaning
+    ordd['line_total'] = (round(ordd['quantity']*ordd['price'],2)).where(ordd['line_total'] == 0, ordd['line_total'])
+    ordd['line_total'] = ordd['line_total'].replace(0, np.nan)
     ord_itm.to_pickle(r"layers/silver/crm/order_item.pkl")
 
     time2 = datetime.datetime.now()
