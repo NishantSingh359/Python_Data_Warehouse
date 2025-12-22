@@ -13,7 +13,6 @@ import module as m
 importlib.reload(m) 
 
 
-
 if __name__ == "__main__":
     
     print('=============================================')
@@ -32,7 +31,7 @@ if __name__ == "__main__":
     
     # ---------------------------------------------------
     # ---------------- restaurants.csv.gz ---------------
-    # ---------------------------------------------------
+    # ---------------------------------------------------    
 
     time1 = datetime.datetime.now()
 
@@ -40,18 +39,27 @@ if __name__ == "__main__":
     path = os.path.join("dataset","crm", "restaurants.csv.gz")
     res = pd.read_csv(path)
 
-    print("=============== CREATING DATAFRAME restaurant")
-    restaurant = pd.DataFrame()
-
     print("==================== CLEANING restaurants.csv")
-    restaurant['restaurant_id'] = res['restaurant_id'].apply(lambda x: x.strip().replace("Y","1").replace("nan &#x1F60A;","R004"))
-    restaurant['name'] = res['name'].astype('str').apply(lambda x: x.strip().replace("<b>bad</b>","").replace('nan','FoodHub Branch 7').replace("3 ","3"))
-    restaurant['city'] = res['city'].astype('str').apply(lambda x: m.value_cleaning(x))
-    restaurant['open_date'] = pd.to_datetime(res['open_date'].astype('str').apply(lambda x: x.replace("<b>bad</b>","").replace(" ","")),format= "%Y-%m-%d")
-    restaurant['phone'] = res['phone'].astype('str').apply(lambda x: m.value_cleaning(x)[2::] if len(m.value_cleaning(x)[2::]) == 10 else None)
-
-    restaurant = restaurant.sort_values(by = 'restaurant_id').reset_index().drop("index", axis = 1).dropna(subset= ['restaurant_id'],axis = 0)
-    restaurant.drop_duplicates(subset= ['restaurant_id']).to_pickle(r"layers/silver/crm/restaurant.pkl")
+    
+    restaurant_id = res['restaurant_id'].apply(lambda x: x.strip().replace("Y","1").replace("nan &#x1F60A;","R004"))
+    name =          res['name'].astype(str).apply(lambda x: m.word_cleaning(x).replace('nan','FoodHub Branch 7'))
+    city =          res['city'].astype(str).apply(lambda x: m.value_cleaning(x))
+    open_date =     res['open_date'].astype(str).apply(lambda x: m.word_cleaning(x))
+    open_date =     pd.to_datetime(open_date, format= "%Y-%m-%d", errors= 'coerce')
+    phone =         res['phone'].astype(str).apply(lambda x: m.value_cleaning(x)[2::] if len(m.value_cleaning(x)[2::]) == 10 else None)
+    
+    restaurant = pd.DataFrame({
+        'restaurant_id': restaurant_id,
+        'name':          name,
+        'city':          city,
+        'open_date':     open_date,
+        'phone':         phone 
+    })
+    
+    restaurant = restaurant.dropna(subset= ['restaurant_id'],axis = 0).drop_duplicates(subset= ['restaurant_id']).sort_values(by = 'restaurant_id').reset_index().drop("index", axis = 1)
+    
+    print("===================== LOADING restaurants.csv")
+    restaurant.to_pickle(r"layers/silver/crm/restaurant.pkl")
 
     time2 = datetime.datetime.now()
     time = time2 - time1
@@ -69,17 +77,24 @@ if __name__ == "__main__":
     path = os.path.join("dataset","crm", "delivery_partners.csv.gz")
     deli = pd.read_csv(path)
 
-    print("======== CREATING DATAFRAME delivery_partners")
-    delivery_partners = pd.DataFrame()
-
     print("============== CLEANING delivery_partners.csv")
-    delivery_partners['delivery_id'] = deli['delivery_id'].astype('str').apply(lambda x: m.value_cleaning(x).replace('DO17','D0017').replace('D0036x1F60A','D0036') if len(m.value_cleaning(x)) == 5 else None)
-    delivery_partners['name'] = deli['name'].astype('str').apply(lambda x: m.value_cleaning(x) if len(m.value_cleaning(x)) in (9,10,11) else None)
-    delivery_partners['vehicle_type'] = deli['vehicle_type'].astype('str').apply(lambda x: None if m.value_cleaning(x) == 'nan' else m.value_cleaning(x))
-    delivery_partners['phone'] = deli['phone'].astype('str').apply(lambda x: None if len(m.value_cleaning(x)[2:12]) != 10 else m.value_cleaning(x)[2:12])
+    
+    delivery_id =  deli['delivery_id'].astype('str').apply(lambda x: m.value_cleaning(x).replace('DO17','D0017').replace('D0036x1F60A','D0036') if len(m.value_cleaning(x)) == 5 else None)
+    name =         deli['name'].astype('str').apply(lambda x: m.value_cleaning(x) if len(m.value_cleaning(x)) in (9,10,11) else None)
+    vehicle_type = deli['vehicle_type'].astype('str').apply(lambda x: m.value_cleaning(x) if m.value_cleaning(x) in ['Bike', 'Scooter', 'Car'] else None)
+    phone =        deli['phone'].astype('str').apply(lambda x: m.value_cleaning(x)[2:12] if len(m.value_cleaning(x)[2:12]) == 10 else None)
 
-    deliv = delivery_partners.sort_values(by = 'delivery_id').reset_index().drop('index', axis = 1).dropna(subset= ['delivery_id'], axis = 0)
-    deliv.drop_duplicates(subset=['delivery_id']).to_pickle(r"layers/silver/crm/delivery_partners.pkl")
+    delivery_partner = pd.DataFrame({
+        'delivery_id': delivery_id,
+        'name':        name,
+        'vehcle_type': vehicle_type,
+        'phone':       phone
+    })
+
+    delivery_partner = delivery_partner.dropna(subset= ['delivery_id'], axis = 0).drop_duplicates(subset=['delivery_id']).sort_values(by = 'delivery_id').reset_index().drop('index', axis = 1)
+    
+    print("================ SAVING delivery_partners.pkl")
+    delivery_partner.to_pickle(r"layers/silver/crm/delivery_partner.pkl")
 
     time2 = datetime.datetime.now()
     time = time2 - time1
@@ -101,15 +116,31 @@ if __name__ == "__main__":
     customer = pd.DataFrame()
 
     print("====================== CLEANING customers.csv")
-    customer['customer_id'] = cust['customer_id'].astype('str').apply(lambda x: m.word_cleaning(m.word_cleaning(m.value_cleaning(x))) if len(m.value_cleaning(x)) in (6,7) else None)
-    customer['first_name'] = cust['first_name'].astype('str').apply(lambda x: None if m.word_cleaning(m.value_cleaning(x)) in ('nan',) else m.word_cleaning(m.value_cleaning(x)))
-    customer['last_name']  = cust['last_name'].astype('str').apply(lambda x: None if m.word_cleaning(m.value_cleaning(x)) in ('nan',) else m.word_cleaning(m.value_cleaning(x)))
-    customer['phone'] = cust['phone'].astype('str').apply(lambda x: None if len(m.word_cleaning(m.value_cleaning(x))[2:12]) != 10 else m.word_cleaning(m.value_cleaning(x))[2:12])
-    customer['city'] = cust['city'].astype('str').apply(lambda x: None if m.word_cleaning(m.value_cleaning(x)) in ('nan',) else m.word_cleaning(m.value_cleaning(x)))
-    customer['created_at'] = cust['created_at'].astype('str').apply(lambda x: None if len(m.word_cleaning(m.value_cleaning_m(x))) != 10 else m.word_cleaning(m.value_cleaning_m(x)))
 
-    cstmr = customer.sort_values(by = 'customer_id').dropna(subset= ['customer_id']).drop_duplicates(subset= ['customer_id']).reset_index().drop('index',axis = 1)
-    cstmr.to_pickle(r"layers/silver/crm/customer.pkl")
+    customer_id = cust['customer_id'].astype(str).apply(lambda x: m.word_cleaning(m.word_cleaning(m.value_cleaning(x))))
+    customer_id =  ['C0'+i[1::] if len(i) == 6 else i for i in customer_id]
+    customer_id =  [i if len(i) == 7 else None for i in customer_id]
+    first_name =  cust['first_name'].astype(str).apply(lambda x: None if m.word_cleaning(m.value_cleaning(x)) in ('nan','na') else m.word_cleaning(m.value_cleaning(x)))
+    last_name =   cust['last_name'].astype(str).apply(lambda x: None if m.word_cleaning(m.value_cleaning(x)) in ('nan','na') else m.word_cleaning(m.value_cleaning(x)))
+    phone =       cust['phone'].astype(str).apply(lambda x: m.word_cleaning(m.value_cleaning(x)))
+    phone =       [i[2::] if len(i[2::]) == 10 else None for i in phone]
+    city =        cust['city'].astype(str).apply(lambda x: None if m.word_cleaning(m.value_cleaning(x)) in ('nan','na') else m.word_cleaning(m.value_cleaning(x)))
+    created_at =  cust['created_at'].astype(str).apply(lambda x: m.word_cleaning(m.value_cleaning_m(x)))
+    created_at =  pd.to_datetime(created_at, format = "%Y-%m-%d", errors= 'coerce')
+
+    customer = pd.DataFrame({
+        'customer_id': customer_id,
+        'first_name':  first_name,
+        'last_name':   last_name,
+        'phone':       phone,
+        'city':        city,
+        'created_at':  created_at
+    })
+
+    customer = customer.sort_values(by = 'customer_id').dropna(subset= ['customer_id']).drop_duplicates(subset= ['customer_id']).reset_index().drop('index',axis = 1)
+    
+    print("======================== SAVING customer.pkl")
+    customer.to_pickle(r"layers/silver/crm/customer.pkl")
 
     time2 = datetime.datetime.now()
     time = time2 - time1
@@ -127,49 +158,71 @@ if __name__ == "__main__":
     path = os.path.join("dataset","crm", "orders.csv.gz")
     orde = pd.read_csv(path)
 
-    print("==================== CREATING DATAFRAME order")
-    order = pd.DataFrame()
-
     print("========================= CLEANING orders.csv")
     # ----- order_id
     order_id = orde['order_id'].astype('str').apply(lambda x: m.letter_cleaning(m.word_cleaning(m.value_cleaning(x))))
-    order_id1 = ['O0'+i[1::] if len(i) == 7 else i for i in order_id]
-    order['order_id'] = [ i if len(i) == 8 else None for i in order_id1]
-    # ----- customer_id
-    cust_id = orde['customer_id'].astype('str').apply(lambda x: m.letter_cleaning(m.word_cleaning(m.value_cleaning(x))) if len(m.letter_cleaning(m.word_cleaning(m.value_cleaning(x)))) in (6,7) else None)
-    customer = pd.read_pickle("./layers/silver/crm/customer.pkl")
-    customer_ids = set(customer['customer_id'])
-    order['customer_id'] = [i if i in customer_ids else None for i in cust_id]
-    # ----- restaurant_id
-    rest_id = orde['restaurant_id'].astype('str').apply(lambda x: m.fix_ids(m.letter_cleaning(m.word_cleaning(m.value_cleaning(x)))))
-    rest_id1 = [i if len(i) == 4 else None for i in rest_id]
-    restaurant = pd.read_pickle(r"C:\Users\TUF\OneDrive\Documents\Code\Vs Code\Python_DataWarehouse\layers\silver\crm\restaurant.pkl")
-    order['restaurant_id'] = [i if i in restaurant['restaurant_id'].tolist() else None for i in rest_id1]
-    # ----- order_datetime
-    datetime1 = orde['order_datetime'].astype('str').apply(lambda x: m.word_cleaning(m.value_cleaning_scm(x)))
-    datetime2 = [i if len(i) == 19 else None for i in datetime1]
-    order['order_datetime'] = pd.to_datetime(datetime2, format= "%Y-%m-%d %H:%M:%S", errors='coerce')
-    # ----- payment_mode
-    pay_mode = orde['payment_mode'].astype('str').apply(lambda x: m.word_cleaning(m.value_cleaning_scm(x)))
-    order['payment_mode'] = [i if i in ['Card', 'UPI', 'Cash', 'NetBanking'] else None for i in pay_mode]
-    # ----- is_delivery
-    is_deli = orde['is_delivery'].astype('str').apply(lambda x: m.word_cleaning(m.value_cleaning_scm(x)))
-    order['is_delivery'] = [ i if i in ['1','0'] else None for i in is_deli]
-    order['is_delivery'] = order['is_delivery'].astype('Int16')
-    # ----- delivery_id
-    del_id = orde['delivery_id'].astype('str').apply(lambda x: m.letter_cleaning(m.word_cleaning(m.value_cleaning(x))))
-    del_id1 = [i[0]+'0'+i[1::] if len(i) == 4 else i if len(i) == 5 else None for i in del_id ]
-    deli_part = pd.read_pickle("./layers/silver/crm/delivery_partners.pkl")
-    order['delivery_id'] = [ None if i not in deli_part['delivery_id'].tolist() else i for i in del_id1]
-    # ----- order_total
-    total = orde['order_total'].astype('str').apply(lambda x: m.word_cleaning(m.value_cleaning_d(x)))
-    order['total'] = [None if i in ('nan','na','n') or float(i) <= 0 else float(i) for i in total]
-    # ----- order_status
-    status = orde['order_status'].astype('str').apply(lambda x: m.word_cleaning(m.value_cleaning(x)))
-    order['order_status'] = [i if i in ['Completed', 'Delivered', 'Preparing', 'Refunded', 'Cancelled'] else None for i in status]
+    order_id = ['O0'+i[1::] if len(i) == 7 else i for i in order_id]
+    order_id = [i if len(i) == 8 else None for i in order_id]
 
-    ordr = order.dropna(subset= 'order_id').drop_duplicates(subset = 'order_id').sort_values(by = 'order_id').reset_index().drop('index', axis = 1)
-    ordr.to_pickle(r"layers/silver/crm/order.pkl")
+    # ----- customer_id
+    customer_id =  orde['customer_id'].astype('str').apply(lambda x: m.letter_cleaning(m.word_cleaning(m.value_cleaning(x))))
+    customer_id =  ['C0'+i[1::] if len(i) == 6 else i for i in customer_id]
+    customer_id =  [i if len(i) == 7 else None for i in customer_id]
+    customer =     pd.read_pickle("./layers/silver/crm/customer.pkl")
+    customer_ids = set(customer['customer_id'])
+    customer_ids =  [i if i in customer_ids else None for i in customer_id]
+
+    # ----- restaurant_id
+    restaurant_id =  orde['restaurant_id'].astype('str').apply(lambda x: m.fix_ids(m.letter_cleaning(m.word_cleaning(m.value_cleaning(x)))))
+    restaurant_id =  [i if len(i) == 4 else None for i in restaurant_id]
+    restaurant =     pd.read_pickle("./layers/silver/crm/restaurant.pkl")
+    restaurant_ids = set(restaurant['restaurant_id'])
+    restaurant_id =  [i if i in restaurant_ids else None for i in restaurant_id]
+
+    # ----- order_datetime
+    order_datetime = orde['order_datetime'].astype('str').apply(lambda x: m.word_cleaning(m.value_cleaning_scm(x)))
+    order_datetime = pd.to_datetime(order_datetime, format= "%Y-%m-%d %H:%M:%S", errors='coerce')
+
+    # ----- payment_mode
+    payment_mode = orde['payment_mode'].astype('str').apply(lambda x: m.word_cleaning(m.value_cleaning_scm(x)))
+    payment_mode = [i if i in ['Card', 'UPI', 'Cash', 'NetBanking'] else None for i in payment_mode]
+
+    # ----- is_delivery
+    is_delivery = orde['is_delivery'].astype('str').apply(lambda x: m.word_cleaning(m.value_cleaning_scm(x)))
+    is_delivery = [int(i) if i in ['1','0'] else None for i in is_delivery]
+
+    # ----- delivery_id
+    delivery_id =       orde['delivery_id'].astype('str').apply(lambda x: m.letter_cleaning(m.word_cleaning(m.value_cleaning(x))))
+    delivery_id =       ['D0'+i[1::] if len(i) == 4 else i for i in delivery_id ]
+    delivery_id =       [i if len(i) == 5 else None for i in delivery_id]
+    delivery_partners = pd.read_pickle("./layers/silver/crm/delivery_partner.pkl")
+    delivery_ids =      set(delivery_partners['delivery_id'])
+    delivery_id =       [None if i not in delivery_ids else i for i in delivery_id]
+
+    # ----- order_total
+    order_total = orde['order_total'].astype('str').apply(lambda x: m.word_cleaning(m.value_cleaning_d(x)))
+    order_total = [None if i in ('nan','na','n') or float(i) <= 0 else float(i) for i in order_total]
+
+    # ----- order_status
+    order_status = orde['order_status'].astype('str').apply(lambda x: m.word_cleaning(m.value_cleaning(x)))
+    order_status = [i if i in ['Completed', 'Delivered', 'Preparing', 'Refunded', 'Cancelled'] else None for i in order_status]
+
+    order = pd.DataFrame({
+        'order_id':       order_id,
+        'customer_id':    customer_id,
+        'restaurant_id':  restaurant_id,
+        'order_datatime': order_datetime,
+        'payment_mode':   payment_mode,
+        'is_delivery':    is_delivery,
+        'delivery_id':    delivery_id,
+        'order_total':    order_total,
+        'order_status':   order_status
+    })
+
+    order = order.dropna(subset= 'order_id').drop_duplicates(subset = 'order_id').sort_values(by = 'order_id').reset_index().drop('index', axis = 1)
+
+    print("=========================== SAVING orders.pkl")
+    order.to_pickle(r"layers/silver/crm/order.pkl")
 
     time2 = datetime.datetime.now()
     time = time2 - time1
@@ -187,27 +240,38 @@ if __name__ == "__main__":
     path = os.path.join("dataset","crm", "menu_items.csv.gz")
     menu = pd.read_csv(path)
 
-    print("================ CREATING DATAFRAME menu_item")
-    menu_item = pd.DataFrame()
-
     print("===================== CLEANING menu_items.csv")
     # item_id
     item_id = menu['item_id'].astype('str').apply(lambda x: m.word_cleaning(m.value_cleaning(x)))
-    menu_item['item_id'] = [i[0]+'0'+i[1::] if len(i) == 4 else i if len(i) == 5 else None for i in item_id]
+    item_id = [i[0]+'0'+i[1::] if len(i) == 4 else i if len(i) == 5 else None for i in item_id]
+
     # item_name
-    menu_item['item_name'] = menu['item_name'].astype('str').apply(lambda x: m.word_cleaning(m.value_cleaning_s(x)))
+    item_name = menu['item_name'].astype('str').apply(lambda x: m.word_cleaning(m.value_cleaning_s(x)))
+
     # category
     category = menu['category'].astype('str').apply(lambda x: m.word_cleaning(m.value_cleaning(x)))
-    menu_item['category'] = [ None if i in ('nan','na','n') else i for i in category]
+    category = [ None if i in ('nan','na','n') else i for i in category]
+
     # price
     price = menu['price'].astype('str').apply(lambda x:  m.word_cleaning(m.value_cleaning_d(x)))
-    menu_item['price'] = [None if i in ('nan','na','n') or float(i) <= 0 else float(i) for i in price]
+    price = [None if i in ('nan','na','n') or float(i) <= 0 else float(i) for i in price]
+
     # supplier_id
     supplier_id = menu['supplier_id'].astype('str').apply(lambda x:  m.letter_cleaning(m.word_cleaning(m.value_cleaning_d(x))))
-    menu_item['supplier_id'] = [i[0]+'0'+i[1::] if len(i) == 4 else i if len(i) == 5 else None for i in supplier_id]
+    supplier_id = [i[0]+'0'+i[1::] if len(i) == 4 else i if len(i) == 5 else None for i in supplier_id]
 
-    menu_ite = menu_item.dropna(subset= 'item_id').drop_duplicates(subset= 'item_id').sort_values(by = 'item_id').reset_index().drop('index', axis = 1)
-    menu_ite.to_pickle(r"layers/silver/crm/menu_item.pkl")
+    menu_item = pd.DataFrame({
+        'item_id': item_id,
+        'item_name': item_name,
+        'category': category,
+        'price': price,
+        'supplier_id': supplier_id
+    })
+
+    menu_item = menu_item.dropna(subset= 'item_id').drop_duplicates(subset= 'item_id').sort_values(by = 'item_id').reset_index().drop('index', axis = 1)
+
+    print("======================== SAVING menu_item.pkl")
+    menu_item.to_pickle(r"layers/silver/crm/menu_item.pkl")
 
     time2 = datetime.datetime.now()
     time = time2 - time1
@@ -225,64 +289,79 @@ if __name__ == "__main__":
     path = os.path.join("dataset","crm", "order_items.csv.gz")
     ord_itm = pd.read_csv(path)
 
-    print("============== CREATING DATAFRAME order_items")
-    order_item = pd.DataFrame()
-
     print("==================== CLEANING order_items.csv")
     # order_item_id
-    ord_itm_id = ord_itm['order_item_id'].astype('str').apply(lambda x: m.letter_cleaning(m.word_cleaning(m.value_cleaning(x))))
-    ord_itm_id1 = ['OI0'+i[2::] if len(i) == 8 else i for i in ord_itm_id]
-    order_item['order_item_id'] = [i if len(i) == 9 else None for i in ord_itm_id1]
-    # order_id
-    order_id = ord_itm['order_id'].astype('str').apply(lambda x: m.letter_cleaning(m.word_cleaning(m.value_cleaning(x))))
-    order_id1 = ['O0'+i[1::] if len(i) == 7 else i for i in order_id]
-    order_id2 = [ i if len(i) == 8 else None for i in order_id1]
-    order = pd.read_pickle("./layers/silver/crm/order.pkl")
-    order_id3 = set(order['order_id'])
-    order_item['order_id'] = [i if i in order_id3 else None for i in order_id]
-    # item_id
-    item_id = ord_itm['item_id'].astype('str').apply(lambda x: m.word_cleaning(m.value_cleaning(x)))
-    item_id1 = [i[0]+'0'+i[1::] if len(i) == 4 else i if len(i) == 5 else None for i in item_id]
-    menu_item = pd.read_pickle("./layers/silver/crm/menu_item.pkl")
-    item_id2 = set(menu_item['item_id'])
-    order_item['item_id'] = [None if i not in item_id2 else i for i in item_id1]
-    # quantity
-    qty = ord_itm['quantity'].astype('str').apply(lambda x: m.word_cleaning(m.value_cleaning(x)))
-    order_item['quantity'] = [0 if i in ('nan', 'na','n') else 0 if len(i) >2 else int(i) for i in qty]
-    # unit_price
-    price = ord_itm['unit_price'].astype('str').apply(lambda x: m.word_cleaning(m.value_cleaning_d(x)))
-    order_item['price'] = [0 if i in ('nan','na','n','999','999999') else round(float(i),2) for i in price]
-    menu_item = pd.read_pickle("./Layers/silver/crm/menu_item.pkl")
-    # line_total
-    price = ord_itm['line_total'].astype('str').apply(lambda x: m.word_cleaning(m.value_cleaning_d(x)))
-    order_item['line_total'] = [0 if i in ('nan','na','n','999999','999') else round(float(i),2) for i in price]
+    order_item_id = ord_itm['order_item_id'].astype('str').apply(lambda x: m.letter_cleaning(m.word_cleaning(m.value_cleaning(x))))
+    order_item_id = ['OI0'+i[2::] if len(i) == 8 else i for i in order_item_id]
+    order_item_id = [i if len(i) == 9 else None for i in order_item_id]
 
-    ordd = order_item.dropna(subset = 'order_item_id').drop_duplicates(subset = 'order_item_id').sort_values(by = 'order_item_id').reset_index().drop('index', axis = 1)
+    # order_id
+    order_id =  ord_itm['order_id'].astype('str').apply(lambda x: m.letter_cleaning(m.word_cleaning(m.value_cleaning(x))))
+    order_id =  ['O0'+i[1::] if len(i) == 7 else i for i in order_id]
+    order_id =  [i if len(i) == 8 else None for i in order_id]
+    order =     pd.read_pickle("./layers/silver/crm/order.pkl")
+    order_ids = set(order['order_id'])
+    order_id =  [i if i in order_ids else None for i in order_id]
+
+    # item_id
+    item_id =   ord_itm['item_id'].astype('str').apply(lambda x: m.word_cleaning(m.value_cleaning(x)))
+    item_id =   [i[0]+'0'+i[1::] if len(i) == 4 else i if len(i) == 5 else None for i in item_id]
+    menu_item = pd.read_pickle("./layers/silver/crm/menu_item.pkl")
+    item_ids =  set(menu_item['item_id'])
+    item_id =   [None if i not in item_ids else i for i in item_id]
+
+    # quantity
+    quantity = ord_itm['quantity'].astype('str').apply(lambda x: m.word_cleaning(m.value_cleaning(x)))
+    quantity = [0 if i in ('nan', 'na','n') else 0 if len(i) >2 else int(i) for i in quantity]
+
+    # unit_price
+    unit_price = ord_itm['unit_price'].astype('str').apply(lambda x: m.word_cleaning(m.value_cleaning_d(x)))
+    unit_price = [0 if i in ('nan','na','n','999','999999') else round(float(i),2) for i in unit_price]
+
+    # unit_price
+    line_total = ord_itm['line_total'].astype('str').apply(lambda x: m.word_cleaning(m.value_cleaning_d(x)))
+    line_total = [0 if i in ('nan','na','n','999999','999') else round(float(i),2) for i in line_total]
+
+    order_item = pd.DataFrame({
+        'order_item_id': order_item_id,
+        'order_id': order_id,
+        'item_id': item_id,
+        'quantity': quantity,
+        'unit_price': unit_price,
+        'line_total': line_total
+    })
+
+    order_item = order_item.dropna(subset = 'order_item_id').drop_duplicates(subset = 'order_item_id').sort_values(by = 'order_item_id').reset_index().drop('index', axis = 1)
 
     # price cleaning
     menu_item = pd.read_pickle("./Layers/silver/crm/menu_item.pkl")
-    merg = pd.merge(ordd, menu, on = 'item_id',how= 'left')
-    ordd['price'] = round(merg['price_y']).where(merg['price_x'] == 0, merg['price_x'])
-    ordd['price'] = ordd['price'].fillna(ordd['line_total']/ordd['quantity'])
-    ordd['price'] = ordd['price'].replace(0, np.nan).pipe(pd.to_numeric, errors='coerce')
+    merge = pd.merge(order_item, menu_item, on = 'item_id',how= 'left')
+    order_item['unit_price'] = round(merge['price']).where(merge['unit_price'] == 0, merge['unit_price'])
+    order_item['unit_price'] = order_item['unit_price'].fillna(order_item['line_total']/order_item['quantity'])
+    order_item['unit_price'] = order_item['unit_price'].replace(0, np.nan).pipe(pd.to_numeric, errors='coerce')
+
     # quantity cleaning
-    ordd['quantity'] = (round(ordd['line_total']/ordd['price'])).where(ordd['quantity'] == 0, ordd['quantity'])
-    ordd['quantity'] = ordd['quantity'].fillna(0).astype(int)
-    ordd['quantity'] = ordd['quantity'].replace(0, np.nan)
+    order_item['quantity'] = (round(order_item['line_total']/order_item['unit_price'])).where(order_item['quantity'] == 0, order_item['quantity'])
+    order_item['quantity'] = order_item['quantity'].fillna(0).astype(int)
+    order_item['quantity'] = order_item['quantity'].replace(0, np.nan)
+
     # line_total_cleaning
-    ordd['line_total'] = (round(ordd['quantity']*ordd['price'],2)).where(ordd['line_total'] == 0, ordd['line_total'])
-    ordd['line_total'] = ordd['line_total'].replace(0, np.nan)
-    ord_itm.to_pickle(r"layers/silver/crm/order_item.pkl")
+    order_item['line_total'] = (round(order_item['quantity']*order_item['unit_price'],2)).where(order_item['line_total'] == 0, order_item['line_total'])
+    order_item['line_total'] = order_item['line_total'].replace(0, np.nan)
+
+    print("======================= SAVING order_item.pkl")
+    order_item.to_pickle(r"layers/silver/crm/order_item.pkl")
 
     time2 = datetime.datetime.now()
     time = time2 - time1
     print("TABLE CLEANING TIME")
     print(time)
     print()
-    # crm tables CLEANING TIME
+
+    # CRM TABLES CLEANING TIME
     crm_time2 = datetime.datetime.now()
     crm_time = crm_time2 - crm_time1
-    print("crm TABLES CLEANING TIME")
+    print("CRM TABLES CLEANING TIME")
     print(crm_time)   
     print()
 
@@ -302,27 +381,36 @@ if __name__ == "__main__":
 
     print("======================= LOADING suppliers.csv")
     path = os.path.join("dataset","erp", "suppliers.csv.gz")
-    suplir = pd.read_csv(path)
+    supplier = pd.read_csv(path)
 
-    print("================= CREATING DATAFRAME supplier")
-    supplier = pd.DataFrame()
 
     print("======================= CLEANING supplier.csv")
     # supplier_id
-    supp_id = suplir['supplier_id'].astype('str').apply(lambda x: m.word_cleaning(m.value_cleaning(x)))
-    supplier['supplier_id'] = [i if len(i) == 5 else None for i in supp_id]
-    # supplier_name
-    supp_name = suplir['supplier_name'].astype('str').apply(lambda x: m.word_cleaning(m.value_cleaning(x)))
-    supplier['supplier_name'] = [None if i in ('nan','na','n') else i for i in supp_name]
-    # phone
-    phone = suplir['phone'].astype('str').apply(lambda x: m.word_cleaning(m.value_cleaning(x)))
-    supplier['phone'] = [i[2::] if len(i) == 12 else i[1::] if len(i) == 11 else None if i in ('nan','na','n') else i for i in phone]
-    # city
-    city = suplir['city'].astype('str').apply(lambda x: m.word_cleaning(m.value_cleaning(x)))
-    supplier['city'] = [ None if i in ('nan','na','n') else i for i in city]
+    supplier_id = supplier['supplier_id'].astype('str').apply(lambda x: m.word_cleaning(m.value_cleaning(x)))
+    supplier_id = [i if len(i) == 5 else None for i in supplier_id]
 
-    suplr = supplier.dropna( subset= 'supplier_id').drop_duplicates(subset= 'supplier_id').sort_values(by = 'supplier_id').reset_index().drop('index', axis = 1)
-    suplr.to_pickle(r"layers/silver/erp/order_item.pkl")
+    # supplier_name
+    supplier_name = supplier['supplier_name'].astype('str').apply(lambda x: m.word_cleaning(m.value_cleaning(x)))
+    supplier_name = [None if i in ('nan','na','n') else i for i in supplier_name]
+
+    # phone
+    phone = supplier['phone'].astype('str').apply(lambda x: m.word_cleaning(m.value_cleaning(x)))
+    phone = [i[2::] if len(i) == 12 else i[1::] if len(i) == 11 else None if i in ('nan','na','n') else i for i in phone]
+    # city
+    city = supplier['city'].astype('str').apply(lambda x: m.word_cleaning(m.value_cleaning(x)))
+    city = [ None if i in ('nan','na','n') else i for i in city]
+
+    supplier = pd.DataFrame({
+        'supplier_id':   supplier_id,
+        'supplier_name': supplier_name,
+        'phone':         phone,
+        'city':          city
+    })
+
+    supplier = supplier.dropna( subset= 'supplier_id').drop_duplicates(subset= 'supplier_id').sort_values(by = 'supplier_id').reset_index().drop('index', axis = 1)
+
+    print("========================= SAVING supplier.pkl")
+    supplier.to_pickle(r"layers/silver/erp/supplier.pkl")
 
     time2 = datetime.datetime.now()
     time = time2 - time1
@@ -338,24 +426,29 @@ if __name__ == "__main__":
     
     print("================= LOADING suppliers_items.csv")
     path = os.path.join("dataset","erp", "supplier_items.csv.gz")
-    sup_itm = pd.read_csv(path)
-
-    print("============ CREATING DATAFRAME supplier_item")
-    supplier_item = pd.DataFrame()
+    supplier_item = pd.read_csv(path)
 
     print("================= CLEANING supplier_items.csv")
     # item_id
-    item_id = sup_itm['item_id'].astype('str').apply(lambda x: m.letter_cleaning(m.word_cleaning(m.value_cleaning(x))))
-    supplier_item['item_id'] = ['M0'+i[1::] if len(i) == 4 else  None if i in ('nan','na','n') else i for i in item_id]
-    # supplier_id
-    supplier_id = sup_itm['supplier_id'].astype('str').apply(lambda x: m.letter_cleaning(m.word_cleaning(m.value_cleaning(x))))
-    supplier_id1 = [ 'S0'+i[1::] if len(i) == 4 else None if i in ('nan','na','n') else i for i in supplier_id]
-    order_item = pd.read_pickle("./layers/silver/erp/order_item.pkl")
-    supplier_id2 = set(order_item['supplier_id'])
-    supplier_item['supplier_id'] = [i if i in supplier_id2 else None for i in supplier_id1]
+    item_id = supplier_item['item_id'].astype('str').apply(lambda x: m.letter_cleaning(m.word_cleaning(m.value_cleaning(x))))
+    item_id = ['M0'+i[1::] if len(i) == 4 else  None if i in ('nan','na','n') else i for i in item_id]
 
-    suplr_itm = supplier_item.dropna(subset = 'item_id').drop_duplicates(subset = 'item_id').sort_values(by = 'item_id').reset_index().drop('index', axis = 1)
-    suplr_itm.to_pickle(r"layers/silver/erp/supplier_item.pkl")
+    # supplier_id
+    supplier_id =  supplier_item['supplier_id'].astype('str').apply(lambda x: m.letter_cleaning(m.word_cleaning(m.value_cleaning(x))))
+    supplier_id =  ['S0'+i[1::] if len(i) == 4 else None if i in ('nan','na','n') else i for i in supplier_id]
+    supplier =     pd.read_pickle("./layers/silver/erp/supplier.pkl")
+    supplier_ids = set(supplier['supplier_id'])
+    supplier_id =  [i if i in supplier_ids else None for i in supplier_id]
+
+    supplier_item = pd.DataFrame({
+        'item_id':     item_id,
+        'supplier_id': supplier_id
+    }) 
+
+    supplier_item = supplier_item.dropna(subset = 'item_id').drop_duplicates(subset = 'item_id').sort_values(by = 'item_id').reset_index().drop('index', axis = 1)
+
+    print("==================== SAVING supplier_item.pkl")
+    supplier_item.to_pickle(r"layers/silver/erp/supplier_item.pkl")
 
     time2 = datetime.datetime.now()
     time = time2 - time1
@@ -371,30 +464,39 @@ if __name__ == "__main__":
     
     print("======================= LOADING inventory.csv")
     path = os.path.join("dataset","erp", "inventory.csv.gz")
-    inty = pd.read_csv(path)
-
-    print("================ CREATING DATAFRAME inventory")
-    inventory = pd.DataFrame()
+    inventory = pd.read_csv(path)
 
     print("====================== CLEANING inventory.csv")
     # restaurant_id
-    rest_id = inty['restaurant_id'].astype('str').apply(lambda x: m.fix_ids(m.letter_cleaning(m.word_cleaning(m.value_cleaning(x)))))
-    rest = pd.read_pickle("./layers/silver/crm/restaurant.pkl")
-    rest_id1 = set(rest['restaurant_id'])
-    inventory['restaurant_id'] = [ i if i in rest_id1 else None for i in rest_id]
-    # item_id
-    itm_id = inty['item_id'].astype('str').apply(lambda x: m.letter_cleaning(m.word_cleaning(m.value_cleaning(x))))
-    itm_id2 = ['M0'+i[1::] if len(i) == 4 else i if len(i) == 5 else None for i in itm_id]
-    sup_itm = pd.read_pickle("./layers/silver/erp/supplier_item.pkl")
-    itm_id3 = set(sup_itm['item_id'])
-    inventory['item_id'] = [ i if i in itm_id3 else None for i in itm_id2]
-    # stock_qty
-    sto_qty = inty['stock_qty'].astype('str').apply(lambda x: m.word_cleaning(m.value_cleaning(x)))
-    inventory['stock_qty'] = [ None if i in ('nan','na','999','999999') else i for i in sto_qty]
-    # reorder_lavel
-    reor_lavel = inty['reorder_level'].astype('str').apply(lambda x: m.word_cleaning(m.value_cleaning(x)))
-    reor_lavel['reorder_level'] = [None if i in ('nan','na','n') else i for i in reor_lavel]
+    restaurant_id =  inventory['restaurant_id'].astype('str').apply(lambda x: m.fix_ids(m.letter_cleaning(m.word_cleaning(m.value_cleaning(x)))))
+    restaurant =     pd.read_pickle("./layers/silver/crm/restaurant.pkl")
+    restaurant_ids = set(restaurant['restaurant_id'])
+    restaurant_id =  [i if i in restaurant_ids else None for i in restaurant_id]
 
+    # item_id
+    item_id =       inventory['item_id'].astype('str').apply(lambda x: m.letter_cleaning(m.word_cleaning(m.value_cleaning(x))))
+    item_id =       ['M0'+i[1::] if len(i) == 4 else i for i in item_id]
+    itetm_id =      [i if len(i) == 5 else None for i in item_id]
+    supplier_item = pd.read_pickle("./layers/silver/erp/supplier_item.pkl")
+    item_ids =      set(supplier_item['item_id'])
+    item_id =       [i if i in item_ids else None for i in item_id]
+
+    # stock_qty
+    stock_qty = inventory['stock_qty'].astype('str').apply(lambda x: m.word_cleaning(m.value_cleaning(x)))
+    stock_qty = [ None if i in ('nan','na','999','999999') else i for i in stock_qty]
+
+    # reorder_lavel
+    reorder_level = inventory['reorder_level'].astype('str').apply(lambda x: m.word_cleaning(m.value_cleaning(x)))
+    reorder_level = [None if i in ('nan','na','n') else i for i in reorder_level]
+
+    inventory = pd.DataFrame({
+        'restaurant_id': restaurant_id,
+        'item_id': item_id,
+        'stock_qty': stock_qty,
+        'reorder_lavel': reorder_level
+    }) 
+
+    print("======================== SAVING inventory.pkl")
     inventory.to_pickle(r"layers/silver/erp/inventory.pkl")
 
     time2 = datetime.datetime.now()
@@ -411,39 +513,53 @@ if __name__ == "__main__":
     
     print("======================= LOADING employees.csv")
     path = os.path.join("dataset","erp", "employees.csv.gz")
-    emp = pd.read_csv(path)
-
-    print("================= CREATING DATAFRAME employee")
-    employee = pd.DataFrame()
+    employee = pd.read_csv(path)
 
     print("====================== CLEANING employees.csv")
     # emp_id
-    emp_id = emp['emp_id'].astype('str').apply(lambda x: m.word_cleaning(m.value_cleaning(x)))
-    employee['emp_id'] = ['E0'+i[1::] if len(i) == 5 else i if len(i) == 6 else None for i in emp_id]
-    # first_name
-    first_name = emp['first_name'].astype('str').apply(lambda x: m.word_cleaning(m.value_cleaning(x)))
-    employee['first_name'] = [ None if i in ('nan','na','n') else i for i in first_name]
-    # last_name
-    last_name = emp['last_name'].astype('str').apply(lambda x: m.word_cleaning(m.value_cleaning(x)))
-    employee['last_name'] = [ None if i in ('nan','na','n') else i for i in last_name]
-    # role
-    role = emp['role'].astype('str').apply(lambda x: m.word_cleaning(m.value_cleaning_s(x)))
-    employee['role'] = [ None if i in ('nan','na','n') else i for i in role]
-    # restaurant_id
-    rest_id = emp['restaurant_id'].astype('str').apply(lambda x: m.letter_cleaning(m.word_cleaning(m.value_cleaning_s(x))))
-    rest = pd.read_pickle("./layers/silver/crm/restaurant.pkl")
-    rest_id1 = set(rest['restaurant_id'])
-    employee['restaurant_id'] =  [ i if i in rest_id1 else None for i in rest_id]
-    # hire_date
-    hire_date = emp['hire_date'].astype('str').apply(lambda x: m.word_cleaning(m.value_cleaning_m(x)))
-    employee['hire_date'] = [None if i in ('nan','na','n') else i for i in hire_date]
-    employee['hire_date'] = pd.to_datetime(employee['hire_date'], format = "%Y-%m-%d")
-    # salary
-    sly = emp['salary'].astype('str').apply(lambda x: m.word_cleaning(m.value_cleaning_d(x)))
-    employee['salary'] = [None if i in ('nan','na','n','999') else float(i) for i in sly]
+    emp_id = employee['emp_id'].astype('str').apply(lambda x: m.word_cleaning(m.value_cleaning(x)))
+    emp_id = ['E0'+i[1::] if len(i) == 5 else i if len(i) == 6 else None for i in emp_id]
 
-    emply = employee.dropna(subset= 'emp_id').drop_duplicates(subset= 'emp_id').sort_values(by = 'emp_id').reset_index().drop('index',axis = 1)
-    emply.to_pickle(r"layers/silver/erp/employee.pkl")
+    # first_name
+    first_name = employee['first_name'].astype('str').apply(lambda x: m.word_cleaning(m.value_cleaning(x)))
+    first_name = [ None if i in ('nan','na','n') else i for i in first_name]
+
+    # last_name
+    last_name = employee['last_name'].astype('str').apply(lambda x: m.word_cleaning(m.value_cleaning(x)))
+    last_name = [ None if i in ('nan','na','n') else i for i in last_name]
+
+    # role
+    role = employee['role'].astype('str').apply(lambda x: m.word_cleaning(m.value_cleaning_s(x)))
+    role = [ None if i in ('nan','na','n') else i for i in role]
+
+    # restaurant_id
+    restaurant_id = employee['restaurant_id'].astype('str').apply(lambda x: m.letter_cleaning(m.word_cleaning(m.value_cleaning_s(x))))
+    restaurant = pd.read_pickle("./layers/silver/crm/restaurant.pkl")
+    restaurant_ids = set(restaurant['restaurant_id'])
+    employee['restaurant_id'] =  [ i if i in restaurant_ids else None for i in restaurant_id]
+
+    # hire_date
+    hire_date = employee['hire_date'].astype('str').apply(lambda x: m.word_cleaning(m.value_cleaning_m(x)))
+    hire_date = pd.to_datetime(hire_date, format = "%Y-%m-%d", errors= 'coerce')
+
+    # salary
+    salary = employee['salary'].astype('str').apply(lambda x: m.word_cleaning(m.value_cleaning_d(x)))
+    salary = [None if i in ('nan','na','n','999') else float(i) for i in salary]
+
+    employee = pd.DataFrame({
+        'emp_id':        emp_id,
+        'first_name':    first_name,
+        'last_name':     last_name,
+        'role':          role,
+        'restaurant_id': restaurant_id,
+        'hire_date':     hire_date,
+        'salary':        salary
+    })
+
+    employee = employee.dropna(subset= 'emp_id').drop_duplicates(subset= 'emp_id').sort_values(by = 'emp_id').reset_index().drop('index',axis = 1)
+
+    print("========================= SAVING employee.pkl")
+    employee.to_pickle(r"layers/silver/erp/employee.pkl")
 
     time2 = datetime.datetime.now()
     time = time2 - time1
@@ -461,53 +577,69 @@ if __name__ == "__main__":
     path = os.path.join("dataset","erp", "kitchen_logs.csv.gz")
     kic = pd.read_csv(path)
 
-    print("============== CREATING DATAFRAME kitchen_log")
-    kitchen_log = pd.DataFrame()
-
     print("=================== CLEANING kitchen_logs.csv")
     # kitchen_log_id
-    kit_id = kic['kitchen_log_id'].astype('str').apply(lambda x: m.letter_cleaning(m.word_cleaning(m.value_cleaning(x))))
-    kitchen_log['kitchen_log_id'] = ['KL0'+i[2::] if len(i) == 9 else i if len(i) == 10 else None for i in kit_id]
-    # order_item_id
-    ord_itm_id = kic['order_item_id'].astype('str').apply(lambda x: m.letter_cleaning(m.word_cleaning(m.value_cleaning(x))))
-    ord_itm_id1 = [ 'OI0'+i[2::] if len(i) == 8 else i if len(i) == 9 else None for i in ord_itm_id]
-    ord_itm = pd.read_pickle("./layers/silver/crm/order_item.pkl")
-    ord_itm_id2 = set(ord_itm['order_item_id'])
-    kitchen_log['order_item_id'] = [i if i in ord_itm_id2 else None for i in ord_itm_id1]
-    # order_id
-    ord_id = kic['order_id'].astype('str').apply(lambda x: m.letter_cleaning(m.word_cleaning(m.value_cleaning(x))))
-    ord_id1 = [ 'O0'+i[1::] if len(i) == 7 else i if len(i) == 8 else None for i in ord_id]
-    ordr = pd.read_pickle("./layers/silver/crm/order.pkl")
-    ord_id2 = set(ordr['order_id'])
-    kitchen_log['order_id'] = [i if i in ord_id2 else None for i in ord_id1 ]
-    # item_id
-    item_id = kic['item_id'].astype('str').apply(lambda x: m.letter_cleaning(m.word_cleaning(m.value_cleaning(x))))
-    item_id1 = ['M0'+i[1::] if len(i) == 4 else i if len(i) == 5 else None for i in item_id]
-    menu_itm = pd.read_pickle("./layers/silver/crm/menu_item.pkl")
-    item_id2 = set(menu_itm['item_id'])
-    kitchen_log['item_id'] = [i if i in item_id2 else None for i in item_id1 ]
-    # started_at
-    start_at = kic['started_at'].astype('str').apply(lambda x: m.word_cleaning(m.value_cleaning_scm(x)).replace('T',' '))
-    start_at2 = [i if len(i) == 19 else None for i in start_at]
-    kitchen_log['started_at'] = pd.to_datetime(start_at2, format = "%Y-%m-%d %H:%M:%S")
-    # completed_at
-    comple_at = kic['completed_at'].astype('str').apply(lambda x: m.word_cleaning(m.value_cleaning_scm(x)).replace('T',' '))
-    comple_at2 = [i if len(i) == 19 else None for i in comple_at]
-    kitchen_log['completed_at'] = pd.to_datetime(comple_at2, format = "%Y-%m-%d %H:%M:%S")
+    kitchen_log_id = kic['kitchen_log_id'].astype('str').apply(lambda x: m.letter_cleaning(m.word_cleaning(m.value_cleaning(x))))
+    kitchen_log_id = ['KL0'+i[2::] if len(i) == 9 else i for i in kitchen_log_id]
+    kitchen_log_id = [i if len(i) == 10 else None for i in kitchen_log_id]
 
-    kitchen_log['started_at'] = kitchen_log['started_at'].where(kitchen_log['started_at'] < kitchen_log['completed_at'],pd.NaT)
+    # order_item_id
+    order_item_id =  kic['order_item_id'].astype('str').apply(lambda x: m.letter_cleaning(m.word_cleaning(m.value_cleaning(x))))
+    order_item_id =  ['OI0'+i[2::] if len(i) == 8 else i for i in order_item_id]
+    order_item_id =  [i if len(i) == 9 else None for i in order_item_id]
+    order_item =     pd.read_pickle("./layers/silver/crm/order_item.pkl")
+    order_item_ids = set(order_item['order_item_id'])
+    order_item_id =  [i if i in order_item_ids else None for i in order_item_id]
+
+    # order_id
+    order_id = kic['order_id'].astype('str').apply(lambda x: m.letter_cleaning(m.word_cleaning(m.value_cleaning(x))))
+    order_id = ['O0'+i[1::] if len(i) == 7 else i for i in order_id]
+    order_id = [i if len(i) == 8 else None for i in order_id]
+    order =    pd.read_pickle("./layers/silver/crm/order.pkl")
+    order_ids =  set(order['order_id'])
+    order_id = [i if i in order_ids else None for i in order_id]
+
+    # item_id
+    item_id =   kic['item_id'].astype('str').apply(lambda x: m.letter_cleaning(m.word_cleaning(m.value_cleaning(x))))
+    item_id =   ['M0'+i[1::] if len(i) == 4 else i for i in item_id]
+    item_id =   [i if len(i) == 5 else None for i in item_id]
+    menu_item = pd.read_pickle("./layers/silver/crm/menu_item.pkl")
+    item_ids =  set(menu_item['item_id'])
+    item_id =   [i if i in item_ids else None for i in item_id ]
+
+    # started_at
+    started_at = kic['started_at'].astype('str').apply(lambda x: m.word_cleaning(m.value_cleaning_scm(x)).replace('T',' '))
+    started_at = pd.to_datetime(started_at, format = "%Y-%m-%d %H:%M:%S", errors = 'coerce')
+
+    # completed_at
+    completed_at = kic['completed_at'].astype('str').apply(lambda x: m.word_cleaning(m.value_cleaning_scm(x)).replace('T',' '))
+    completed_at = pd.to_datetime(completed_at, format = "%Y-%m-%d %H:%M:%S", errors='coerce')
+
     # chef_id
-    chef_id = kic['chef_id'].astype('str').apply(lambda x: m.letter_cleaning(m.word_cleaning(m.value_cleaning(x))))
-    chef_id1 = ['E0'+i[1::] if len(i) == 5 else i if len(i) == 6 else None for i in chef_id]
-    emp = pd.read_pickle("./layers/silver/erp/employee.pkl")
-    chef_id2 = set(emp['emp_id'])
-    kitchen_log['chef_id'] = [ i if i in chef_id2 else None for i in chef_id1]
+    chef_id =  kic['chef_id'].astype('str').apply(lambda x: m.letter_cleaning(m.word_cleaning(m.value_cleaning(x))))
+    chef_id =  ['E0'+i[1::] if len(i) == 5 else i for i in chef_id]
+    chef_id =  [i if len(i) == 6 else None for i in chef_id]
+    employee = pd.read_pickle("./layers/silver/erp/employee.pkl")
+    chef_ids = set(employee['emp_id'])
+    chef_id =  [i if i in chef_ids else None for i in chef_id]
+
     # stauts
     status = kic['status'].astype('str').apply(lambda x: m.word_cleaning(m.value_cleaning_scm(x)))
-    kitchen_log['status'] = [i if i in ('Completed', 'Started', 'Cancelled') else None for i in status]
+    status = [i if i in ('Completed', 'Started', 'Cancelled') else None for i in status]
 
-    kit_log = kitchen_log.dropna(subset= 'kitchen_log_id').drop_duplicates(subset= 'kitchen_log_id').sort_values(by = 'kitchen_log_id').reset_index().drop('index', axis = 1)
-    kit_log.to_pickle(r"layers/silver/erp/kitchen_log.pkl")
+    kitchen_log = pd.DataFrame({
+        'kitchen_log_id': kitchen_log_id,
+        'order_item_id': order_item_id,
+        'order_id': order_id,
+        'item_id': item_id,
+        'started_at': started_at,
+        'completed_at': completed_at,
+        'chef_id': chef_id,
+        'status': status
+    })
+
+    kitchen_log = kitchen_log.dropna(subset= 'kitchen_log_id').drop_duplicates(subset= 'kitchen_log_id').sort_values(by = 'kitchen_log_id').reset_index().drop('index', axis = 1)
+    kitchen_log.to_pickle(r"layers/silver/erp/kitchen_log.pkl")
 
     time2 = datetime.datetime.now()
     time = time2 - time1
