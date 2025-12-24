@@ -1,9 +1,4 @@
 
-import sys
-from pathlib import Path
-ROOT_DIR = Path(__file__).resolve().parents[1]
-sys.path.append(str(ROOT_DIR))
-
 import os
 import datetime
 import logging
@@ -16,7 +11,7 @@ importlib.reload(m)
 logging.basicConfig(
     level= logging.INFO,
     filemode = 'w',
-    filename = 'layers/silver/silver.log',
+    filename = 'silver.log',
     format = "%(asctime)s | %(levelname)s | %(message)s",
     datefmt="%H:%M:%S"
 )
@@ -45,7 +40,7 @@ if __name__ == "__main__":
         time1 = datetime.datetime.now()
 
         logging.info("===================== LOADING restaurants.csv")
-        path = os.path.join("dataset","crm", "restaurants.csv.gz")
+        path = "../../dataset/crm/restaurants.csv.gz"
         res = pd.read_csv(path)
 
         logging.info("==================== CLEANING restaurants.csv")
@@ -67,7 +62,7 @@ if __name__ == "__main__":
         restaurant = restaurant.dropna(subset= ['restaurant_id'],axis = 0).drop_duplicates(subset= ['restaurant_id']).sort_values(by = 'restaurant_id').reset_index().drop("index", axis = 1)
         
         logging.info("====================== SAVING restaurants.csv")
-        restaurant.to_pickle(r"layers/silver/crm/restaurants.pkl")
+        restaurant.to_pickle(r"crm/restaurants.pkl")
 
         before = res.shape
         after =  restaurant.shape
@@ -81,16 +76,16 @@ if __name__ == "__main__":
         logging.info("TABLE CLEANING TIME")
         logging.info(time)
 
-    except FileNotFoundError as f:
-        logging.error(f"FileNotFoundError: {f}")
-    except ValueError as v:
-        logging.error(f"ValueError: {v}")
-    except KeyError as k:
-        logging.error(f"KeyError: {k}")
-    except AttributeError as a:
-        logging.error(f"AttributeError: {a}")
-    except NameError as n:
-        logging.error(f"NameError: {n}")
+    except FileNotFoundError as e:
+        logging.error(f"FileNotFoundError: {e}")
+    except ValueError as e:
+        logging.error(f"ValueError: {e}")
+    except KeyError as e:
+        logging.error(f"KeyError: {e}")
+    except AttributeError as e:
+        logging.error(f"AttributeError: {e}")
+    except NameError as e:
+        logging.error(f"NameError: {e}")
 
 
     # ---------------------------------------------------
@@ -101,7 +96,7 @@ if __name__ == "__main__":
         time1 = datetime.datetime.now()
 
         logging.info("=============== LOADING delivery_partners.csv")
-        path = os.path.join("dataset","crm", "delivery_partners.csv.gz")
+        path = "../../dataset/crm/delivery_partners.csv.gz"
         deli = pd.read_csv(path)
 
         logging.info("============== CLEANING delivery_partners.csv")
@@ -121,7 +116,7 @@ if __name__ == "__main__":
         delivery_partner = delivery_partner.dropna(subset= ['delivery_id'], axis = 0).drop_duplicates(subset=['delivery_id']).sort_values(by = 'delivery_id').reset_index().drop('index', axis = 1)
         
         logging.info("================ SAVING delivery_partners.pkl")
-        delivery_partner.to_pickle(r"layers/silver/crm/delivery_partners.pkl")
+        delivery_partner.to_pickle(r"crm/delivery_partners.pkl")
 
         before = deli.shape
         after =  delivery_partner.shape
@@ -135,16 +130,16 @@ if __name__ == "__main__":
         logging.info("TABLE CLEANING TIME")
         logging.info(time)
 
-    except FileNotFoundError as f:
-        logging.error(f"FileNotFoundError: {f}")
-    except ValueError as v:
-        logging.error(f"ValueError: {v}")
-    except KeyError as k:
-        logging.error(f"KeyError: {k}")
-    except AttributeError as a:
-        logging.error(f"AttributeError: {a}")
-    except NameError as n:
-        logging.error(f"NameError: {n}")
+    except FileNotFoundError as e:
+        logging.error(f"FileNotFoundError: {e}")
+    except ValueError as e:
+        logging.error(f"ValueError: {e}")
+    except KeyError as e:
+        logging.error(f"KeyError: {e}")
+    except AttributeError as e:
+        logging.error(f"AttributeError: {e}")
+    except NameError as e:
+        logging.error(f"NameError: {e}")
 
 
     # ---------------------------------------------------
@@ -155,7 +150,7 @@ if __name__ == "__main__":
         time1 = datetime.datetime.now()
 
         logging.info("======================= LOADING customers.csv")
-        path = os.path.join("dataset","crm", "customers.csv.gz")
+        path = "../../dataset/crm/customers.csv.gz"
         cust = pd.read_csv(path)
 
         logging.info("====================== CLEANING customers.csv")
@@ -183,7 +178,7 @@ if __name__ == "__main__":
         customer = customer.sort_values(by = 'customer_id').dropna(subset= ['customer_id']).drop_duplicates(subset= ['customer_id']).reset_index().drop('index',axis = 1)
         
         logging.info("======================== SAVING customers.pkl")
-        customer.to_pickle(r"layers/silver/crm/customers.pkl")
+        customer.to_pickle(r"crm/customers.pkl")
 
         before = cust.shape
         after =  customer.shape
@@ -197,16 +192,16 @@ if __name__ == "__main__":
         logging.info("TABLE CLEANING TIME")
         logging.info(time)
 
-    except FileNotFoundError as f:
-        logging.error(f"FileNotFoundError: {f}")
-    except ValueError as v:
-        logging.error(f"ValueError: {v}")
-    except KeyError as k:
-        logging.error(f"KeyError: {k}")
-    except AttributeError as a:
-        logging.error(f"AttributeError: {a}")
-    except NameError as n:
-        logging.error(f"NameError: {n}")
+    except FileNotFoundError as e:
+        logging.error(f"FileNotFoundError: {e}")
+    except ValueError as e:
+        logging.error(f"ValueError: {e}")
+    except KeyError as e:
+        logging.error(f"KeyError: {e}")
+    except AttributeError as e:
+        logging.error(f"AttributeError: {e}")
+    except NameError as e:
+        logging.error(f"NameError: {e}")
 
 
     # ---------------------------------------------------
@@ -217,7 +212,7 @@ if __name__ == "__main__":
         time1 = datetime.datetime.now()
 
         logging.info("========================== LOADING orders.csv")
-        path = os.path.join("dataset","crm", "orders.csv.gz")
+        path = "../../dataset/crm/orders.csv.gz"
         orde = pd.read_csv(path)
 
         logging.info("========================= CLEANING orders.csv")
@@ -230,14 +225,14 @@ if __name__ == "__main__":
         customer_id =  orde['customer_id'].astype('str').apply(lambda x: m.letter_cleaning(m.word_cleaning(m.value_cleaning(x))))
         customer_id =  ['C0'+i[1::] if len(i) == 6 else i for i in customer_id]
         customer_id =  [i if len(i) == 7 else None for i in customer_id]
-        customer =     pd.read_pickle("./layers/silver/crm/customers.pkl")
+        customer =     pd.read_pickle("./crm/customers.pkl")
         customer_ids = set(customer['customer_id'])
         customer_ids =  [i if i in customer_ids else None for i in customer_id]
 
         # ----- restaurant_id
         restaurant_id =  orde['restaurant_id'].astype('str').apply(lambda x: m.fix_ids(m.letter_cleaning(m.word_cleaning(m.value_cleaning(x)))))
         restaurant_id =  [i if len(i) == 4 else None for i in restaurant_id]
-        restaurant =     pd.read_pickle("./layers/silver/crm/restaurants.pkl")
+        restaurant =     pd.read_pickle("./crm/restaurants.pkl")
         restaurant_ids = set(restaurant['restaurant_id'])
         restaurant_id =  [i if i in restaurant_ids else None for i in restaurant_id]
 
@@ -257,7 +252,7 @@ if __name__ == "__main__":
         delivery_id =       orde['delivery_id'].astype('str').apply(lambda x: m.letter_cleaning(m.word_cleaning(m.value_cleaning(x))))
         delivery_id =       ['D0'+i[1::] if len(i) == 4 else i for i in delivery_id ]
         delivery_id =       [i if len(i) == 5 else None for i in delivery_id]
-        delivery_partners = pd.read_pickle("./layers/silver/crm/delivery_partners.pkl")
+        delivery_partners = pd.read_pickle("./crm/delivery_partners.pkl")
         delivery_ids =      set(delivery_partners['delivery_id'])
         delivery_id =       [None if i not in delivery_ids else i for i in delivery_id]
 
@@ -284,7 +279,7 @@ if __name__ == "__main__":
         order = order.dropna(subset= 'order_id').drop_duplicates(subset = 'order_id').sort_values(by = 'order_id').reset_index().drop('index', axis = 1)
 
         logging.info("=========================== SAVING orders.pkl")
-        order.to_pickle(r"layers/silver/crm/orders.pkl")
+        order.to_pickle(r"crm/orders.pkl")
 
         before = orde.shape
         after =  order.shape
@@ -298,16 +293,16 @@ if __name__ == "__main__":
         logging.info("TABLE CLEANING TIME")
         logging.info(time)
 
-    except FileNotFoundError as f:
-        logging.error(f"FileNotFoundError: {f}")
-    except ValueError as v:
-        logging.error(f"ValueError: {v}")
-    except KeyError as k:
-        logging.error(f"KeyError: {k}")
-    except AttributeError as a:
-        logging.error(f"AttributeError: {a}")
-    except NameError as n:
-        logging.error(f"NameError: {n}")
+    except FileNotFoundError as e:
+        logging.error(f"FileNotFoundError: {e}")
+    except ValueError as e:
+        logging.error(f"ValueError: {e}")
+    except KeyError as e:
+        logging.error(f"KeyError: {e}")
+    except AttributeError as e:
+        logging.error(f"AttributeError: {e}")
+    except NameError as e:
+        logging.error(f"NameError: {e}")
 
 
     # ---------------------------------------------------
@@ -318,7 +313,7 @@ if __name__ == "__main__":
         time1 = datetime.datetime.now()
 
         logging.info("====================== LOADING menu_items.csv")
-        path = os.path.join("dataset","crm", "menu_items.csv.gz")
+        path = "../../dataset/crm/menu_items.csv.gz"
         menu = pd.read_csv(path)
 
         logging.info("===================== CLEANING menu_items.csv")
@@ -352,7 +347,7 @@ if __name__ == "__main__":
         menu_item = menu_item.dropna(subset= 'item_id').drop_duplicates(subset= 'item_id').sort_values(by = 'item_id').reset_index().drop('index', axis = 1)
 
         logging.info("======================= SAVING menu_items.pkl")
-        menu_item.to_pickle(r"layers/silver/crm/menu_items.pkl")
+        menu_item.to_pickle(r"crm/menu_items.pkl")
 
         before = menu.shape
         after =  menu_item.shape
@@ -366,16 +361,16 @@ if __name__ == "__main__":
         logging.info("TABLE CLEANING TIME")
         logging.info(time)
 
-    except FileNotFoundError as f:
-        logging.error(f"FileNotFoundError: {f}")
-    except ValueError as v:
-        logging.error(f"ValueError: {v}")
-    except KeyError as k:
-        logging.error(f"KeyError: {k}")
-    except AttributeError as a:
-        logging.error(f"AttributeError: {a}")
-    except NameError as n:
-        logging.error(f"NameError: {n}")
+    except FileNotFoundError as e:
+        logging.error(f"FileNotFoundError: {e}")
+    except ValueError as e:
+        logging.error(f"ValueError: {e}")
+    except KeyError as e:
+        logging.error(f"KeyError: {e}")
+    except AttributeError as e:
+        logging.error(f"AttributeError: {e}")
+    except NameError as e:
+        logging.error(f"NameError: {e}")
 
 
     # ---------------------------------------------------
@@ -386,7 +381,7 @@ if __name__ == "__main__":
         time1 = datetime.datetime.now()
 
         logging.info("===================== LOADING order_items.csv")
-        path = os.path.join("dataset","crm", "order_items.csv.gz")
+        path = "../../dataset/crm/order_items.csv.gz"
         ord_itm = pd.read_csv(path)
 
         logging.info("==================== CLEANING order_items.csv")
@@ -399,14 +394,14 @@ if __name__ == "__main__":
         order_id =  ord_itm['order_id'].astype('str').apply(lambda x: m.letter_cleaning(m.word_cleaning(m.value_cleaning(x))))
         order_id =  ['O0'+i[1::] if len(i) == 7 else i for i in order_id]
         order_id =  [i if len(i) == 8 else None for i in order_id]
-        order =     pd.read_pickle("./layers/silver/crm/orders.pkl")
+        order =     pd.read_pickle("./crm/orders.pkl")
         order_ids = set(order['order_id'])
         order_id =  [i if i in order_ids else None for i in order_id]
 
         # item_id
         item_id =   ord_itm['item_id'].astype('str').apply(lambda x: m.word_cleaning(m.value_cleaning(x)))
         item_id =   [i[0]+'0'+i[1::] if len(i) == 4 else i if len(i) == 5 else None for i in item_id]
-        menu_item = pd.read_pickle("./layers/silver/crm/menu_items.pkl")
+        menu_item = pd.read_pickle("./crm/menu_items.pkl")
         item_ids =  set(menu_item['item_id'])
         item_id =   [None if i not in item_ids else i for i in item_id]
 
@@ -434,7 +429,7 @@ if __name__ == "__main__":
         order_item = order_item.dropna(subset = 'order_item_id').drop_duplicates(subset = 'order_item_id').sort_values(by = 'order_item_id').reset_index().drop('index', axis = 1)
 
         # price cleaning
-        menu_item = pd.read_pickle("./Layers/silver/crm/menu_items.pkl")
+        menu_item = pd.read_pickle("./crm/menu_items.pkl")
         merge = pd.merge(order_item, menu_item, on = 'item_id',how= 'left')
         order_item['unit_price'] = round(merge['price']).where(merge['unit_price'] == 0, merge['unit_price'])
         order_item['unit_price'] = order_item['unit_price'].fillna(order_item['line_total']/order_item['quantity'])
@@ -450,7 +445,7 @@ if __name__ == "__main__":
         order_item['line_total'] = order_item['line_total'].replace(0, np.nan)
 
         logging.info("====================== SAVING order_items.pkl")
-        order_item.to_pickle(r"layers/silver/crm/order_items.pkl")
+        order_item.to_pickle(r"crm/order_items.pkl")
 
         before = ord_itm.shape
         after =  order_item.shape
@@ -465,16 +460,16 @@ if __name__ == "__main__":
         logging.info(time)
         logging.info('')
 
-    except FileNotFoundError as f:
-        logging.error(f"FileNotFoundError: {f}")
-    except ValueError as v:
-        logging.error(f"ValueError: {v}")
-    except KeyError as k:
-        logging.error(f"KeyError: {k}")
-    except AttributeError as a:
-        logging.error(f"AttributeError: {a}")
-    except NameError as n:
-        logging.error(f"NameError: {n}")
+    except FileNotFoundError as e:
+        logging.error(f"FileNotFoundError: {e}")
+    except ValueError as e:
+        logging.error(f"ValueError: {e}")
+    except KeyError as e:
+        logging.error(f"KeyError: {e}")
+    except AttributeError as e:
+        logging.error(f"AttributeError: {e}")
+    except NameError as e:
+        logging.error(f"NameError: {e}")
 
     crm_time2 = datetime.datetime.now()
     crm_time =  crm_time2 - crm_time1
@@ -498,7 +493,7 @@ if __name__ == "__main__":
         time1 = datetime.datetime.now()
 
         logging.info("======================= LOADING suppliers.csv")
-        path = os.path.join("dataset","erp", "suppliers.csv.gz")
+        path = "../../dataset/erp/suppliers.csv.gz"
         suplr = pd.read_csv(path)
 
         logging.info("====================== CLEANING suppliers.csv")
@@ -527,7 +522,7 @@ if __name__ == "__main__":
         supplier = supplier.dropna( subset= 'supplier_id').drop_duplicates(subset= 'supplier_id').sort_values(by = 'supplier_id').reset_index().drop('index', axis = 1)
 
         logging.info("======================== SAVING suppliers.pkl")
-        supplier.to_pickle(r"layers/silver/erp/suppliers.pkl")
+        supplier.to_pickle(r"erp/suppliers.pkl")
 
         before = suplr.shape
         after =  supplier.shape
@@ -541,16 +536,16 @@ if __name__ == "__main__":
         logging.info("TABLE CLEANING TIME")
         logging.info(time)
 
-    except FileNotFoundError as f:
-        logging.error(f"FileNotFoundError: {f}")
-    except ValueError as v:
-        logging.error(f"ValueError: {v}")
-    except KeyError as k:
-        logging.error(f"KeyError: {k}")
-    except AttributeError as a:
-        logging.error(f"AttributeError: {a}")
-    except NameError as n:
-        logging.error(f"NameError: {n}")
+    except FileNotFoundError as e:
+        logging.error(f"FileNotFoundError: {e}")
+    except ValueError as e:
+        logging.error(f"ValueError: {e}")
+    except KeyError as e:
+        logging.error(f"KeyError: {e}")
+    except AttributeError as e:
+        logging.error(f"AttributeError: {e}")
+    except NameError as e:
+        logging.error(f"NameError: {e}")
 
 
     # ---------------------------------------------------
@@ -561,7 +556,7 @@ if __name__ == "__main__":
         time1 = datetime.datetime.now()
         
         logging.info("================== LOADING supplier_items.csv")
-        path = os.path.join("dataset","erp", "supplier_items.csv.gz")
+        path = "../../dataset/erp/supplier_items.csv.gz"
         suplr_itm = pd.read_csv(path)
 
         logging.info("================= CLEANING supplier_items.csv")
@@ -572,7 +567,7 @@ if __name__ == "__main__":
         # supplier_id
         supplier_id =  suplr_itm['supplier_id'].astype('str').apply(lambda x: m.letter_cleaning(m.word_cleaning(m.value_cleaning(x))))
         supplier_id =  ['S0'+i[1::] if len(i) == 4 else None if i in ('nan','na','n') else i for i in supplier_id]
-        supplier =     pd.read_pickle("./layers/silver/erp/suppliers.pkl")
+        supplier =     pd.read_pickle("./erp/suppliers.pkl")
         supplier_ids = set(supplier['supplier_id'])
         supplier_id =  [i if i in supplier_ids else None for i in supplier_id]
 
@@ -584,7 +579,7 @@ if __name__ == "__main__":
         supplier_item = supplier_item.dropna(subset = 'item_id').drop_duplicates(subset = 'item_id').sort_values(by = 'item_id').reset_index().drop('index', axis = 1)
 
         logging.info("=================== SAVING supplier_items.pkl")
-        supplier_item.to_pickle(r"layers/silver/erp/supplier_items.pkl")
+        supplier_item.to_pickle(r"erp/supplier_items.pkl")
 
         before = suplr_itm.shape
         after =  supplier_item.shape
@@ -598,16 +593,16 @@ if __name__ == "__main__":
         logging.info("TABLE CLEANING TIME")
         logging.info(time)
 
-    except FileNotFoundError as f:
-        logging.error(f"FileNotFoundError: {f}")
-    except ValueError as v:
-        logging.error(f"ValueError: {v}")
-    except KeyError as k:
-        logging.error(f"KeyError: {k}")
-    except AttributeError as a:
-        logging.error(f"AttributeError: {a}")
-    except NameError as n:
-        logging.error(f"NameError: {n}")
+    except FileNotFoundError as e:
+        logging.error(f"FileNotFoundError: {e}")
+    except ValueError as e:
+        logging.error(f"ValueError: {e}")
+    except KeyError as e:
+        logging.error(f"KeyError: {e}")
+    except AttributeError as e:
+        logging.error(f"AttributeError: {e}")
+    except NameError as e:
+        logging.error(f"NameError: {e}")
 
 
     # ---------------------------------------------------
@@ -618,13 +613,13 @@ if __name__ == "__main__":
         time1 = datetime.datetime.now()
         
         logging.info("======================= LOADING inventory.csv")
-        path = os.path.join("dataset","erp", "inventory.csv.gz")
+        path = "../../dataset/erp/inventory.csv.gz"
         invtry = pd.read_csv(path)
 
         logging.info("====================== CLEANING inventory.csv")
         # restaurant_id
         restaurant_id =  invtry['restaurant_id'].astype('str').apply(lambda x: m.fix_ids(m.letter_cleaning(m.word_cleaning(m.value_cleaning(x)))))
-        restaurant =     pd.read_pickle("./layers/silver/crm/restaurants.pkl")
+        restaurant =     pd.read_pickle("./crm/restaurants.pkl")
         restaurant_ids = set(restaurant['restaurant_id'])
         restaurant_id =  [i if i in restaurant_ids else None for i in restaurant_id]
 
@@ -632,7 +627,7 @@ if __name__ == "__main__":
         item_id =       invtry['item_id'].astype('str').apply(lambda x: m.letter_cleaning(m.word_cleaning(m.value_cleaning(x))))
         item_id =       ['M0'+i[1::] if len(i) == 4 else i for i in item_id]
         itetm_id =      [i if len(i) == 5 else None for i in item_id]
-        supplier_item = pd.read_pickle("./layers/silver/erp/supplier_items.pkl")
+        supplier_item = pd.read_pickle("./erp/supplier_items.pkl")
         item_ids =      set(supplier_item['item_id'])
         item_id =       [i if i in item_ids else None for i in item_id]
 
@@ -652,7 +647,7 @@ if __name__ == "__main__":
         }) 
 
         logging.info("======================== SAVING inventory.pkl")
-        inventory.to_pickle(r"layers/silver/erp/inventory.pkl")
+        inventory.to_pickle(r"erp/inventory.pkl")
 
         before = invtry.shape
         after =  inventory.shape
@@ -666,16 +661,16 @@ if __name__ == "__main__":
         logging.info("TABLE CLEANING TIME")
         logging.info(time)
 
-    except FileNotFoundError as f:
-        logging.error(f"FileNotFoundError: {f}")
-    except ValueError as v:
-        logging.error(f"ValueError: {v}")
-    except KeyError as k:
-        logging.error(f"KeyError: {k}")
-    except AttributeError as a:
-        logging.error(f"AttributeError: {a}")
-    except NameError as n:
-        logging.error(f"NameError: {n}")
+    except FileNotFoundError as e:
+        logging.error(f"FileNotFoundError: {e}")
+    except ValueError as e:
+        logging.error(f"ValueError: {e}")
+    except KeyError as e:
+        logging.error(f"KeyError: {e}")
+    except AttributeError as e:
+        logging.error(f"AttributeError: {e}")
+    except NameError as e:
+        logging.error(f"NameError: {e}")
 
 
     # ---------------------------------------------------
@@ -686,7 +681,7 @@ if __name__ == "__main__":
         time1 = datetime.datetime.now()
         
         logging.info("======================= LOADING employees.csv")
-        path = os.path.join("dataset","erp", "employees.csv.gz")
+        path = "../../dataset/erp/employees.csv.gz"
         emp = pd.read_csv(path)
 
         logging.info("====================== CLEANING employees.csv")
@@ -708,7 +703,7 @@ if __name__ == "__main__":
 
         # restaurant_id
         restaurant_id = emp['restaurant_id'].astype('str').apply(lambda x: m.letter_cleaning(m.word_cleaning(m.value_cleaning_s(x))))
-        restaurant = pd.read_pickle("./layers/silver/crm/restaurants.pkl")
+        restaurant = pd.read_pickle("./crm/restaurants.pkl")
         restaurant_ids = set(restaurant['restaurant_id'])
         emp['restaurant_id'] =  [ i if i in restaurant_ids else None for i in restaurant_id]
 
@@ -733,7 +728,7 @@ if __name__ == "__main__":
         employee = employee.dropna(subset= 'emp_id').drop_duplicates(subset= 'emp_id').sort_values(by = 'emp_id').reset_index().drop('index',axis = 1)
 
         logging.info("======================== SAVING employees.pkl")
-        employee.to_pickle(r"layers/silver/erp/employees.pkl")
+        employee.to_pickle(r"erp/employees.pkl")
 
         before = emp.shape
         after =  employee.shape
@@ -747,16 +742,16 @@ if __name__ == "__main__":
         logging.info("TABLE CLEANING TIME")
         logging.info(time)
 
-    except FileNotFoundError as f:
-        logging.error(f"FileNotFoundError: {f}")
-    except ValueError as v:
-        logging.error(f"ValueError: {v}")
-    except KeyError as k:
-        logging.error(f"KeyError: {k}")
-    except AttributeError as a:
-        logging.error(f"AttributeError: {a}")
-    except NameError as n:
-        logging.error(f"NameError: {n}")
+    except FileNotFoundError as e:
+        logging.error(f"FileNotFoundError: {e}")
+    except ValueError as e:
+        logging.error(f"ValueError: {e}")
+    except KeyError as e:
+        logging.error(f"KeyError: {e}")
+    except AttributeError as e:
+        logging.error(f"AttributeError: {e}")
+    except NameError as e:
+        logging.error(f"NameError: {e}")
 
 
     # ---------------------------------------------------
@@ -767,7 +762,7 @@ if __name__ == "__main__":
         time1 = datetime.datetime.now()
         
         logging.info("==================== LOADING kitchen_logs.csv")
-        path = os.path.join("dataset","erp", "kitchen_logs.csv.gz")
+        path = "../../dataset/erp/kitchen_logs.csv.gz"
         kic = pd.read_csv(path)
 
         logging.info("=================== CLEANING kitchen_logs.csv")
@@ -780,7 +775,7 @@ if __name__ == "__main__":
         order_item_id =  kic['order_item_id'].astype('str').apply(lambda x: m.letter_cleaning(m.word_cleaning(m.value_cleaning(x))))
         order_item_id =  ['OI0'+i[2::] if len(i) == 8 else i for i in order_item_id]
         order_item_id =  [i if len(i) == 9 else None for i in order_item_id]
-        order_item =     pd.read_pickle("./layers/silver/crm/order_items.pkl")
+        order_item =     pd.read_pickle("./crm/order_items.pkl")
         order_item_ids = set(order_item['order_item_id'])
         order_item_id =  [i if i in order_item_ids else None for i in order_item_id]
 
@@ -788,7 +783,7 @@ if __name__ == "__main__":
         order_id = kic['order_id'].astype('str').apply(lambda x: m.letter_cleaning(m.word_cleaning(m.value_cleaning(x))))
         order_id = ['O0'+i[1::] if len(i) == 7 else i for i in order_id]
         order_id = [i if len(i) == 8 else None for i in order_id]
-        order =    pd.read_pickle("./layers/silver/crm/orders.pkl")
+        order =    pd.read_pickle("./crm/orders.pkl")
         order_ids =  set(order['order_id'])
         order_id = [i if i in order_ids else None for i in order_id]
 
@@ -796,7 +791,7 @@ if __name__ == "__main__":
         item_id =   kic['item_id'].astype('str').apply(lambda x: m.letter_cleaning(m.word_cleaning(m.value_cleaning(x))))
         item_id =   ['M0'+i[1::] if len(i) == 4 else i for i in item_id]
         item_id =   [i if len(i) == 5 else None for i in item_id]
-        menu_item = pd.read_pickle("./layers/silver/crm/menu_items.pkl")
+        menu_item = pd.read_pickle("./crm/menu_items.pkl")
         item_ids =  set(menu_item['item_id'])
         item_id =   [i if i in item_ids else None for i in item_id ]
 
@@ -812,7 +807,7 @@ if __name__ == "__main__":
         chef_id =  kic['chef_id'].astype('str').apply(lambda x: m.letter_cleaning(m.word_cleaning(m.value_cleaning(x))))
         chef_id =  ['E0'+i[1::] if len(i) == 5 else i for i in chef_id]
         chef_id =  [i if len(i) == 6 else None for i in chef_id]
-        employee = pd.read_pickle("./layers/silver/erp/employees.pkl")
+        employee = pd.read_pickle("./erp/employees.pkl")
         chef_ids = set(employee['emp_id'])
         chef_id =  [i if i in chef_ids else None for i in chef_id]
 
@@ -834,7 +829,7 @@ if __name__ == "__main__":
         kitchen_log = kitchen_log.dropna(subset= 'kitchen_log_id').drop_duplicates(subset= 'kitchen_log_id').sort_values(by = 'kitchen_log_id').reset_index().drop('index', axis = 1)
         
         logging.info("============================ kitchen_logs.pkl")    
-        kitchen_log.to_pickle(r"layers/silver/erp/kitchen_logs.pkl")
+        kitchen_log.to_pickle(r"erp/kitchen_logs.pkl")
 
         before = kic.shape
         after =  kitchen_log.shape
@@ -849,16 +844,16 @@ if __name__ == "__main__":
         logging.info(time)
         logging.info('')
 
-    except FileNotFoundError as f:
-        logging.error(f"FileNotFoundError: {f}")
-    except ValueError as v:
-        logging.error(f"ValueError: {v}")
-    except KeyError as k:
-        logging.error(f"KeyError: {k}")
-    except AttributeError as a:
-        logging.error(f"AttributeError: {a}")
-    except NameError as n:
-        logging.error(f"NameError: {n}")
+    except FileNotFoundError as e:
+        logging.error(f"FileNotFoundError: {e}")
+    except ValueError as e:
+        logging.error(f"ValueError: {e}")
+    except KeyError as e:
+        logging.error(f"KeyError: {e}")
+    except AttributeError as e:
+        logging.error(f"AttributeError: {e}")
+    except NameError as e:
+        logging.error(f"NameError: {e}")
 
 
     erp_time2 = datetime.datetime.now()
