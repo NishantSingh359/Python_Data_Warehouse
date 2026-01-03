@@ -182,7 +182,8 @@ if __name__ == "__main__":
         ingredient_id = ('ING' + ingredient_id.astype(str).str.zfill(3)).where(ingredient_id.notna(), np.nan)
         ingredient_id = ingredient_id.where(ingredient_id.isin(ingredients['ingredient_id']), np.nan)
 
-        cost_price =    sup_ing['cost_price'].where(sup_ing['cost_price'] > 0, np.nan)
+        cost_price =    pd.to_numeric(sup_ing['cost_price'], errors='coerce')
+        cost_price =    cost_price.where((cost_price > 0) & (cost_price < 5000), np.nan)
 
         supplier_ingredients = pd.DataFrame({
             'supplier_id':     supplier_id,
@@ -249,7 +250,7 @@ if __name__ == "__main__":
         menu_items = pd.DataFrame({
             'item_id':       item_id,
             'item_name':     item_name,
-            'categorry':     category,
+            'category':      category,
             'cuisine':       cuisine,
             'selling_price': selling_price
         })
@@ -375,7 +376,7 @@ if __name__ == "__main__":
             'restaurant_id':   restaurant_id,
             'restaurant_name': restaurant_name,
             'city':            city,
-            'restautant_type': restaurant_type,
+            'restaurant_type': restaurant_type,
             'open_date':       open_date
         })
 
@@ -734,7 +735,7 @@ if __name__ == "__main__":
             'order_datetime':     order_datetime,
             'payment_mode':       payment_mode,
             'order_status':       order_status,
-            'id_delivery':        is_delivery,
+            'is_delivery':        is_delivery,
             'delivery_partner_id':partner_id
         })
 

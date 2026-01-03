@@ -1,0 +1,88 @@
+23:33:36 | INFO | =============================================
+23:33:36 | INFO | ================= GOLD LAYER ================
+23:33:36 | INFO | =============================================
+23:33:36 | INFO | 
+23:33:36 | INFO | =============================================
+23:33:36 | INFO | ============== DIMENSION TABLES =============
+23:33:36 | INFO | =============================================
+23:33:36 | INFO | =====
+23:33:36 | INFO | ======================= CREATING dim_date.pkl
+23:33:36 | INFO | ========================= SAVING dim_date.pkl
+23:33:36 | INFO | TABLE ROWS & COLUMNS: 517 & 9
+23:33:36 | INFO | TABLE CREATING TIME
+23:33:36 | INFO | 0:00:00.008545
+23:33:36 | INFO | =============== CREATING dim_order_status.pkl
+23:33:36 | INFO | ================= SAVING dim_payment_mode.pkl
+23:33:36 | INFO | TABLE ROWS & COLUMNS: 4 & 2
+23:33:36 | INFO | TABLE CREATING TIME
+23:33:36 | INFO | 0:00:00.000880
+23:33:36 | INFO | =============== CREATING dim_order_status.pkl
+23:33:36 | INFO | ================= SAVING dim_order_status.pkl
+23:33:36 | INFO | TABLE ROWS & COLUMNS: 3 & 2
+23:33:36 | INFO | TABLE CREATING TIME
+23:33:36 | INFO | 0:00:00.000880
+23:33:36 | INFO | ===================== LOADING restaurants.pkl
+23:33:36 | INFO | ================= CREATING dim_restaurant.pkl
+23:33:36 | INFO | =================== SAVING dim_restaurant.pkl
+23:33:36 | INFO | TABLE ROWS & COLUMNS: 50 & 6
+23:33:36 | INFO | TABLE CREATING TIME
+23:33:36 | INFO | 0:00:00.001685
+23:33:36 | INFO | =================== LOADING dim_employees.pkl
+23:33:36 | INFO | ================== CREATING dim_employees.pkl
+23:33:36 | INFO | ==================== SAVING dim_employees.pkl
+23:33:36 | INFO | TABLE ROWS & COLUMNS: 547 & 3
+23:33:36 | INFO | TABLE CREATING TIME
+23:33:36 | INFO | 0:00:00.001588
+23:33:36 | INFO | ======================= LOADING customers.pkl
+23:33:36 | INFO | =================== CREATING dim_customer.pkl
+23:33:36 | INFO | ===================== SAVING dim_customer.pkl
+23:33:36 | INFO | TABLE ROWS & COLUMNS: 99246 & 4
+23:33:36 | INFO | TABLE CREATING TIME
+23:33:36 | INFO | 0:00:00.077936
+23:33:36 | INFO | =================== LOADING dim_employess.pkl
+23:33:36 | INFO | ================== CREATING dim_employess.pkl
+23:33:36 | INFO | ==================== SAVING dim_employess.pkl
+23:33:36 | INFO | TABLE ROWS & COLUMNS: 547 & 3
+23:33:36 | INFO | TABLE CREATING TIME
+23:33:36 | INFO | 0:00:00.007187
+23:33:36 | INFO | ====================== LOADING menu_items.pkl
+23:33:36 | INFO | ================== CREATING dim_menu_item.pkl
+23:33:36 | INFO | ==================== SAVING dim_menu_item.pkl
+23:33:36 | INFO | TABLE ROWS & COLUMNS: 299 & 5
+23:33:36 | INFO | TABLE CREATING TIME
+23:33:36 | INFO | 0:00:00.004754
+23:33:36 | INFO | =============== LOADING delivery_partners.pkl
+23:33:36 | INFO | =========== CREATING dim_delivery_partner.pkl
+23:33:36 | INFO | ============= SAVING dim_delivery_partner.pkl
+23:33:36 | INFO | TABLE ROWS & COLUMNS: 199 & 4
+23:33:36 | INFO | TABLE CREATING TIME
+23:33:36 | INFO | 0:00:00.005751
+23:33:36 | INFO | 
+23:33:36 | INFO | DIMENSION TABLES CREATING TIME
+23:33:36 | INFO | 0:00:00.109883
+23:33:36 | INFO | 
+23:33:36 | INFO | =============================================
+23:33:36 | INFO | ================= FACT TABLE ================
+23:33:36 | INFO | =============================================
+23:33:36 | INFO | =====
+23:33:36 | INFO | LOAD & JOIN kitchen_logs, order_items, orders
+23:33:39 | INFO | =========== LOAD & JOIN dim_payment_modes.pkl
+23:33:40 | INFO | ============ LOAD & JOIN dim_order_status.pkl
+23:33:40 | INFO | =============== LOAD & JOIN dim_customers.pkl
+23:33:41 | INFO | ============= LOAD & JOIN dim_restaurents.pkl
+23:33:42 | INFO | ============== LOAD & JOIN dim_menu_items.pkl
+23:33:42 | INFO | =============== LOAD & JOIN dim_employess.pkl
+23:33:43 | INFO | ======= LOAD & JOIN dim_delivery_partners.pkl
+23:33:43 | INFO | ============================ Assign Variables
+23:33:48 | INFO | ========================= CREATING DATA_FRAME
+23:33:49 | INFO | ======================= SAVING fact_sales.pkl
+23:33:51 | INFO | TABLE ROWS & COLUMNS: 1302783 & 17
+23:33:51 | INFO | TABLE CREATING TIME
+23:33:51 | INFO | 0:00:15.596558
+23:33:51 | INFO | 
+23:33:51 | INFO | TOTAL GOLD LAYER TIME
+23:33:51 | INFO | 0:00:15.706781
+23:33:51 | INFO | 
+23:33:51 | INFO | =============================================
+23:33:51 | INFO | ============ GOLD LAYER COMPLETED ===========
+23:33:51 | INFO | =============================================
