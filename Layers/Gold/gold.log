@@ -1,88 +1,62 @@
-08:51:10 | INFO | =============================================
-08:51:10 | INFO | ================= GOLD LAYER ================
-08:51:10 | INFO | =============================================
-08:51:10 | INFO | 
-08:51:10 | INFO | =============================================
-08:51:10 | INFO | ============== DIMENSION TABLES =============
-08:51:10 | INFO | =============================================
-08:51:10 | INFO | =====
-08:51:10 | INFO | ======================= CREATING dim_date.pkl
-08:51:10 | INFO | ========================= SAVING dim_date.pkl
-08:51:10 | INFO | TABLE ROWS & COLUMNS: 517 & 9
-08:51:10 | INFO | TABLE CREATING TIME
-08:51:10 | INFO | 0:00:00.008158
-08:51:10 | INFO | =============== CREATING dim_payment_mode.pkl
-08:51:10 | INFO | ================= SAVING dim_payment_mode.pkl
-08:51:10 | INFO | TABLE ROWS & COLUMNS: 4 & 2
-08:51:10 | INFO | TABLE CREATING TIME
-08:51:10 | INFO | 0:00:00.000813
-08:51:10 | INFO | =============== CREATING dim_order_status.pkl
-08:51:10 | INFO | ================= SAVING dim_order_status.pkl
-08:51:10 | INFO | TABLE ROWS & COLUMNS: 3 & 2
-08:51:10 | INFO | TABLE CREATING TIME
-08:51:10 | INFO | 0:00:00.000733
-08:51:10 | INFO | ===================== LOADING restaurants.pkl
-08:51:10 | INFO | ================= CREATING dim_restaurant.pkl
-08:51:10 | INFO | =================== SAVING dim_restaurant.pkl
-08:51:10 | INFO | TABLE ROWS & COLUMNS: 50 & 6
-08:51:10 | INFO | TABLE CREATING TIME
-08:51:10 | INFO | 0:00:00.001739
-08:51:10 | INFO | =================== LOADING dim_employees.pkl
-08:51:10 | INFO | ================== CREATING dim_employees.pkl
-08:51:10 | INFO | ==================== SAVING dim_employees.pkl
-08:51:10 | INFO | TABLE ROWS & COLUMNS: 547 & 3
-08:51:10 | INFO | TABLE CREATING TIME
-08:51:10 | INFO | 0:00:00.001661
-08:51:10 | INFO | ======================= LOADING customers.pkl
-08:51:10 | INFO | =================== CREATING dim_customer.pkl
-08:51:10 | INFO | ===================== SAVING dim_customer.pkl
-08:51:10 | INFO | TABLE ROWS & COLUMNS: 99246 & 4
-08:51:10 | INFO | TABLE CREATING TIME
-08:51:10 | INFO | 0:00:00.069210
-08:51:10 | INFO | =================== LOADING dim_employess.pkl
-08:51:10 | INFO | ================== CREATING dim_employess.pkl
-08:51:10 | INFO | ==================== SAVING dim_employess.pkl
-08:51:10 | INFO | TABLE ROWS & COLUMNS: 547 & 3
-08:51:10 | INFO | TABLE CREATING TIME
-08:51:10 | INFO | 0:00:00.004532
-08:51:10 | INFO | ====================== LOADING menu_items.pkl
-08:51:10 | INFO | ================== CREATING dim_menu_item.pkl
-08:51:10 | INFO | ==================== SAVING dim_menu_item.pkl
-08:51:10 | INFO | TABLE ROWS & COLUMNS: 299 & 5
-08:51:10 | INFO | TABLE CREATING TIME
-08:51:10 | INFO | 0:00:00.001956
-08:51:10 | INFO | =============== LOADING delivery_partners.pkl
-08:51:10 | INFO | =========== CREATING dim_delivery_partner.pkl
-08:51:10 | INFO | ============= SAVING dim_delivery_partner.pkl
-08:51:10 | INFO | TABLE ROWS & COLUMNS: 199 & 4
-08:51:10 | INFO | TABLE CREATING TIME
-08:51:10 | INFO | 0:00:00.002075
-08:51:10 | INFO | 
-08:51:10 | INFO | DIMENSION TABLES CREATING TIME
-08:51:10 | INFO | 0:00:00.091592
-08:51:10 | INFO | 
-08:51:10 | INFO | =============================================
-08:51:10 | INFO | ================= FACT TABLE ================
-08:51:10 | INFO | =============================================
-08:51:10 | INFO | =====
-08:51:10 | INFO | LOAD & JOIN kitchen_logs, order_items, orders
-08:51:13 | INFO | =========== LOAD & JOIN dim_payment_modes.pkl
-08:51:13 | INFO | ============ LOAD & JOIN dim_order_status.pkl
-08:51:14 | INFO | =============== LOAD & JOIN dim_customers.pkl
-08:51:14 | INFO | ============= LOAD & JOIN dim_restaurents.pkl
-08:51:15 | INFO | ============== LOAD & JOIN dim_menu_items.pkl
-08:51:15 | INFO | =============== LOAD & JOIN dim_employess.pkl
-08:51:15 | INFO | ======= LOAD & JOIN dim_delivery_partners.pkl
-08:51:16 | INFO | ============================ Assign Variables
-08:51:21 | INFO | ========================= CREATING DATA_FRAME
-08:51:21 | INFO | ======================= SAVING fact_sales.pkl
-08:51:24 | INFO | TABLE ROWS & COLUMNS: 1302783 & 17
-08:51:24 | INFO | TABLE CREATING TIME
-08:51:24 | INFO | 0:00:13.639280
-08:51:24 | INFO | 
-08:51:24 | INFO | TOTAL GOLD LAYER TIME
-08:51:24 | INFO | 0:00:13.731163
-08:51:24 | INFO | 
-08:51:24 | INFO | =============================================
-08:51:24 | INFO | ============ GOLD LAYER COMPLETED ===========
-08:51:24 | INFO | =============================================
+00:20:22 | INFO | GOLD | LAYER_START
+00:20:22 | INFO | -----
+00:20:22 | INFO | GOLD | DIM | DOMAIN_START
+00:20:22 | INFO | ---------------------
+00:20:22 | INFO | GOLD | DIM | CREAT | dim_date
+00:20:22 | INFO | GOLD | DIM | SAVE | dim_date
+00:20:22 | INFO | GOLD | DIM | SHAPE | dim_date | rows=517 columns=9
+00:20:22 | INFO | GOLD | DIM | TIME | dim_date | duration_sec=0.0072
+00:20:22 | INFO | ---------------------
+00:20:22 | INFO | GOLD | DIM | CREAT | dim_payment_mode
+00:20:22 | INFO | GOLD | DIM | SAVE | dim_payment_mode
+00:20:22 | INFO | GOLD | DIM | SHAPE | dim_payment_mode | rows=4 columns=2
+00:20:22 | INFO | GOLD | DIM | TIME | dim_payment_mode | duration_sec=0.0009
+00:20:22 | INFO | ---------------------
+00:20:22 | INFO | GOLD | DIM | CREAT | dim_order_status
+00:20:22 | INFO | GOLD | DIM | SAVE | dim_order_status
+00:20:22 | INFO | GOLD | DIM | SHAPE | dim_order_status | rows=3 columns=2
+00:20:22 | INFO | GOLD | DIM | TIME | dim_order_status | duration_sec=0.0008
+00:20:22 | INFO | ---------------------
+00:20:22 | INFO | GOLD | DIM | LOAD | restaurants
+00:20:22 | INFO | GOLD | DIM | CREAT | dim_restaurants
+00:20:22 | INFO | GOLD | DIM | SAVE | dim_restaurants
+00:20:22 | INFO | GOLD | DIM | SHAPE | dim_restaurants | rows=50 columns=6
+00:20:22 | INFO | GOLD | DIM | TIME | dim_restaurants | duration_sec=0.0018
+00:20:22 | INFO | ---------------------
+00:20:22 | INFO | GOLD | DIM | LOAD | employees
+00:20:22 | INFO | GOLD | DIM | CREAT | dim_employees
+00:20:22 | INFO | GOLD | DIM | SAVE | dim_employees
+00:20:22 | INFO | GOLD | DIM | SHAPE | dim_employees | rows=547 columns=3
+00:20:22 | INFO | GOLD | DIM | TIME | dim_employees | duration_sec=0.0015
+00:20:22 | INFO | ---------------------
+00:20:22 | INFO | GOLD | DIM | LOAD | customers
+00:20:22 | INFO | GOLD | DIM | CREAT | dim_customers
+00:20:22 | INFO | GOLD | DIM | SAVE | dim_customers
+00:20:22 | INFO | GOLD | DIM | SHAPE | dim_customers | rows=99246 columns=4
+00:20:22 | INFO | GOLD | DIM | TIME | dim_customers | duration_sec=0.059
+00:20:22 | INFO | ---------------------
+00:20:22 | INFO | GOLD | DIM | LOAD | menu_items
+00:20:22 | INFO | GOLD | DIM | CREAT | dim_menu_items
+00:20:22 | INFO | GOLD | DIM | SAVE | dim_menu_items
+00:20:22 | INFO | GOLD | DIM | SHAPE | dim_menu_items | rows=299 columns=5
+00:20:22 | INFO | GOLD | DIM | TIME | dim_menu_items | duration_sec=0.0026
+00:20:22 | INFO | ---------------------
+00:20:22 | INFO | GOLD | DIM | LOAD | delivery_partners
+00:20:22 | INFO | GOLD | DIM | CREAT | dim_delivery_partners
+00:20:22 | INFO | GOLD | DIM | SAVE | dim_delivery_partners
+00:20:22 | INFO | GOLD | DIM | SHAPE | dim_delivery_partners | rows=199 columns=4
+00:20:22 | INFO | GOLD | DIM | TIME | dim_delivery_partners | duration_sec=0.0019
+00:20:22 | INFO | ---------------------
+00:20:22 | INFO | GOLD | DIM | DOMAIN_END | duration_sec=0.0763
+00:20:22 | INFO | -----
+00:20:22 | INFO | GOLD | FACT | DOMAIN_START
+00:20:22 | INFO | ---------------------
+00:20:22 | INFO | GOLD | FACT | LOAD | kitchen_logs, order_items, orders
+00:20:23 | INFO | GOLD | FACT | CREAT | fact_sales
+00:20:33 | INFO | GOLD | FACT | SAVE | fact_sales
+00:20:35 | INFO | GOLD | FACT | SHAPE | fact_sales | rows=1302783 columns=17
+00:20:35 | INFO | GOLD | FACT | TIME | fact_sales | duration_sec=13.6027
+00:20:35 | INFO | ---------------------
+00:20:35 | INFO | GOLD | FACT | DOMAIN_END
+00:20:35 | INFO | -----
+00:20:35 | INFO | GOLD | LAYER_END | duration_sec=13.6794

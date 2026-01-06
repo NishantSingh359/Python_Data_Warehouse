@@ -15,28 +15,28 @@ logging.basicConfig(
 
 if __name__ == "__main__":
 
-    logging.info('=============================================')
-    logging.info('================= GOLD LAYER ================')
-    logging.info('=============================================')
-    logging.info('')
-
     gold_time1 = datetime.datetime.now()
+    logging.info(f"GOLD | LAYER_START")  
 
-    logging.info('=============================================')
-    logging.info('============== DIMENSION TABLES =============')
-    logging.info('=============================================')
-    logging.info('=====')
+    # ===================================================
+    # ===================== DIM =========================
+    # ===================================================
 
+    logging.info("-" * 5)
     dim_time1 = datetime.datetime.now()
+    logging.info(f"GOLD | DIM | DOMAIN_START")  
 
     # ---------------------------------------------------
-    # ------------------- dim_date.pkl ------------------
+    # --------------------- dim_date --------------------
     # ---------------------------------------------------
 
     try:
-        time1 = datetime.datetime.now()
+        logging.info("-" * 21)
 
-        logging.info("======================= CREATING dim_date.pkl")
+        time1 = datetime.datetime.now()
+        table = "dim_date"
+
+        logging.info(f"GOLD | DIM | CREAT | {table}")
 
         date_range = pd.date_range(start="2023-01-01", end="2024-05-31")
 
@@ -57,16 +57,17 @@ if __name__ == "__main__":
             ["date_key","date","day","month","month_name","quarter","year","week_of_year","is_weekend"]
         ]
 
-        logging.info("========================= SAVING dim_date.pkl")
+        logging.info(f"GOLD | DIM | SAVE | {table}")
         dim_date.to_pickle(r"Layers/gold/dim_date.pkl")
 
         before = dim_date.shape
-        logging.info(f"TABLE ROWS & COLUMNS: {before[0]} & {before[1]}")
+        logging.info(f"GOLD | DIM | SHAPE | {table} | rows={before[0]} columns={before[1]}")
 
         time2 = datetime.datetime.now()
         time =  time2 - time1
-        logging.info("TABLE CREATING TIME")
-        logging.info(time)
+        time = round(time.total_seconds(), 4)
+        logging.info(f"GOLD | DIM | TIME | {table} | duration_sec={time}")     
+        logging.info("-" * 21)
 
     except ValueError as e:
         logging.error(f"ValueError: {e}")
@@ -79,13 +80,14 @@ if __name__ == "__main__":
 
 
     # ---------------------------------------------------
-    # --------------- dim_order_status.pkl --------------
+    # ----------------- dim_payment_mode ----------------
     # ---------------------------------------------------
 
     try:
         time1 = datetime.datetime.now()
+        table = "dim_payment_mode"
 
-        logging.info("=============== CREATING dim_payment_mode.pkl")
+        logging.info(f"GOLD | DIM | CREAT | {table}")
 
         payment_key = [1,2,3,4]
         payment_mode = ['wallet', 'upi', 'cash', 'card']
@@ -95,16 +97,17 @@ if __name__ == "__main__":
             'payment_mode':payment_mode
         })
 
-        logging.info("================= SAVING dim_payment_mode.pkl")
+        logging.info(f"GOLD | DIM | SAVE | {table}")
         dim_payment_mode.to_pickle(r"Layers/gold/dim_payment_mode.pkl")
 
         before = dim_payment_mode.shape
-        logging.info(f"TABLE ROWS & COLUMNS: {before[0]} & {before[1]}")
+        logging.info(f"GOLD | DIM | SHAPE | {table} | rows={before[0]} columns={before[1]}")
 
         time2 = datetime.datetime.now()
         time =  time2 - time1
-        logging.info("TABLE CREATING TIME")
-        logging.info(time)
+        time = round(time.total_seconds(), 4)
+        logging.info(f"GOLD | DIM | TIME | {table} | duration_sec={time}")     
+        logging.info("-" * 21)
 
     except ValueError as e:
         logging.error(f"ValueError: {e}")
@@ -115,14 +118,16 @@ if __name__ == "__main__":
     except NameError as e:
         logging.error(f"NameError: {e}")
 
+
     # ---------------------------------------------------
-    # --------------- dim_order_status.pkl --------------
+    # ----------------- dim_order_status ----------------
     # ---------------------------------------------------
 
     try:
         time1 = datetime.datetime.now()
+        table = "dim_order_status"
 
-        logging.info("=============== CREATING dim_order_status.pkl")
+        logging.info(f"GOLD | DIM | CREAT | {table}")
 
         status_key = [1,2,3]
         order_status = ['completed', 'cancelled', 'failed']
@@ -132,16 +137,17 @@ if __name__ == "__main__":
             'order_status':order_status
         })
 
-        logging.info("================= SAVING dim_order_status.pkl")
+        logging.info(f"GOLD | DIM | SAVE | {table}")
         dim_order_status.to_pickle(r"Layers/gold/dim_order_status.pkl")
 
         before = dim_order_status.shape
-        logging.info(f"TABLE ROWS & COLUMNS: {before[0]} & {before[1]}")
+        logging.info(f"GOLD | DIM | SHAPE | {table} | rows={before[0]} columns={before[1]}")
 
         time2 = datetime.datetime.now()
         time =  time2 - time1
-        logging.info("TABLE CREATING TIME")
-        logging.info(time)
+        time = round(time.total_seconds(), 4)
+        logging.info(f"GOLD | DIM | TIME | {table} | duration_sec={time}")     
+        logging.info("-" * 21)
 
     except ValueError as e:
         logging.error(f"ValueError: {e}")
@@ -159,12 +165,13 @@ if __name__ == "__main__":
 
     try:
         time1 = datetime.datetime.now()
+        table = "dim_restaurants"
 
-        logging.info("===================== LOADING restaurants.pkl")
+        logging.info(f"GOLD | DIM | LOAD | restaurants")
         path = r"Layers/silver/erp/restaurants.pkl"
         res = pd.read_pickle(path)
 
-        logging.info("================= CREATING dim_restaurant.pkl")
+        logging.info(f"GOLD | DIM | CREAT | {table}")
         res['restaurant_key'] = res.index + 1
 
         restaurant_key =  res['restaurant_key']
@@ -174,7 +181,7 @@ if __name__ == "__main__":
         restaurant_type = res['restaurant_type']
         open_date =       res['open_date']
 
-        dim_restaurant = pd.DataFrame({
+        dim_restaurants = pd.DataFrame({
             'restaurant_key': restaurant_key,
             'restaurant_id':  restaurant_id,
             'restaurant_name':restaurant_name,
@@ -183,16 +190,17 @@ if __name__ == "__main__":
             'open_date':      open_date
         })
 
-        logging.info("=================== SAVING dim_restaurant.pkl")
-        dim_restaurant.to_pickle(r"Layers/gold/dim_restaurant.pkl")
+        logging.info(f"GOLD | DIM | SAVE | {table}")
+        dim_restaurants.to_pickle(r"Layers/gold/dim_restaurants.pkl")
 
-        before = dim_restaurant.shape
-        logging.info(f"TABLE ROWS & COLUMNS: {before[0]} & {before[1]}")
+        before = dim_restaurants.shape
+        logging.info(f"GOLD | DIM | SHAPE | {table} | rows={before[0]} columns={before[1]}")
 
         time2 = datetime.datetime.now()
         time =  time2 - time1
-        logging.info("TABLE CREATING TIME")
-        logging.info(time)
+        time = round(time.total_seconds(), 4)
+        logging.info(f"GOLD | DIM | TIME | {table} | duration_sec={time}")     
+        logging.info("-" * 21)
 
     except FileNotFoundError as e:
         logging.error(f"FileNotFoundError: {e}")
@@ -207,17 +215,18 @@ if __name__ == "__main__":
 
 
     # ---------------------------------------------------
-    # ---------------- dim_employees.pkl ----------------
+    # ------------------ dim_employees ------------------
     # ---------------------------------------------------
 
     try:
         time1 = datetime.datetime.now()
+        table = "dim_employees"
 
-        logging.info("=================== LOADING dim_employees.pkl")
-        path = r"Layers/silver/erp/employe.pkl"
+        logging.info(f"GOLD | DIM | LOAD | employees")
+        path = r"Layers/silver/erp/employees.pkl"
         emp = pd.read_pickle(path)
 
-        logging.info("================== CREATING dim_employees.pkl")
+        logging.info(f"GOLD | DIM | CREAT | {table}")
         emp['emp_key'] = emp.index + 1
 
         emp_key = emp['emp_key']
@@ -230,16 +239,17 @@ if __name__ == "__main__":
             'role':   role
         })
 
-        logging.info("==================== SAVING dim_employees.pkl")
+        logging.info(f"GOLD | DIM | SAVE | {table}")
         dim_employees.to_pickle(r"Layers/gold/dim_employees.pkl")
 
         before = dim_employees.shape
-        logging.info(f"TABLE ROWS & COLUMNS: {before[0]} & {before[1]}")
+        logging.info(f"GOLD | DIM | SHAPE | {table} | rows={before[0]} columns={before[1]}")
 
         time2 = datetime.datetime.now()
         time =  time2 - time1
-        logging.info("TABLE CREATING TIME")
-        logging.info(time)
+        time = round(time.total_seconds(), 4)
+        logging.info(f"GOLD | DIM | TIME | {table} | duration_sec={time}")     
+        logging.info("-" * 21)
 
     except FileNotFoundError as e:
         logging.error(f"FileNotFoundError: {e}")
@@ -254,17 +264,18 @@ if __name__ == "__main__":
 
 
     # ---------------------------------------------------
-    # ---------------- dim_customer.pkl ----------------
+    # ------------------ dim_customers ------------------
     # ---------------------------------------------------
 
     try:
         time1 = datetime.datetime.now()
+        table = "dim_customers"
 
-        logging.info("======================= LOADING customers.pkl")
-        path = r"Layers/silver/erp/customers.pkl"
+        logging.info(f"GOLD | DIM | LOAD | customers")
+        path = r"Layers/silver/crm/customers.pkl"
         cust = pd.read_pickle(path)
 
-        logging.info("=================== CREATING dim_customer.pkl")
+        logging.info(f"GOLD | DIM | CREAT | {table}")
         cust['customer_key'] = cust.index + 1
 
         customer_key = cust['customer_key']
@@ -272,23 +283,24 @@ if __name__ == "__main__":
         city = cust['city']
         created_at = cust['created_at']
 
-        dim_customer = pd.DataFrame({
+        dim_customers = pd.DataFrame({
             'customer_key':customer_key,
             'customer_id':customer_id,
             'city':city,
             'created_at':created_at
         })
 
-        logging.info("===================== SAVING dim_customer.pkl")
-        dim_customer.to_pickle(r"Layers/gold/dim_customer.pkl")
+        logging.info(f"GOLD | DIM | SAVE | {table}")
+        dim_customers.to_pickle(r"Layers/gold/dim_customers.pkl")
 
-        before = dim_customer.shape
-        logging.info(f"TABLE ROWS & COLUMNS: {before[0]} & {before[1]}")
+        before = dim_customers.shape
+        logging.info(f"GOLD | DIM | SHAPE | {table} | rows={before[0]} columns={before[1]}")
 
         time2 = datetime.datetime.now()
         time =  time2 - time1
-        logging.info("TABLE CREATING TIME")
-        logging.info(time)
+        time = round(time.total_seconds(), 4)
+        logging.info(f"GOLD | DIM | TIME | {table} | duration_sec={time}")     
+        logging.info("-" * 21)
 
     except FileNotFoundError as e:
         logging.error(f"FileNotFoundError: {e}")
@@ -301,66 +313,19 @@ if __name__ == "__main__":
     except NameError as e:
         logging.error(f"NameError: {e}")
 
-
     # ---------------------------------------------------
-    # ---------------- dim_employess.pkl ----------------
-    # ---------------------------------------------------
-
-    try:
-        time1 = datetime.datetime.now()
-
-        logging.info("=================== LOADING dim_employees.pkl")
-        path = r"Layers/silver/erp/employees.pkl"
-        emp = pd.read_pickle(path)
-
-        logging.info("================== CREATING dim_employees.pkl")
-        emp['emp_key'] = emp.index + 1
-
-        emp_key = emp['emp_key']
-        emp_id = emp['emp_id']
-        role = emp['role']
-
-        dim_employees = pd.DataFrame({
-            'emp_key':emp_key,
-            'emp_id':emp_id,
-            'role':role,
-        })
-
-        logging.info("==================== SAVING dim_employees.pkl")
-        dim_employees.to_pickle(r"Layers/gold/dim_employees.pkl")
-
-        before = dim_employees.shape
-        logging.info(f"TABLE ROWS & COLUMNS: {before[0]} & {before[1]}")
-
-        time2 = datetime.datetime.now()
-        time =  time2 - time1
-        logging.info("TABLE CREATING TIME")
-        logging.info(time)
-
-    except FileNotFoundError as e:
-        logging.error(f"FileNotFoundError: {e}")
-    except ValueError as e:
-        logging.error(f"ValueError: {e}")
-    except KeyError as e:
-        logging.error(f"KeyError: {e}")
-    except AttributeError as e:
-        logging.error(f"AttributeError: {e}")
-    except NameError as e:
-        logging.error(f"NameError: {e}")
-
-
-    # ---------------------------------------------------
-    # ---------------- dim_menu_item.pkl ----------------
+    # ------------------ dim_menu_item ------------------
     # ---------------------------------------------------
 
     try:
         time1 = datetime.datetime.now()
+        table = "dim_menu_items"
 
-        logging.info("====================== LOADING menu_items.pkl")
+        logging.info(f"GOLD | DIM | LOAD | menu_items")
         path = r"Layers/silver/erp/menu_items.pkl"
         menu = pd.read_pickle(path)
 
-        logging.info("================== CREATING dim_menu_item.pkl")
+        logging.info(f"GOLD | DIM | CREAT | {table}")
         menu['item_key'] = menu.index + 1
 
         item_key =  menu['item_key']
@@ -369,7 +334,7 @@ if __name__ == "__main__":
         category =  menu['category']
         cuisine =   menu['cuisine']
 
-        dim_menu_item = pd.DataFrame({
+        dim_menu_items = pd.DataFrame({
             'item_key':item_key,
             'item_id':item_id,
             'item_name':item_name,
@@ -377,16 +342,17 @@ if __name__ == "__main__":
             'cuisine':cuisine
         })
 
-        logging.info("==================== SAVING dim_menu_item.pkl")
-        dim_menu_item.to_pickle(r"Layers/gold/dim_menu_item.pkl")
+        logging.info(f"GOLD | DIM | SAVE | {table}")
+        dim_menu_items.to_pickle(r"Layers/gold/dim_menu_items.pkl")
 
-        before = dim_menu_item.shape
-        logging.info(f"TABLE ROWS & COLUMNS: {before[0]} & {before[1]}")
+        before = dim_menu_items.shape
+        logging.info(f"GOLD | DIM | SHAPE | {table} | rows={before[0]} columns={before[1]}")
 
         time2 = datetime.datetime.now()
         time =  time2 - time1
-        logging.info("TABLE CREATING TIME")
-        logging.info(time)
+        time = round(time.total_seconds(), 4)
+        logging.info(f"GOLD | DIM | TIME | {table} | duration_sec={time}")     
+        logging.info("-" * 21)
 
     except FileNotFoundError as e:
         logging.error(f"FileNotFoundError: {e}")
@@ -401,17 +367,18 @@ if __name__ == "__main__":
 
 
     # ---------------------------------------------------
-    # ------------ dim_delivery_partners.pkl ------------
+    # -------------- dim_delivery_partners --------------
     # ---------------------------------------------------
 
     try:
         time1 = datetime.datetime.now()
+        table = "dim_delivery_partners"
 
-        logging.info("=============== LOADING delivery_partners.pkl")
+        logging.info(f"GOLD | DIM | LOAD | delivery_partners")
         path = r"Layers/silver/erp/delivery_partners.pkl"
         del_part = pd.read_pickle(path)
 
-        logging.info("=========== CREATING dim_delivery_partner.pkl")
+        logging.info(f"GOLD | DIM | CREAT | {table}")
         del_part['delivery_partner_key'] = del_part.index + 1
 
         delivery_partner_key = del_part['delivery_partner_key']
@@ -419,24 +386,24 @@ if __name__ == "__main__":
         partner_type = del_part['partner_type']
         vehicle_type = del_part['vehicle_type']
 
-        dim_delivery_partner = pd.DataFrame({
+        dim_delivery_partners = pd.DataFrame({
             'delivery_partner_key':delivery_partner_key,
             'delivery_partner_id':delivery_partner_id,
             'partner_type':partner_type,
             'vehicle_type':vehicle_type
         })
 
-        logging.info("============= SAVING dim_delivery_partner.pkl")
-        dim_delivery_partner.to_pickle(r"Layers/gold/dim_delivery_partner.pkl")
+        logging.info(f"GOLD | DIM | SAVE | {table}")
+        dim_delivery_partners.to_pickle(r"Layers/gold/dim_delivery_partners.pkl")
 
-        before = dim_delivery_partner.shape
-        logging.info(f"TABLE ROWS & COLUMNS: {before[0]} & {before[1]}")
+        before = dim_delivery_partners.shape
+        logging.info(f"GOLD | DIM | SHAPE | {table} | rows={before[0]} columns={before[1]}")
 
         time2 = datetime.datetime.now()
         time =  time2 - time1
-        logging.info("TABLE CREATING TIME")
-        logging.info(time)
-        logging.info('')
+        time = round(time.total_seconds(), 4)
+        logging.info(f"GOLD | DIM | TIME | {table} | duration_sec={time}")     
+        logging.info("-" * 21)
         
     except FileNotFoundError as e:
         logging.error(f"FileNotFoundError: {e}")
@@ -451,24 +418,28 @@ if __name__ == "__main__":
 
     dim_time2 = datetime.datetime.now()
     dim_time =  dim_time2 - dim_time1
-    logging.info("DIMENSION TABLES CREATING TIME")
-    logging.info(dim_time)   
-    logging.info('')
+    dim_time = round(dim_time.total_seconds(), 4)
+    logging.info(f"GOLD | DIM | DOMAIN_END | duration_sec={dim_time}")
+    logging.info("-" * 5)
+
+
+    # ===================================================
+    # ==================== FACT =========================
+    # ===================================================
+
+    logging.info(f"GOLD | FACT | DOMAIN_START")  
+    logging.info("-" * 21)
 
     # ---------------------------------------------------
-    # ------------------ fact_sales.pkl -----------------
+    # ------------------- fact_sales --------------------
     # ---------------------------------------------------
 
-    logging.info('=============================================')
-    logging.info('================= FACT TABLE ================')
-    logging.info('=============================================')
-    logging.info('=====')
-
-    time1 = datetime.datetime.now()
     try:
 
-        logging.info("LOAD & JOIN kitchen_logs, order_items, orders")
-        
+        time1 = datetime.datetime.now()
+        table = "fact_sales"
+
+        logging.info(f"GOLD | FACT | LOAD | kitchen_logs, order_items, orders")        
         kic_path = r"Layers/silver/crm/kitchen_logs.pkl"
         ord_itm_path = r"Layers/silver/crm/order_items.pkl"
         ordr_path = r"Layers/silver/crm/orders.pkl"
@@ -477,39 +448,32 @@ if __name__ == "__main__":
         ord_itm = pd.read_pickle(ord_itm_path)
         ordr = pd.read_pickle(ordr_path)
 
+        logging.info(f"GOLD | FACT | CREAT | {table}")
         fact_sales = kic.merge(ord_itm, on='order_item_id', how='left')
         fact_sales = fact_sales.merge(ordr, on='order_id', how='left')
 
-        logging.info("=========== LOAD & JOIN dim_payment_modes.pkl")
         pay_mode = pd.read_pickle("Layers/gold/dim_payment_mode.pkl")
         fact_sales = fact_sales.merge(pay_mode, on='payment_mode', how='left')
 
-        logging.info("============ LOAD & JOIN dim_order_status.pkl")
         ord_status = pd.read_pickle("Layers/gold/dim_order_status.pkl")
         fact_sales = fact_sales.merge(ord_status, on='order_status', how='left')
 
-        logging.info("=============== LOAD & JOIN dim_customers.pkl")
-        cust = pd.read_pickle("Layers/gold/dim_customer.pkl")
+        cust = pd.read_pickle("Layers/gold/dim_customers.pkl")
         fact_sales = fact_sales.merge(cust[['customer_id','customer_key']], on='customer_id', how='left')
 
-        logging.info("============= LOAD & JOIN dim_restaurents.pkl")
-        res = pd.read_pickle("Layers/gold/dim_restaurant.pkl")
+        res = pd.read_pickle("Layers/gold/dim_restaurants.pkl")
         fact_sales = fact_sales.merge(res[['restaurant_id','restaurant_key']], on='restaurant_id',how='left')
 
-        logging.info("============== LOAD & JOIN dim_menu_items.pkl")
-        menu = pd.read_pickle("Layers/gold/dim_menu_item.pkl")
+        menu = pd.read_pickle("Layers/gold/dim_menu_items.pkl")
         fact_sales = fact_sales.merge(menu[['item_id', 'item_key']], on='item_id', how='left')
 
-        logging.info("=============== LOAD & JOIN dim_employess.pkl")
-        emp = pd.read_pickle("Layers/gold/dim_employess.pkl")
+        emp = pd.read_pickle("Layers/gold/dim_employees.pkl")
         fact_sales = fact_sales.merge(emp[['emp_id','emp_key']], left_on='chef_id', right_on='emp_id', how='left')
 
-        logging.info("======= LOAD & JOIN dim_delivery_partners.pkl")
-        del_part = pd.read_pickle("Layers/gold/dim_delivery_partner.pkl")
+        del_part = pd.read_pickle("Layers/gold/dim_delivery_partners.pkl")
         fact_sales = fact_sales.merge(del_part[['delivery_partner_id', 'delivery_partner_key']], how='left')
 
 
-        logging.info("============================ Assign Variables")
         order_item_id = fact_sales['order_item_id']
 
         order_id =       fact_sales['order_id']
@@ -532,7 +496,7 @@ if __name__ == "__main__":
         is_delivery = fact_sales['is_delivery']
         is_completed = fact_sales['status']
 
-        logging.info("========================= CREATING DATA_FRAME")
+
         fact_sales = pd.DataFrame({
             'order_item_id':order_item_id,
             'order_id':order_id,
@@ -553,17 +517,17 @@ if __name__ == "__main__":
             'is_completed':is_completed
         })
 
-        logging.info("======================= SAVING fact_sales.pkl")
+        logging.info(f"GOLD | FACT | SAVE | {table}")
         fact_sales.to_pickle(r"Layers/gold/fact_sales.pkl")
 
         before = fact_sales.shape
-        logging.info(f"TABLE ROWS & COLUMNS: {before[0]} & {before[1]}")
+        logging.info(f"GOLD | FACT | SHAPE | {table} | rows={before[0]} columns={before[1]}")
 
         time2 = datetime.datetime.now()
         time =  time2 - time1
-        logging.info("TABLE CREATING TIME")
-        logging.info(time)
-        logging.info('')
+        time = round(time.total_seconds(), 4)
+        logging.info(f"GOLD | FACT | TIME | {table} | duration_sec={time}")     
+        logging.info("-" * 21)
 
     except FileNotFoundError as e:
         logging.error(f"FileNotFoundError: {e}")
@@ -576,12 +540,11 @@ if __name__ == "__main__":
     except NameError as e:
         logging.error(f"NameError: {e}")
 
+    logging.info(f"GOLD | FACT | DOMAIN_END")
+    logging.info("-" * 5)
+
     gold_time2 = datetime.datetime.now()
     gold_time = gold_time2 - gold_time1
-    logging.info("TOTAL GOLD LAYER TIME")
-    logging.info(gold_time)
-    logging.info('')
+    gold_time = round(gold_time.total_seconds(), 4)
+    logging.info(f"GOLD | LAYER_END | duration_sec={gold_time}")
 
-    logging.info('=============================================')
-    logging.info('============ GOLD LAYER COMPLETED ===========')
-    logging.info('=============================================')  

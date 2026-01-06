@@ -1,5 +1,4 @@
 
-import os
 import datetime
 import logging
 import pandas as pd
@@ -15,19 +14,21 @@ logging.basicConfig(
 
 if __name__ == "__main__":
 
+    layer = "SILVER"
     silver_time1 = datetime.datetime.now()
-    logging.info(f"SILVER | LAYER_START")  
+    logging.info(f"{layer} | LAYER_START")  
 
     # ===================================================
-    # ===================== CRM =========================
+    # ===================== ERP =========================
     # ===================================================
 
-    logging.info("-" * 5)
+    logging.info("-" * 21)
+    domain = "ERP"
     erp_time1 = datetime.datetime.now()
-    logging.info(f"SILVER | ERP | DOMAIN_START")  
+    logging.info(f"{layer} | {domain} | DOMAIN_START")  
 
     # ---------------------------------------------------
-    # ------------------- restaurants -------------------
+    # ------------------- suppliers ---------------------
     # --------------------------------------------------- 
 
     try:
@@ -37,11 +38,13 @@ if __name__ == "__main__":
         time1 = datetime.datetime.now()
         table = "suppliers"
 
-        logging.info(f"SILVER | ERP | LOAD | {table}")
+        step = "LOAD"
+        logging.info(f"{layer} | {domain} | {step} | {table}")
         path = r"C:\Users\TUF\OneDrive\Documents\Code\Vs Code\Python_DataWarehouse\dataset\erp\suppliers.csv.gz"
         sup = pd.read_csv(path)
 
-        logging.info(f"SILVER | ERP | CLEAN | {table} | started")
+        step = "CLEAN"
+        logging.info(f"{layer} | {domain} | {step} | {table} | started")
         supplier_id =   sup['supplier_id'].str.replace(r'\D', '', regex=True).replace({'':np.nan})
         supplier_id =   pd.to_numeric(supplier_id, errors= 'coerce').replace(0,np.nan).astype('Int16')
         supplier_id =   supplier_id.fillna(sup['supplier_name'].str.replace(r'\D', '', regex=True).replace({'':np.nan}))
@@ -70,32 +73,29 @@ if __name__ == "__main__":
         after = suppliers.shape[0]
         drop = before-after
         drop_pct = round((before - after) / before * 100, 2)
-        logging.info(f"SILVER | ERP | CLEAN | {table} | rows_before={before} rows_after={after} dropped={drop} pct={drop_pct}")
+        logging.info(f"{layer} | {domain} | {step} | {table} | rows_before={before} rows_after={after} dropped={drop} pct={drop_pct}")
 
-        logging.info(f"SILVER | ERP | SAVE | {table} | target=pickle")
+        step = "SAVE"
+        logging.info(f"{layer} | {domain} | {step} | {table} | target=pickle")
         suppliers.to_pickle(r"Layers/silver/erp/suppliers.pkl")
 
+        step = "TIME"
         time2 = datetime.datetime.now()
         time = time2 - time1
-        time = round(time.total_seconds(), 4)
-        
-        logging.info(f"SILVER | ERP | TIME | {table} | duration_sec={time}")        
+        time = round(time.total_seconds(), 4)     
+        logging.info(f"{layer} | {domain} | {step} | {table} | duration_sec={time}")        
 
+        step = "DQ"
         if drop_pct > 5:
-            logging.warning(f"SILVER | ERP | DQ | {table} | dropped_pct={drop_pct} threshold=5")
+            logging.warning(f"{layer} | {domain} | {step} | {table} | dropped_pct={drop_pct} threshold=5")
 
         logging.info("-" * 21)
 
-    except FileNotFoundError as e:
-        logging.error(f"FileNotFoundError: {e}")
-    except ValueError as e:
-        logging.error(f"ValueError: {e}")
-    except KeyError as e:
-        logging.error(f"KeyError: {e}")
-    except AttributeError as e:
-        logging.error(f"AttributeError: {e}")
-    except NameError as e:
-        logging.error(f"NameError: {e}")
+    except Exception as e:
+        logging.exception(
+            f"{layer} | {domain} | {step} | {table} | "
+            f"error_type={type(e).__name__} message={e}"
+        )
 
     
     # ---------------------------------------------------
@@ -106,11 +106,13 @@ if __name__ == "__main__":
         time1 = datetime.datetime.now()
         table = "ingredients"
 
-        logging.info(f"SILVER | ERP | LOAD | {table}")
+        step = "LOAD"
+        logging.info(f"{layer} | {domain} | {step} | {table}")
         path = r"C:\Users\TUF\OneDrive\Documents\Code\Vs Code\Python_DataWarehouse\dataset\erp\ingredients.csv.gz"
         ing = pd.read_csv(path)
 
-        logging.info(f"SILVER | ERP | CLEAN | {table} | started")
+        step = "CLEAN"
+        logging.info(f"{layer} | {domain} | {step} | {table} | started")
         ingredient_id =   ing['ingredient_id'].str.replace(r'\D', '', regex=True).replace({'':np.nan})
         ingredient_id =   pd.to_numeric(ingredient_id, errors='coerce').replace(0,np.nan).astype('Int16')
         ingredient_id =   ingredient_id.fillna(ing['ingredient_name'].str.replace(r'\D', '', regex=True).replace({'':np.nan}))
@@ -132,31 +134,29 @@ if __name__ == "__main__":
         after = ingredients.shape[0]
         drop = before-after
         drop_pct = round((before - after) / before * 100, 2)
-        logging.info(f"SILVER | ERP | CLEAN | {table} | rows_before={before} rows_after={after} dropped={drop} pct={drop_pct}")
+        logging.info(f"{layer} | {domain} | {step} | {table} | rows_before={before} rows_after={after} dropped={drop} pct={drop_pct}")
 
-        logging.info(f"SILVER | ERP | SAVE | {table} | target=pickle")
+        step = "SAVE"
+        logging.info(f"{layer} | {domain} | {step} | {table} | target=pickle")
         ingredients.to_pickle(r"Layers/silver/erp/ingredients.pkl")
 
+        step = "TIME"
         time2 = datetime.datetime.now()
         time = time2 - time1
         time = round(time.total_seconds(), 4)
-        logging.info(f"SILVER | ERP | TIME | {table} | duration_sec={time}")
+        logging.info(f"{layer} | {domain} | {step} | {table} | duration_sec={time}")
 
+        step = "DQ"
         if drop_pct > 5:
-            logging.warning(f"SILVER | ERP | DQ | {table} | dropped_pct={drop_pct} threshold=5")
+            logging.warning(f"{layer} | {domain} | {step} | {table} | dropped_pct={drop_pct} threshold=5")
 
         logging.info("-" * 21)
 
-    except FileNotFoundError as e:
-        logging.error(f"FileNotFoundError: {e}")
-    except ValueError as e:
-        logging.error(f"ValueError: {e}")
-    except KeyError as e:
-        logging.error(f"KeyError: {e}")
-    except AttributeError as e:
-        logging.error(f"AttributeError: {e}")
-    except NameError as e:
-        logging.error(f"NameError: {e}")
+    except Exception as e:
+        logging.exception(
+            f"{layer} | {domain} | {step} | {table} | "
+            f"error_type={type(e).__name__} message={e}"
+        )
 
 
     # ---------------------------------------------------
@@ -167,11 +167,13 @@ if __name__ == "__main__":
         time1 = datetime.datetime.now()
         table = "supplier_ingredients"
 
-        logging.info(f"SILVER | ERP | LOAD | {table}")
+        step = "LOAD"
+        logging.info(f"{layer} | {domain} | {step} | {table}")
         path = r"C:\Users\TUF\OneDrive\Documents\Code\Vs Code\Python_DataWarehouse\dataset\erp\supplier_ingredients.csv.gz"
         sup_ing = pd.read_csv(path)
 
-        logging.info(f"SILVER | ERP | CLEAN | {table} | started")
+        step = "CLEAN"
+        logging.info(f"{layer} | {domain} | {step} | {table} | started")
         suppliers =     pd.read_pickle(r"./Layers/silver/erp/suppliers.pkl")
         supplier_id =   sup_ing['supplier_id'].str.replace(r'\D','',regex=True).replace({'':np.nan})
         supplier_id =   pd.to_numeric(supplier_id, errors='coerce').replace(0,np.nan).astype('Int16')
@@ -199,31 +201,29 @@ if __name__ == "__main__":
         after = supplier_ingredients.shape[0]
         drop = before-after
         drop_pct = round((before - after) / before * 100, 2)
-        logging.info(f"SILVER | ERP | CLEAN | {table} | rows_before={before} rows_after={after} dropped={drop} pct={drop_pct}")
+        logging.info(f"{layer} | {domain} | {step} | {table} | rows_before={before} rows_after={after} dropped={drop} pct={drop_pct}")
 
-        logging.info(f"SILVER | ERP | SAVE | {table} | target=pickle")
+        step = "SAVE"
+        logging.info(f"{layer} | {domain} | {step} | {table} | target=pickle")
         supplier_ingredients.to_pickle(r"Layers/silver/erp/supplier_ingredients.pkl")
 
+        step = "TIME"
         time2 = datetime.datetime.now()
         time = time2 - time1
         time = round(time.total_seconds(), 4)
-        logging.info(f"SILVER | ERP | TIME | {table} | duration_sec={time}")
+        logging.info(f"{layer} | {domain} | {step} | {table} | duration_sec={time}")
 
+        step = "DQ"
         if drop_pct > 5:
-            logging.warning(f"SILVER | ERP | DQ | {table} | dropped_pct={drop_pct} threshold=5")
+            logging.warning(f"{layer} | {domain} | {step} | {table} | dropped_pct={drop_pct} threshold=5")
             
         logging.info("-" * 21)
             
-    except FileNotFoundError as e:
-        logging.error(f"FileNotFoundError: {e}")
-    except ValueError as e:
-        logging.error(f"ValueError: {e}")
-    except KeyError as e:
-        logging.error(f"KeyError: {e}")
-    except AttributeError as e:
-        logging.error(f"AttributeError: {e}")
-    except NameError as e:
-        logging.error(f"NameError: {e}")
+    except Exception as e:
+        logging.exception(
+            f"{layer} | {domain} | {step} | {table} | "
+            f"error_type={type(e).__name__} message={e}"
+        )
 
 
     # ---------------------------------------------------
@@ -234,11 +234,13 @@ if __name__ == "__main__":
         time1 = datetime.datetime.now()
         table = "menu_items"
 
-        logging.info(f"SILVER | ERP | LOAD | {table}")
+        step = "LOAD"
+        logging.info(f"{layer} | {domain} | {step} | {table}")
         path = r"C:\Users\TUF\OneDrive\Documents\Code\Vs Code\Python_DataWarehouse\dataset\erp\menu_items.csv.gz"
         menu = pd.read_csv(path)
 
-        logging.info(f"SILVER | ERP | CLEAN | {table} | started")
+        step = "CLEAN"
+        logging.info(f"{layer} | {domain} | {step} | {table} | started")
 
         item_id =    menu['item_id'].str.replace(r'\D', '', regex=True).replace({'':np.nan})
         item_id =    pd.to_numeric(item_id, errors='coerce').replace(0, np.nan).astype('Int16')
@@ -268,31 +270,29 @@ if __name__ == "__main__":
         after = menu_items.shape[0]
         drop = before-after
         drop_pct = round((before - after) / before * 100, 2)
-        logging.info(f"SILVER | ERP | CLEAN | {table} | rows_before={before} rows_after={after} dropped={drop} pct={drop_pct}")
+        logging.info(f"{layer} | {domain} | {step} | {table} | rows_before={before} rows_after={after} dropped={drop} pct={drop_pct}")
 
-        logging.info(f"SILVER | ERP | SAVE | {table} | target=pickle")
+        step = "SAVE"
+        logging.info(f"{layer} | {domain} | {step} | {table} | target=pickle")
         menu_items.to_pickle(r"Layers/silver/erp/menu_items.pkl")
 
+        step = "TIME"
         time2 = datetime.datetime.now()
         time =  time2 - time1
         time = round(time.total_seconds(), 4)
-        logging.info(f"SILVER | ERP | TIME | {table} | duration_sec={time}")
-        
+        logging.info(f"{layer} | {domain} | {step} | {table} | duration_sec={time}")
+
+        step = "DQ"
         if drop_pct > 5:
-            logging.warning(f"SILVER | ERP | DQ | {table} | dropped_pct={drop_pct} threshold=5")
+            logging.warning(f"{layer} | {domain} | {step} | {table} | dropped_pct={drop_pct} threshold=5")
             
         logging.info("-" * 21)
             
-    except FileNotFoundError as e:
-        logging.error(f"FileNotFoundError: {e}")
-    except ValueError as e:
-        logging.error(f"ValueError: {e}")
-    except KeyError as e:
-        logging.error(f"KeyError: {e}")
-    except AttributeError as e:
-        logging.error(f"AttributeError: {e}")
-    except NameError as e:
-        logging.error(f"NameError: {e}")
+    except Exception as e:
+        logging.exception(
+            f"{layer} | {domain} | {step} | {table} | "
+            f"error_type={type(e).__name__} message={e}"
+        )
 
 
     # ---------------------------------------------------
@@ -303,11 +303,13 @@ if __name__ == "__main__":
         time1 = datetime.datetime.now()
         table = "recipe"
 
-        logging.info(f"SILVER | ERP | LOAD | {table}")
+        step = "LOAD"
+        logging.info(f"{layer} | {domain} | {step} | {table}")
         path = r"C:\Users\TUF\OneDrive\Documents\Code\Vs Code\Python_DataWarehouse\dataset\erp\recipe.csv.gz"
         recp = pd.read_csv(path)
 
-        logging.info(f"SILVER | ERP | CLEAN | {table} | started")
+        step = "CLEAN"
+        logging.info(f"{layer} | {domain} | {step} | {table} | started")
 
         menu_items =        pd.read_pickle(r"./Layers/silver/erp/menu_items.pkl")
         item_id =           recp['item_id'].str.replace(r'\D','', regex=True).replace({'':np.nan})
@@ -336,31 +338,29 @@ if __name__ == "__main__":
         after = recipe.shape[0]
         drop = before-after
         drop_pct = round((before - after) / before * 100, 2)
-        logging.info(f"SILVER | ERP | CLEAN | {table} | rows_before={before} rows_after={after} dropped={drop} pct={drop_pct}")
+        logging.info(f"{layer} | {domain} | {step} | {table} | rows_before={before} rows_after={after} dropped={drop} pct={drop_pct}")
 
-        logging.info(f"SILVER | ERP | SAVE | {table} | target=pickle")
+        step = "SAVE"
+        logging.info(f"{layer} | {domain} | {step} | {table} | target=pickle")
         recipe.to_pickle(r"Layers/silver/erp/recipe.pkl")
 
+        step = "TIME"
         time2 = datetime.datetime.now()
         time = time2 - time1
         time = round(time.total_seconds(), 4)
-        logging.info(f"SILVER | ERP | TIME | {table} | duration_sec={time}")
-        
+        logging.info(f"{layer} | {domain} | {step} | {table} | duration_sec={time}")
+
+        step = "DQ"
         if drop_pct > 5:
-            logging.warning(f"SILVER | ERP | DQ | {table} | dropped_pct={drop_pct} threshold=5")
+            logging.warning(f"{layer} | {domain} | {step} | {table} | dropped_pct={drop_pct} threshold=5")
             
         logging.info("-" * 21)
 
-    except FileNotFoundError as e:
-        logging.error(f"FileNotFoundError: {e}")
-    except ValueError as e:
-        logging.error(f"ValueError: {e}")
-    except KeyError as e:
-        logging.error(f"KeyError: {e}")
-    except AttributeError as e:
-        logging.error(f"AttributeError: {e}")
-    except NameError as e:
-        logging.error(f"NameError: {e}")
+    except Exception as e:
+        logging.exception(
+            f"{layer} | {domain} | {step} | {table} | "
+            f"error_type={type(e).__name__} message={e}"
+        )
 
 
     # ---------------------------------------------------
@@ -371,11 +371,13 @@ if __name__ == "__main__":
         time1 = datetime.datetime.now()
         table = "restaurants"
 
-        logging.info(f"SILVER | ERP | LOAD | {table}")
+        step = "LOAD"
+        logging.info(f"{layer} | {domain} | {step} | {table}")
         path = r"C:\Users\TUF\OneDrive\Documents\Code\Vs Code\Python_DataWarehouse\dataset\erp\restaurants.csv.gz"
         res = pd.read_csv(path)
 
-        logging.info(f"SILVER | ERP | CLEAN | {table} | started")
+        step = "CLEAN"
+        logging.info(f"{layer} | {domain} | {step} | {table} | started")
 
         restaurant_id =   res['restaurant_id'].str.replace(r'\D','',regex=True).replace({'':np.nan})
         restaurant_id =   pd.to_numeric(restaurant_id, errors='coerce').replace(0,np.nan).astype('Int16')
@@ -403,31 +405,29 @@ if __name__ == "__main__":
         after = restaurants.shape[0]
         drop = before-after
         drop_pct = round((before - after) / before * 100, 2)
-        logging.info(f"SILVER | ERP | CLEAN | {table} | rows_before={before} rows_after={after} dropped={drop} pct={drop_pct}")
+        logging.info(f"{layer} | {domain} | {step} | {table} | rows_before={before} rows_after={after} dropped={drop} pct={drop_pct}")
 
-        logging.info(f"SILVER | ERP | SAVE | {table} | target=pickle")
+        step = "SAVE"
+        logging.info(f"{layer} | {domain} | {step} | {table} | target=pickle")
         restaurants.to_pickle(r"Layers/silver/erp/restaurants.pkl")
 
+        step = "TIME"
         time2 = datetime.datetime.now()
         time = time2 - time1
         time = round(time.total_seconds(), 4)
-        logging.info(f"SILVER | ERP | TIME | {table} | duration_sec={time}")
-        
+        logging.info(f"{layer} | {domain} | {step} | {table} | duration_sec={time}")
+
+        step = "DQ"        
         if drop_pct > 5:
-            logging.warning(f"SILVER | ERP | DQ | {table} | dropped_pct={drop_pct} threshold=5")
+            logging.warning(f"{layer} | {domain} | {step} | {table} | dropped_pct={drop_pct} threshold=5")
             
         logging.info("-" * 21)
 
-    except FileNotFoundError as e:
-        logging.error(f"FileNotFoundError: {e}")
-    except ValueError as e:
-        logging.error(f"ValueError: {e}")
-    except KeyError as e:
-        logging.error(f"KeyError: {e}")
-    except AttributeError as e:
-        logging.error(f"AttributeError: {e}")
-    except NameError as e:
-        logging.error(f"NameError: {e}")
+    except Exception as e:
+        logging.exception(
+            f"{layer} | {domain} | {step} | {table} | "
+            f"error_type={type(e).__name__} message={e}"
+        )
 
 
     # ---------------------------------------------------
@@ -438,11 +438,13 @@ if __name__ == "__main__":
         time1 = datetime.datetime.now()
         table = "inventory"
 
-        logging.info(f"SILVER | ERP | LOAD | {table}")
+        step = "LOAD"
+        logging.info(f"{layer} | {domain} | {step} | {table}")
         path = r"C:\Users\TUF\OneDrive\Documents\Code\Vs Code\Python_DataWarehouse\dataset\erp\inventory.csv.gz"
         inv = pd.read_csv(path)
 
-        logging.info(f"SILVER | ERP | CLEAN | {table} | started")
+        step = "CLEAN"
+        logging.info(f"{layer} | {domain} | {step} | {table} | started")
 
         restaurants =     pd.read_pickle(r"./Layers/silver/erp/restaurants.pkl")
         restaurant_id =   inv['restaurant_id'].str.replace(r'\D', '', regex=True).replace({'':np.nan})
@@ -479,31 +481,29 @@ if __name__ == "__main__":
         after = inventory.shape[0]
         drop = before-after
         drop_pct = round((before - after) / before * 100, 2)
-        logging.info(f"SILVER | ERP | CLEAN | {table} | rows_before={before} rows_after={after} dropped={drop} pct={drop_pct}")
+        logging.info(f"{layer} | {domain} | {step} | {table} | rows_before={before} rows_after={after} dropped={drop} pct={drop_pct}")
 
-        logging.info(f"SILVER | ERP | SAVE | {table} | target=pickle")
+        step = "SAVE"
+        logging.info(f"{layer} | {domain} | {step} | {table} | target=pickle")
         inventory.to_pickle(r"Layers/silver/erp/inventory.pkl")
 
+        step = "TIME"
         time2 = datetime.datetime.now()
         time = time2 - time1
         time = round(time.total_seconds(), 4)
-        logging.info(f"SILVER | ERP | TIME | {table} | duration_sec={time}")
-        
+        logging.info(f"{layer} | {domain} | {step} | {table} | duration_sec={time}")
+
+        step = "DQ"
         if drop_pct > 5:
-            logging.warning(f"SILVER | ERP | DQ | {table} | dropped_pct={drop_pct} threshold=5")
+            logging.warning(f"{layer} | {domain} | {step} | {table} | dropped_pct={drop_pct} threshold=5")
             
         logging.info("-" * 21)
 
-    except FileNotFoundError as e:
-        logging.error(f"FileNotFoundError: {e}")
-    except ValueError as e:
-        logging.error(f"ValueError: {e}")
-    except KeyError as e:
-        logging.error(f"KeyError: {e}")
-    except AttributeError as e:
-        logging.error(f"AttributeError: {e}")
-    except NameError as e:
-        logging.error(f"NameError: {e}")
+    except Exception as e:
+        logging.exception(
+            f"{layer} | {domain} | {step} | {table} | "
+            f"error_type={type(e).__name__} message={e}"
+        )
 
     
     # ---------------------------------------------------
@@ -514,11 +514,13 @@ if __name__ == "__main__":
         time1 = datetime.datetime.now()
         table = "delivery_partners"
 
-        logging.info(f"SILVER | ERP | LOAD | {table}")
+        step = "LOAD"
+        logging.info(f"{layer} | {domain} | {step} | {table}")
         path = r"C:\Users\TUF\OneDrive\Documents\Code\Vs Code\Python_DataWarehouse\dataset\erp\delivery_partners.csv.gz"
         del_part = pd.read_csv(path)
 
-        logging.info(f"SILVER | ERP | CLEAN | {table} | started")
+        step = "CLEAN"
+        logging.info(f"{layer} | {domain} | {step} | {table} | started")
 
         partner_id =   del_part['delivery_partner_id'].str.replace(r'\D', '', regex=True).replace({'':np.nan})
         partner_id =   pd.to_numeric(partner_id, errors='coerce').replace(0, np.nan).astype('Int16')
@@ -549,31 +551,29 @@ if __name__ == "__main__":
         after = delivery_partners.shape[0]
         drop = before-after
         drop_pct = round((before - after) / before * 100, 2)
-        logging.info(f"SILVER | ERP | CLEAN | {table} | rows_before={before} rows_after={after} dropped={drop} pct={drop_pct}")
+        logging.info(f"{layer} | {domain} | {step} | {table} | rows_before={before} rows_after={after} dropped={drop} pct={drop_pct}")
 
-        logging.info(f"SILVER | ERP | SAVE | {table} | target=pickle")
+        step = "SAVE"
+        logging.info(f"{layer} | {domain} | {step} | {table} | target=pickle")
         delivery_partners.to_pickle(r"Layers/silver/erp/delivery_partners.pkl")
 
+        step = "TIME"
         time2 = datetime.datetime.now()
         time = time2 - time1
         time = round(time.total_seconds(), 4)
-        logging.info(f"SILVER | ERP | TIME | {table} | duration_sec={time}")
-        
+        logging.info(f"{layer} | {domain} | {step} | {table} | duration_sec={time}")
+
+        step = "DQ"
         if drop_pct > 5:
-            logging.warning(f"SILVER | ERP | DQ | {table} | dropped_pct={drop_pct} threshold=5")
+            logging.warning(f"{layer} | {domain} | {step} | {table} | dropped_pct={drop_pct} threshold=5")
             
         logging.info("-" * 21)
             
-    except FileNotFoundError as e:
-        logging.error(f"FileNotFoundError: {e}")
-    except ValueError as e:
-        logging.error(f"ValueError: {e}")
-    except KeyError as e:
-        logging.error(f"KeyError: {e}")
-    except AttributeError as e:
-        logging.error(f"AttributeError: {e}")
-    except NameError as e:
-        logging.error(f"NameError: {e}")
+    except Exception as e:
+        logging.exception(
+            f"{layer} | {domain} | {step} | {table} | "
+            f"error_type={type(e).__name__} message={e}"
+        )
 
 
     # ---------------------------------------------------
@@ -584,11 +584,13 @@ if __name__ == "__main__":
         time1 = datetime.datetime.now()
         table = "employees"
 
-        logging.info(f"SILVER | ERP | LOAD | {table}")
+        step = "LOAD"
+        logging.info(f"{layer} | {domain} | {step} | {table}")
         path = r"C:\Users\TUF\OneDrive\Documents\Code\Vs Code\Python_DataWarehouse\dataset\erp\employees.csv.gz"
         emp = pd.read_csv(path)
 
-        logging.info(f"SILVER | ERP | CLEAN | {table} | started")
+        step = "CLEAN"
+        logging.info(f"{layer} | {domain} | {step} | {table} | started")
 
         emp_id =        emp['emp_id'].str.replace(r'\D', '', regex=True).astype('Int16')
         emp_id =        ('E' + emp_id.astype(str).str.zfill(5)).where(emp_id.notnull() == True, np.nan) 
@@ -620,36 +622,34 @@ if __name__ == "__main__":
         after = employees.shape[0]
         drop = before-after
         drop_pct = round((before - after) / before * 100, 2)
-        logging.info(f"SILVER | ERP | CLEAN | {table} | rows_before={before} rows_after={after} dropped={drop} pct={drop_pct}")
+        logging.info(f"{layer} | {domain} | {step} | {table} | rows_before={before} rows_after={after} dropped={drop} pct={drop_pct}")
 
-        logging.info(f"SILVER | ERP | SAVE | {table} | target=pickle")
+        step = "SAVE"
+        logging.info(f"{layer} | {domain} | {step} | {table} | target=pickle")
         employees.to_pickle(r"Layers/silver/erp/employees.pkl")
 
+        step = "TIME"
         time2 = datetime.datetime.now()
         time =  time2 - time1
         time = round(time.total_seconds(), 4)
-        logging.info(f"SILVER | ERP | TIME | {table} | duration_sec={time}")
+        logging.info(f"{layer} | {domain} | {step} | {table} | duration_sec={time}")
         
+        step = "DQ"
         if drop_pct > 5:
-            logging.warning(f"SILVER | ERP | DQ | {table} | dropped_pct={drop_pct} threshold=5")
+            logging.warning(f"{layer} | {domain} | {step} | {table} | dropped_pct={drop_pct} threshold=5")
             
         logging.info("-" * 21)
 
-    except FileNotFoundError as e:
-        logging.error(f"FileNotFoundError: {e}")
-    except ValueError as e:
-        logging.error(f"ValueError: {e}")
-    except KeyError as e:
-        logging.error(f"KeyError: {e}")
-    except AttributeError as e:
-        logging.error(f"AttributeError: {e}")
-    except NameError as e:
-        logging.error(f"NameError: {e}")
+    except Exception as e:
+        logging.exception(
+            f"{layer} | {domain} | {step} | {table} | "
+            f"error_type={type(e).__name__} message={e}"
+        )
 
     erp_time2 = datetime.datetime.now()
     erp_time = erp_time2 - erp_time1
     erp_time = round(erp_time.total_seconds(), 4)
-    logging.info(f"SILVER | ERP | DOMAIN_END | duration_sec={erp_time}") 
+    logging.info(f"{layer} | {domain} | DOMAIN_END | duration_sec={erp_time}") 
 
 
 
@@ -657,9 +657,10 @@ if __name__ == "__main__":
     # ===================== CRM =========================
     # ===================================================
 
-    logging.info("-" * 5)
+    logging.info("-" * 21)
+    domain = "CRM"
     crm_time1 = datetime.datetime.now()
-    logging.info(f"SILVER | CRM | DOMAIN_START")
+    logging.info(f"{layer} | {domain} | DOMAIN_START")
 
     # ---------------------------------------------------
     # -------------------- customers --------------------
@@ -668,15 +669,16 @@ if __name__ == "__main__":
     try:
                     
         logging.info("-" * 21)
-
         time1 = datetime.datetime.now()
         table = "customers"
 
-        logging.info(f"SILVER | CRM | LOAD | {table}")
+        step = "LOAD"
+        logging.info(f"{layer} | {domain} | {step} | {table}")
         path = r"C:\Users\TUF\OneDrive\Documents\Code\Vs Code\Python_DataWarehouse\dataset\crm\customers.csv.gz"
         cust = pd.read_csv(path)
 
-        logging.info(f"SILVER | CRM | CLEAN | {table} | started")
+        step = "CLEAN"
+        logging.info(f"{layer} | {domain} | {step} | {table} | started")
 
         customer_id =   cust['customer_id'].str.replace(r'\D','', regex=True).replace({'':np.nan})
         customer_id =   customer_id.fillna(cust['customer_name'].str.replace(r'\D','',regex=True).replace({'':np.nan}))
@@ -707,31 +709,29 @@ if __name__ == "__main__":
         after = customers.shape[0]
         drop = before-after
         drop_pct = round((before - after) / before * 100, 2)
-        logging.info(f"SILVER | CRM | CLEAN | {table} | rows_before={before} rows_after={after} dropped={drop} pct={drop_pct}")
+        logging.info(f"{layer} | {domain} | {step} | {table} | rows_before={before} rows_after={after} dropped={drop} pct={drop_pct}")
 
-        logging.info(f"SILVER | CRM | SAVE | {table} | target=pickle")
+        step = "SAVE"
+        logging.info(f"{layer} | {domain} | {step} | {table} | target=pickle")
         customers.to_pickle(r"Layers/silver/crm/customers.pkl")
 
+        step = "TIME"
         time2 = datetime.datetime.now()
         time =  time2 - time1
         time = round(time.total_seconds(), 4)
-        logging.info(f"SILVER | CRM | TIME | {table} | duration_sec={time}")
+        logging.info(f"{layer} | {domain} | {step} | {table} | duration_sec={time}")
 
+        step = "DQ"
         if drop_pct > 5:
-            logging.warning(f"SILVER | CRM | DQ | {table} | dropped_pct={drop_pct} threshold=5")
+            logging.warning(f"{layer} | {domain} | {step} | {table} | dropped_pct={drop_pct} threshold=5")
             
         logging.info("-" * 21)
             
-    except FileNotFoundError as e:
-        logging.error(f"FileNotFoundError: {e}")
-    except ValueError as e:
-        logging.error(f"ValueError: {e}")
-    except KeyError as e:
-        logging.error(f"KeyError: {e}")
-    except AttributeError as e:
-        logging.error(f"AttributeError: {e}")
-    except NameError as e:
-        logging.error(f"NameError: {e}")
+    except Exception as e:
+        logging.exception(
+            f"{layer} | {domain} | {step} | {table} | "
+            f"error_type={type(e).__name__} message={e}"
+        )
 
 
     # ---------------------------------------------------
@@ -742,11 +742,13 @@ if __name__ == "__main__":
         time1 = datetime.datetime.now()
         table = "orders"
 
-        logging.info(f"SILVER | CRM | LOAD | {table}")
+        step = "LOAD"
+        logging.info(f"{layer} | {domain} | {step} | {table}")
         path = r"C:\Users\TUF\OneDrive\Documents\Code\Vs Code\Python_DataWarehouse\dataset\crm\orders.csv.gz"
         orde = pd.read_csv(path)
 
-        logging.info(f"SILVER | CRM | CLEAN | {table} | started")
+        step = "CLEAN"
+        logging.info(f"{layer} | {domain} | {step} | {table} | started")
 
         order_id =       orde['order_id'].str.replace(r'\D', '', regex=True).replace({'':np.nan}).astype('Int32')
         order_id =       ('O' + order_id.astype(str).str.zfill(7)).where(order_id.notnull(), np.nan) 
@@ -791,31 +793,29 @@ if __name__ == "__main__":
         after = orders.shape[0]
         drop = before-after
         drop_pct = round((before - after) / before * 100, 2)
-        logging.info(f"SILVER | CRM | CLEAN | {table} | rows_before={before} rows_after={after} dropped={drop} pct={drop_pct}")
+        logging.info(f"{layer} | {domain} | {step} | {table} | rows_before={before} rows_after={after} dropped={drop} pct={drop_pct}")
 
-        logging.info(f"SILVER | CRM | SAVE | {table} | target=pickle")
+        step = "SAVE"
+        logging.info(f"{layer} | {domain} | {step} | {table} | target=pickle")
         orders.to_pickle(r"Layers/silver/crm/orders.pkl")
 
+        step = "TIME"
         time2 = datetime.datetime.now()
         time =  time2 - time1
         time = round(time.total_seconds(), 4)
-        logging.info(f"SILVER | CRM | TIME | {table} | duration_sec={time}")
-            
+        logging.info(f"{layer} | {domain} | {step} | {table} | duration_sec={time}")
+
+        step = "DQ"            
         if drop_pct > 5:
-            logging.warning(f"SILVER | CRM | DQ | {table} | dropped_pct={drop_pct} threshold=5")
+            logging.warning(f"{layer} | {domain} | {step} | {table} | dropped_pct={drop_pct} threshold=5")
             
         logging.info("-" * 21)
 
-    except FileNotFoundError as e:
-        logging.error(f"FileNotFoundError: {e}")
-    except ValueError as e:
-        logging.error(f"ValueError: {e}")
-    except KeyError as e:
-        logging.error(f"KeyError: {e}")
-    except AttributeError as e:
-        logging.error(f"AttributeError: {e}")
-    except NameError as e:
-        logging.error(f"NameError: {e}")
+    except Exception as e:
+        logging.exception(
+            f"{layer} | {domain} | {step} | {table} | "
+            f"error_type={type(e).__name__} message={e}"
+        )
 
     # ---------------------------------------------------
     # ---------------------- review ---------------------
@@ -825,11 +825,13 @@ if __name__ == "__main__":
         time1 = datetime.datetime.now()
         table = "review"
 
-        logging.info(f"SILVER | CRM | LOAD | {table}")
+        step = "LOAD"
+        logging.info(f"{layer} | {domain} | {step} | {table}")
         path = r"C:\Users\TUF\OneDrive\Documents\Code\Vs Code\Python_DataWarehouse\dataset\crm\customer_reviews.csv.gz"
         rev = pd.read_csv(path)
 
-        logging.info(f"SILVER | CRM | CLEAN | {table} | started")
+        step = "CLEAN"
+        logging.info(f"{layer} | {domain} | {step} | {table} | started")
 
         orders =      pd.read_pickle(r"./Layers/silver/crm/orders.pkl")
         order_id =    rev['order_id'].str.replace(r'\D','',regex=True).replace({'':np.nan})
@@ -859,31 +861,29 @@ if __name__ == "__main__":
         after = review.shape[0]
         drop = before-after
         drop_pct = round((before - after) / before * 100, 2)
-        logging.info(f"SILVER | CRM | CLEAN | {table} | rows_before={before} rows_after={after} dropped={drop} pct={drop_pct}")
+        logging.info(f"{layer} | {domain} | {step} | {table} | rows_before={before} rows_after={after} dropped={drop} pct={drop_pct}")
 
-        logging.info(f"SILVER | CRM | SAVE | {table} | target=pickle")
+        step = "SAVE"
+        logging.info(f"{layer} | {domain} | {step} | {table} | target=pickle")
         review.to_pickle(r"Layers/silver/crm/review.pkl")
 
+        step = "TIME"
         time2 = datetime.datetime.now()
         time =  time2 - time1
         time = round(time.total_seconds(), 4)
-        logging.info(f"SILVER | CRM | TIME | {table} | duration_sec={time}")
-            
+        logging.info(f"{layer} | {domain} | {step} | {table} | duration_sec={time}")
+
+        step = "DQ"            
         if drop_pct > 5:
-            logging.warning(f"SILVER | CRM | DQ | {table} | dropped_pct={drop_pct} threshold=5")
+            logging.warning(f"{layer} | {domain} | {step} | {table} | dropped_pct={drop_pct} threshold=5")
             
         logging.info("-" * 21)
 
-    except FileNotFoundError as e:
-        logging.error(f"FileNotFoundError: {e}")
-    except ValueError as e:
-        logging.error(f"ValueError: {e}")
-    except KeyError as e:
-        logging.error(f"KeyError: {e}")
-    except AttributeError as e:
-        logging.error(f"AttributeError: {e}")
-    except NameError as e:
-        logging.error(f"NameError: {e}")
+    except Exception as e:
+        logging.exception(
+            f"{layer} | {domain} | {step} | {table} | "
+            f"error_type={type(e).__name__} message={e}"
+        )
 
 
     # ---------------------------------------------------
@@ -894,11 +894,13 @@ if __name__ == "__main__":
         time1 = datetime.datetime.now()
         table = "order_items"
 
-        logging.info(f"SILVER | CRM | LOAD | {table}")
+        step = "LOAD"
+        logging.info(f"{layer} | {domain} | {step} | {table}")
         path = r"C:\Users\TUF\OneDrive\Documents\Code\Vs Code\Python_DataWarehouse\dataset\crm\order_items.csv.gz"
         ord_itm = pd.read_csv(path)
 
-        logging.info(f"SILVER | CRM | CLEAN | {table} | started")
+        step = "CLEAN"
+        logging.info(f"{layer} | {domain} | {step} | {table} | started")
 
         order_item_id = ord_itm['order_item_id'].str.replace(r'\D','', regex=True).replace({'':np.nan,'nan':np.nan})
         order_item_id = ('OI'+order_item_id.astype('Int32').astype(str).str.zfill(8)).where(order_item_id.notnull() == True, np.nan)
@@ -963,46 +965,46 @@ if __name__ == "__main__":
         after = order_items.shape[0]
         drop = before-after
         drop_pct = round((before - after) / before * 100, 2)
-        logging.info(f"SILVER | CRM | CLEAN | {table} | rows_before={before} rows_after={after} dropped={drop} pct={drop_pct}")
+        logging.info(f"{layer} | {domain} | {step} | {table} | rows_before={before} rows_after={after} dropped={drop} pct={drop_pct}")
 
-        logging.info(f"SILVER | CRM | SAVE | {table} | target=pickle")
+        step = "SAVE"
+        logging.info(f"{layer} | {domain} | {step} | {table} | target=pickle")
         order_items.to_pickle(r"Layers/silver/crm/order_items.pkl")
 
+        step = "TIME"
         time2 = datetime.datetime.now()
         time = time2 - time1
         time = round(time.total_seconds(), 4)
-        logging.info(f"SILVER | CRM | TIME | {table} | duration_sec={time}")
-          
+        logging.info(f"{layer} | {domain} | {step} | {table} | duration_sec={time}")
+
+        step = "DQ"          
         if drop_pct > 5:
-            logging.warning(f"SILVER | CRM | DQ | {table} | dropped_pct={drop_pct} threshold=5")
+            logging.warning(f"{layer} | {domain} | {step} | {table} | dropped_pct={drop_pct} threshold=5")
             
         logging.info("-" * 21)
 
-    except FileNotFoundError as e:
-        logging.error(f"FileNotFoundError: {e}")
-    except ValueError as e:
-        logging.error(f"ValueError: {e}")
-    except KeyError as e:
-        logging.error(f"KeyError: {e}")
-    except AttributeError as e:
-        logging.error(f"AttributeError: {e}")
-    except NameError as e:
-        logging.error(f"NameError: {e}")
+    except Exception as e:
+        logging.exception(
+            f"{layer} | {domain} | {step} | {table}| "
+            f"error_type={type(e).__name__} message={e}"
+        )
     
 
     # ---------------------------------------------------
-    # ---------------- kitchen_logs.csv.gz ---------------
+    # ------------------- kitchen_logs ------------------
     # --------------------------------------------------- 
 
     try:
         time1 = datetime.datetime.now()
         table = "kitchen_logs"
 
-        logging.info(f"SILVER | CRM | LOAD | {table}")
+        step = "LOAD"
+        logging.info(f"{layer} | {domain} | {step} | {table}")
         path = r"C:\Users\TUF\OneDrive\Documents\Code\Vs Code\Python_DataWarehouse\dataset\crm\kitchen_logs.csv.gz"
         kic = pd.read_csv(path)
 
-        logging.info(f"SILVER | CRM | CLEAN | {table} | started")
+        step = "CLEAN"
+        logging.info(f"{layer} | {domain} | {step} | {table} | started")
 
         order_item =     pd.read_pickle(r"./Layers/silver/crm/order_items.pkl")
         order_item_id =  kic['order_item_id'].str.replace(r'\D','',regex=True).replace({'':np.nan,'nan':np.nan})
@@ -1040,39 +1042,37 @@ if __name__ == "__main__":
         after = kitchen_logs.shape[0]
         drop = before-after
         drop_pct = round((before - after) / before * 100, 2)
-        logging.info(f"SILVER | CRM | CLEAN | {table} | rows_before={before} rows_after={after} dropped={drop} pct={drop_pct}")
+        logging.info(f"{layer} | {domain} | {step} | {table} | rows_before={before} rows_after={after} dropped={drop} pct={drop_pct}")
 
-        logging.info(f"SILVER | CRM | SAVE | {table} | target=pickle")
+        step = "SAVE"
+        logging.info(f"{layer} | {domain} | {step} | {table} | target=pickle")
         kitchen_logs.to_pickle(r"Layers/silver/crm/kitchen_logs.pkl")
 
+        step = "TIME"
         time2 = datetime.datetime.now()
         time = time2 - time1
         time = round(time.total_seconds(), 4)
-        logging.info(f"SILVER | CRM | TIME | {table} | duration_sec={time}")
+        logging.info(f"{layer} | {domain} | {step} | {table} | duration_sec={time}")
 
+        step = "DQ"
         if drop_pct > 5:
-            logging.warning(f"SILVER | CRM | DQ | {table} | dropped_pct={drop_pct} threshold=5")
+            logging.warning(f"{layer} | {domain} | {step} | {table} | dropped_pct={drop_pct} threshold=5")
             
         logging.info("-" * 21)
 
-    except FileNotFoundError as e:
-        logging.error(f"FileNotFoundError: {e}")
-    except ValueError as e:
-        logging.error(f"ValueError: {e}")
-    except KeyError as e:
-        logging.error(f"KeyError: {e}")
-    except AttributeError as e:
-        logging.error(f"AttributeError: {e}")
-    except NameError as e:
-        logging.error(f"NameError: {e}")
+    except Exception as e:
+        logging.exception(
+            f"{layer} | {domain} | {step} | {table} | "
+            f"error_type={type(e).__name__} message={e}"
+        )
 
     crm_time2 = datetime.datetime.now()
     crm_time = crm_time2 - crm_time1
     crm_time = round(crm_time.total_seconds(), 4)
-    logging.info(f"SILVER | CRM | DOMAIN_END | duration_sec={crm_time}")
-    logging.info("-" * 5)
+    logging.info(f"{layer} | {domain} | DOMAIN_END | duration_sec={crm_time}")
+    logging.info("-" * 21)
     
     silver_time2 = datetime.datetime.now()
     silver_time = silver_time2 - silver_time1
     silver_time = round(silver_time.total_seconds(), 4)
-    logging.info(f"SILVER | LAYER_END | duration_sec={silver_time}")
+    logging.info(f"{layer} | LAYER_END | duration_sec={silver_time}")
