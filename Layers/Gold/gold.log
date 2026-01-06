@@ -1,62 +1,61 @@
-00:20:22 | INFO | GOLD | LAYER_START
-00:20:22 | INFO | -----
-00:20:22 | INFO | GOLD | DIM | DOMAIN_START
-00:20:22 | INFO | ---------------------
-00:20:22 | INFO | GOLD | DIM | CREAT | dim_date
-00:20:22 | INFO | GOLD | DIM | SAVE | dim_date
-00:20:22 | INFO | GOLD | DIM | SHAPE | dim_date | rows=517 columns=9
-00:20:22 | INFO | GOLD | DIM | TIME | dim_date | duration_sec=0.0072
-00:20:22 | INFO | ---------------------
-00:20:22 | INFO | GOLD | DIM | CREAT | dim_payment_mode
-00:20:22 | INFO | GOLD | DIM | SAVE | dim_payment_mode
-00:20:22 | INFO | GOLD | DIM | SHAPE | dim_payment_mode | rows=4 columns=2
-00:20:22 | INFO | GOLD | DIM | TIME | dim_payment_mode | duration_sec=0.0009
-00:20:22 | INFO | ---------------------
-00:20:22 | INFO | GOLD | DIM | CREAT | dim_order_status
-00:20:22 | INFO | GOLD | DIM | SAVE | dim_order_status
-00:20:22 | INFO | GOLD | DIM | SHAPE | dim_order_status | rows=3 columns=2
-00:20:22 | INFO | GOLD | DIM | TIME | dim_order_status | duration_sec=0.0008
-00:20:22 | INFO | ---------------------
-00:20:22 | INFO | GOLD | DIM | LOAD | restaurants
-00:20:22 | INFO | GOLD | DIM | CREAT | dim_restaurants
-00:20:22 | INFO | GOLD | DIM | SAVE | dim_restaurants
-00:20:22 | INFO | GOLD | DIM | SHAPE | dim_restaurants | rows=50 columns=6
-00:20:22 | INFO | GOLD | DIM | TIME | dim_restaurants | duration_sec=0.0018
-00:20:22 | INFO | ---------------------
-00:20:22 | INFO | GOLD | DIM | LOAD | employees
-00:20:22 | INFO | GOLD | DIM | CREAT | dim_employees
-00:20:22 | INFO | GOLD | DIM | SAVE | dim_employees
-00:20:22 | INFO | GOLD | DIM | SHAPE | dim_employees | rows=547 columns=3
-00:20:22 | INFO | GOLD | DIM | TIME | dim_employees | duration_sec=0.0015
-00:20:22 | INFO | ---------------------
-00:20:22 | INFO | GOLD | DIM | LOAD | customers
-00:20:22 | INFO | GOLD | DIM | CREAT | dim_customers
-00:20:22 | INFO | GOLD | DIM | SAVE | dim_customers
-00:20:22 | INFO | GOLD | DIM | SHAPE | dim_customers | rows=99246 columns=4
-00:20:22 | INFO | GOLD | DIM | TIME | dim_customers | duration_sec=0.059
-00:20:22 | INFO | ---------------------
-00:20:22 | INFO | GOLD | DIM | LOAD | menu_items
-00:20:22 | INFO | GOLD | DIM | CREAT | dim_menu_items
-00:20:22 | INFO | GOLD | DIM | SAVE | dim_menu_items
-00:20:22 | INFO | GOLD | DIM | SHAPE | dim_menu_items | rows=299 columns=5
-00:20:22 | INFO | GOLD | DIM | TIME | dim_menu_items | duration_sec=0.0026
-00:20:22 | INFO | ---------------------
-00:20:22 | INFO | GOLD | DIM | LOAD | delivery_partners
-00:20:22 | INFO | GOLD | DIM | CREAT | dim_delivery_partners
-00:20:22 | INFO | GOLD | DIM | SAVE | dim_delivery_partners
-00:20:22 | INFO | GOLD | DIM | SHAPE | dim_delivery_partners | rows=199 columns=4
-00:20:22 | INFO | GOLD | DIM | TIME | dim_delivery_partners | duration_sec=0.0019
-00:20:22 | INFO | ---------------------
-00:20:22 | INFO | GOLD | DIM | DOMAIN_END | duration_sec=0.0763
-00:20:22 | INFO | -----
-00:20:22 | INFO | GOLD | FACT | DOMAIN_START
-00:20:22 | INFO | ---------------------
-00:20:22 | INFO | GOLD | FACT | LOAD | kitchen_logs, order_items, orders
-00:20:23 | INFO | GOLD | FACT | CREAT | fact_sales
-00:20:33 | INFO | GOLD | FACT | SAVE | fact_sales
-00:20:35 | INFO | GOLD | FACT | SHAPE | fact_sales | rows=1302783 columns=17
-00:20:35 | INFO | GOLD | FACT | TIME | fact_sales | duration_sec=13.6027
-00:20:35 | INFO | ---------------------
-00:20:35 | INFO | GOLD | FACT | DOMAIN_END
-00:20:35 | INFO | -----
-00:20:35 | INFO | GOLD | LAYER_END | duration_sec=13.6794
+10:39:08 | INFO | GLOD | LAYER_START
+10:39:08 | INFO | ---------------------
+10:39:08 | INFO | GLOD | DIM | DOMAIN_START
+10:39:08 | INFO | ---------------------
+10:39:08 | INFO | GLOD | DIM | CREAT | dim_date
+10:39:08 | INFO | GLOD | DIM | SAVE | dim_date
+10:39:08 | INFO | GLOD | DIM | SHAPE | dim_date | rows=517 columns=9
+10:39:08 | INFO | GLOD | DIM | TIME | dim_date | duration_sec=0.017
+10:39:08 | INFO | ---------------------
+10:39:08 | INFO | GLOD | DIM | CREAT | dim_payment_mode
+10:39:08 | INFO | GLOD | DIM | SAVE | dim_payment_mode
+10:39:08 | INFO | GLOD | DIM | SHAPE | dim_payment_mode | rows=4 columns=2
+10:39:08 | INFO | GLOD | DIM | TIME | dim_payment_mode | duration_sec=0.0011
+10:39:08 | INFO | ---------------------
+10:39:08 | INFO | GLOD | DIM | CREAT | dim_order_status
+10:39:08 | INFO | GLOD | DIM | SAVE | dim_order_status
+10:39:08 | INFO | GLOD | DIM | SHAPE | dim_order_status | rows=3 columns=2
+10:39:08 | INFO | GLOD | DIM | TIME | dim_order_status | duration_sec=0.0008
+10:39:08 | INFO | ---------------------
+10:39:08 | INFO | GLOD | DIM | LOAD | restaurants
+10:39:08 | INFO | GLOD | DIM | CREAT | dim_restaurants
+10:39:08 | INFO | GLOD | DIM | SAVE | dim_restaurants
+10:39:08 | INFO | GLOD | DIM | SHAPE | dim_restaurants | rows=50 columns=6
+10:39:08 | INFO | GLOD | DIM | TIME | dim_restaurants | duration_sec=0.0016
+10:39:08 | INFO | ---------------------
+10:39:08 | INFO | GLOD | DIM | LOAD | employees
+10:39:08 | INFO | GLOD | DIM | CREAT | dim_employees
+10:39:08 | INFO | GLOD | DIM | SAVE | dim_employees
+10:39:08 | INFO | GLOD | DIM | SHAPE | dim_employees | rows=547 columns=3
+10:39:08 | INFO | GLOD | DIM | TIME | dim_employees | duration_sec=0.0015
+10:39:08 | INFO | ---------------------
+10:39:08 | INFO | GLOD | DIM | LOAD | customers
+10:39:08 | INFO | GLOD | DIM | CREAT | dim_customers
+10:39:08 | INFO | GLOD | DIM | SAVE | dim_customers
+10:39:08 | INFO | GLOD | DIM | SHAPE | dim_customers | rows=99246 columns=4
+10:39:08 | INFO | GLOD | DIM | TIME | dim_customers | duration_sec=0.1009
+10:39:08 | INFO | ---------------------
+10:39:08 | INFO | GLOD | DIM | LOAD | menu_items
+10:39:08 | INFO | GLOD | DIM | CREAT | dim_menu_items
+10:39:08 | INFO | GLOD | DIM | SAVE | dim_menu_items
+10:39:08 | INFO | GLOD | DIM | SHAPE | dim_menu_items | rows=299 columns=5
+10:39:08 | INFO | GLOD | DIM | TIME | dim_menu_items | duration_sec=0.0023
+10:39:08 | INFO | ---------------------
+10:39:08 | INFO | GLOD | DIM | LOAD | delivery_partners
+10:39:08 | INFO | GLOD | DIM | CREAT | dim_delivery_partners
+10:39:08 | INFO | GLOD | DIM | SAVE | dim_delivery_partners
+10:39:08 | INFO | GLOD | DIM | SHAPE | dim_delivery_partners | rows=199 columns=4
+10:39:08 | INFO | GLOD | DIM | TIME | dim_delivery_partners | duration_sec=0.0026
+10:39:08 | INFO | ---------------------
+10:39:08 | INFO | GLOD | DIM | DOMAIN_END | duration_sec=0.1285
+10:39:08 | INFO | ---------------------
+10:39:08 | INFO | GLOD | FACT | DOMAIN_START
+10:39:08 | INFO | ---------------------
+10:39:08 | INFO | GLOD | FACT | LOAD | kitchen_logs, order_items, orders
+10:39:09 | INFO | GLOD | FACT | CREAT | fact_sales
+10:39:20 | INFO | GLOD | FACT | SAVE | fact_sales
+10:39:23 | INFO | GLOD | FACT | SHAPE | fact_sales | rows=1302783 columns=17
+10:39:23 | INFO | ---------------------
+10:39:23 | INFO | GLOD | FACT | DOMAIN_END | duration_sec=15.2504
+10:39:23 | INFO | ---------------------
+10:39:23 | INFO | GLOD | LAYER_END | duration_sec=15.3792

@@ -15,16 +15,19 @@ logging.basicConfig(
 
 if __name__ == "__main__":
 
+    layer = "GLOD"
     gold_time1 = datetime.datetime.now()
-    logging.info(f"GOLD | LAYER_START")  
+    logging.info(f"{layer} | LAYER_START")  
 
     # ===================================================
     # ===================== DIM =========================
     # ===================================================
 
-    logging.info("-" * 5)
+
+    logging.info("-" * 21)
     dim_time1 = datetime.datetime.now()
-    logging.info(f"GOLD | DIM | DOMAIN_START")  
+    domain = "DIM"
+    logging.info(f"{layer} | {domain} | DOMAIN_START")  
 
     # ---------------------------------------------------
     # --------------------- dim_date --------------------
@@ -36,7 +39,8 @@ if __name__ == "__main__":
         time1 = datetime.datetime.now()
         table = "dim_date"
 
-        logging.info(f"GOLD | DIM | CREAT | {table}")
+        step = "CREAT"
+        logging.info(f"{layer} | {domain} | {step} | {table}")
 
         date_range = pd.date_range(start="2023-01-01", end="2024-05-31")
 
@@ -57,26 +61,26 @@ if __name__ == "__main__":
             ["date_key","date","day","month","month_name","quarter","year","week_of_year","is_weekend"]
         ]
 
-        logging.info(f"GOLD | DIM | SAVE | {table}")
+        step = "SAVE"
+        logging.info(f"{layer} | {domain} | {step} | {table}")
         dim_date.to_pickle(r"Layers/gold/dim_date.pkl")
 
+        step = "SHAPE"
         before = dim_date.shape
-        logging.info(f"GOLD | DIM | SHAPE | {table} | rows={before[0]} columns={before[1]}")
+        logging.info(f"{layer} | {domain} | {step} | {table} | rows={before[0]} columns={before[1]}")
 
+        step = "TIME"
         time2 = datetime.datetime.now()
         time =  time2 - time1
         time = round(time.total_seconds(), 4)
-        logging.info(f"GOLD | DIM | TIME | {table} | duration_sec={time}")     
+        logging.info(f"{layer} | {domain} | {step} | {table} | duration_sec={time}")     
         logging.info("-" * 21)
 
-    except ValueError as e:
-        logging.error(f"ValueError: {e}")
-    except KeyError as e:
-        logging.error(f"KeyError: {e}")
-    except AttributeError as e:
-        logging.error(f"AttributeError: {e}")
-    except NameError as e:
-        logging.error(f"NameError: {e}")
+    except Exception as e:
+        logging.exception(
+            f"{layer} | {domain} | {step} | {table} | "
+            f"error_type={type(e).__name__} message={e}"
+        )
 
 
     # ---------------------------------------------------
@@ -87,7 +91,8 @@ if __name__ == "__main__":
         time1 = datetime.datetime.now()
         table = "dim_payment_mode"
 
-        logging.info(f"GOLD | DIM | CREAT | {table}")
+        step = "CREAT"        
+        logging.info(f"{layer} | {domain} | {step} | {table}")
 
         payment_key = [1,2,3,4]
         payment_mode = ['wallet', 'upi', 'cash', 'card']
@@ -97,26 +102,26 @@ if __name__ == "__main__":
             'payment_mode':payment_mode
         })
 
-        logging.info(f"GOLD | DIM | SAVE | {table}")
+        step = "SAVE"
+        logging.info(f"{layer} | {domain} | {step} | {table}")
         dim_payment_mode.to_pickle(r"Layers/gold/dim_payment_mode.pkl")
 
+        step = "SHAPE"
         before = dim_payment_mode.shape
-        logging.info(f"GOLD | DIM | SHAPE | {table} | rows={before[0]} columns={before[1]}")
+        logging.info(f"{layer} | {domain} | {step} | {table} | rows={before[0]} columns={before[1]}")
 
+        step = "TIME"
         time2 = datetime.datetime.now()
         time =  time2 - time1
         time = round(time.total_seconds(), 4)
-        logging.info(f"GOLD | DIM | TIME | {table} | duration_sec={time}")     
+        logging.info(f"{layer} | {domain} | {step} | {table} | duration_sec={time}")     
         logging.info("-" * 21)
 
-    except ValueError as e:
-        logging.error(f"ValueError: {e}")
-    except KeyError as e:
-        logging.error(f"KeyError: {e}")
-    except AttributeError as e:
-        logging.error(f"AttributeError: {e}")
-    except NameError as e:
-        logging.error(f"NameError: {e}")
+    except Exception as e:
+        logging.exception(
+            f"{layer} | {domain} | {step} | {table} | "
+            f"error_type={type(e).__name__} message={e}"
+        )
 
 
     # ---------------------------------------------------
@@ -127,7 +132,8 @@ if __name__ == "__main__":
         time1 = datetime.datetime.now()
         table = "dim_order_status"
 
-        logging.info(f"GOLD | DIM | CREAT | {table}")
+        step = "CREAT"
+        logging.info(f"{layer} | {domain} | {step} | {table}")
 
         status_key = [1,2,3]
         order_status = ['completed', 'cancelled', 'failed']
@@ -137,26 +143,26 @@ if __name__ == "__main__":
             'order_status':order_status
         })
 
-        logging.info(f"GOLD | DIM | SAVE | {table}")
+        step = "SAVE"
+        logging.info(f"{layer} | {domain} | {step} | {table}")
         dim_order_status.to_pickle(r"Layers/gold/dim_order_status.pkl")
 
+        step = "SHAPE"
         before = dim_order_status.shape
-        logging.info(f"GOLD | DIM | SHAPE | {table} | rows={before[0]} columns={before[1]}")
+        logging.info(f"{layer} | {domain} | {step} | {table} | rows={before[0]} columns={before[1]}")
 
+        step = "TIME"
         time2 = datetime.datetime.now()
         time =  time2 - time1
         time = round(time.total_seconds(), 4)
-        logging.info(f"GOLD | DIM | TIME | {table} | duration_sec={time}")     
+        logging.info(f"{layer} | {domain} | {step} | {table} | duration_sec={time}")     
         logging.info("-" * 21)
 
-    except ValueError as e:
-        logging.error(f"ValueError: {e}")
-    except KeyError as e:
-        logging.error(f"KeyError: {e}")
-    except AttributeError as e:
-        logging.error(f"AttributeError: {e}")
-    except NameError as e:
-        logging.error(f"NameError: {e}")
+    except Exception as e:
+        logging.exception(
+            f"{layer} | {domain} | {step} | {table} | "
+            f"error_type={type(e).__name__} message={e}"
+        )
 
 
     # ---------------------------------------------------
@@ -167,11 +173,13 @@ if __name__ == "__main__":
         time1 = datetime.datetime.now()
         table = "dim_restaurants"
 
-        logging.info(f"GOLD | DIM | LOAD | restaurants")
+        step = "LOAD"
+        logging.info(f"{layer} | {domain} | {step} | restaurants")
         path = r"Layers/silver/erp/restaurants.pkl"
         res = pd.read_pickle(path)
 
-        logging.info(f"GOLD | DIM | CREAT | {table}")
+        step = "CREAT"
+        logging.info(f"{layer} | {domain} | {step} | {table}")
         res['restaurant_key'] = res.index + 1
 
         restaurant_key =  res['restaurant_key']
@@ -190,28 +198,26 @@ if __name__ == "__main__":
             'open_date':      open_date
         })
 
-        logging.info(f"GOLD | DIM | SAVE | {table}")
+        step = "SAVE"
+        logging.info(f"{layer} | {domain} | {step} | {table}")
         dim_restaurants.to_pickle(r"Layers/gold/dim_restaurants.pkl")
 
+        step = "SHAPE"
         before = dim_restaurants.shape
-        logging.info(f"GOLD | DIM | SHAPE | {table} | rows={before[0]} columns={before[1]}")
+        logging.info(f"{layer} | {domain} | {step} | {table} | rows={before[0]} columns={before[1]}")
 
+        step = "TIME"
         time2 = datetime.datetime.now()
         time =  time2 - time1
         time = round(time.total_seconds(), 4)
-        logging.info(f"GOLD | DIM | TIME | {table} | duration_sec={time}")     
+        logging.info(f"{layer} | {domain} | {step} | {table} | duration_sec={time}")     
         logging.info("-" * 21)
 
-    except FileNotFoundError as e:
-        logging.error(f"FileNotFoundError: {e}")
-    except ValueError as e:
-        logging.error(f"ValueError: {e}")
-    except KeyError as e:
-        logging.error(f"KeyError: {e}")
-    except AttributeError as e:
-        logging.error(f"AttributeError: {e}")
-    except NameError as e:
-        logging.error(f"NameError: {e}")
+    except Exception as e:
+        logging.exception(
+            f"{layer} | {domain} | {step} | {table} | "
+            f"error_type={type(e).__name__} message={e}"
+        )
 
 
     # ---------------------------------------------------
@@ -222,11 +228,13 @@ if __name__ == "__main__":
         time1 = datetime.datetime.now()
         table = "dim_employees"
 
-        logging.info(f"GOLD | DIM | LOAD | employees")
+        step = "LOAD"
+        logging.info(f"{layer} | {domain} | {step} | employees")
         path = r"Layers/silver/erp/employees.pkl"
         emp = pd.read_pickle(path)
 
-        logging.info(f"GOLD | DIM | CREAT | {table}")
+        step = "CREAT"
+        logging.info(f"{layer} | {domain} | {step} | {table}")
         emp['emp_key'] = emp.index + 1
 
         emp_key = emp['emp_key']
@@ -239,28 +247,26 @@ if __name__ == "__main__":
             'role':   role
         })
 
-        logging.info(f"GOLD | DIM | SAVE | {table}")
+        step = "SAVE"
+        logging.info(f"{layer} | {domain} | {step} | {table}")
         dim_employees.to_pickle(r"Layers/gold/dim_employees.pkl")
 
+        step = "SHAPE"
         before = dim_employees.shape
-        logging.info(f"GOLD | DIM | SHAPE | {table} | rows={before[0]} columns={before[1]}")
+        logging.info(f"{layer} | {domain} | {step} | {table} | rows={before[0]} columns={before[1]}")
 
+        step = "TIME"
         time2 = datetime.datetime.now()
         time =  time2 - time1
         time = round(time.total_seconds(), 4)
-        logging.info(f"GOLD | DIM | TIME | {table} | duration_sec={time}")     
+        logging.info(f"{layer} | {domain} | {step} | {table} | duration_sec={time}")     
         logging.info("-" * 21)
 
-    except FileNotFoundError as e:
-        logging.error(f"FileNotFoundError: {e}")
-    except ValueError as e:
-        logging.error(f"ValueError: {e}")
-    except KeyError as e:
-        logging.error(f"KeyError: {e}")
-    except AttributeError as e:
-        logging.error(f"AttributeError: {e}")
-    except NameError as e:
-        logging.error(f"NameError: {e}")
+    except Exception as e:
+        logging.exception(
+            f"{layer} | {domain} | {step} | {table} | "
+            f"error_type={type(e).__name__} message={e}"
+        )
 
 
     # ---------------------------------------------------
@@ -271,11 +277,13 @@ if __name__ == "__main__":
         time1 = datetime.datetime.now()
         table = "dim_customers"
 
-        logging.info(f"GOLD | DIM | LOAD | customers")
+        step = "LOAD"
+        logging.info(f"{layer} | {domain} | {step} | customers")
         path = r"Layers/silver/crm/customers.pkl"
         cust = pd.read_pickle(path)
 
-        logging.info(f"GOLD | DIM | CREAT | {table}")
+        step = "CREAT"
+        logging.info(f"{layer} | {domain} | {step} | {table}")
         cust['customer_key'] = cust.index + 1
 
         customer_key = cust['customer_key']
@@ -290,28 +298,26 @@ if __name__ == "__main__":
             'created_at':created_at
         })
 
-        logging.info(f"GOLD | DIM | SAVE | {table}")
+        step = "SAVE"
+        logging.info(f"{layer} | {domain} | {step} | {table}")
         dim_customers.to_pickle(r"Layers/gold/dim_customers.pkl")
 
+        step = "SHAPE"
         before = dim_customers.shape
-        logging.info(f"GOLD | DIM | SHAPE | {table} | rows={before[0]} columns={before[1]}")
+        logging.info(f"{layer} | {domain} | {step} | {table} | rows={before[0]} columns={before[1]}")
 
+        step = "TIME"
         time2 = datetime.datetime.now()
         time =  time2 - time1
         time = round(time.total_seconds(), 4)
-        logging.info(f"GOLD | DIM | TIME | {table} | duration_sec={time}")     
+        logging.info(f"{layer} | {domain} | {step} | {table} | duration_sec={time}")     
         logging.info("-" * 21)
 
-    except FileNotFoundError as e:
-        logging.error(f"FileNotFoundError: {e}")
-    except ValueError as e:
-        logging.error(f"ValueError: {e}")
-    except KeyError as e:
-        logging.error(f"KeyError: {e}")
-    except AttributeError as e:
-        logging.error(f"AttributeError: {e}")
-    except NameError as e:
-        logging.error(f"NameError: {e}")
+    except Exception as e:
+        logging.exception(
+            f"{layer} | {domain} | {step} | {table} | "
+            f"error_type={type(e).__name__} message={e}"
+        )
 
     # ---------------------------------------------------
     # ------------------ dim_menu_item ------------------
@@ -321,11 +327,13 @@ if __name__ == "__main__":
         time1 = datetime.datetime.now()
         table = "dim_menu_items"
 
-        logging.info(f"GOLD | DIM | LOAD | menu_items")
+        step = "LOAD"
+        logging.info(f"{layer} | {domain} | {step} | menu_items")
         path = r"Layers/silver/erp/menu_items.pkl"
         menu = pd.read_pickle(path)
 
-        logging.info(f"GOLD | DIM | CREAT | {table}")
+        step = "CREAT"
+        logging.info(f"{layer} | {domain} | {step} | {table}")
         menu['item_key'] = menu.index + 1
 
         item_key =  menu['item_key']
@@ -342,28 +350,26 @@ if __name__ == "__main__":
             'cuisine':cuisine
         })
 
-        logging.info(f"GOLD | DIM | SAVE | {table}")
+        step = "SAVE"
+        logging.info(f"{layer} | {domain} | {step} | {table}")
         dim_menu_items.to_pickle(r"Layers/gold/dim_menu_items.pkl")
 
+        step = "SHAPE"
         before = dim_menu_items.shape
-        logging.info(f"GOLD | DIM | SHAPE | {table} | rows={before[0]} columns={before[1]}")
+        logging.info(f"{layer} | {domain} | {step} | {table} | rows={before[0]} columns={before[1]}")
 
+        step = "TIME"
         time2 = datetime.datetime.now()
         time =  time2 - time1
         time = round(time.total_seconds(), 4)
-        logging.info(f"GOLD | DIM | TIME | {table} | duration_sec={time}")     
+        logging.info(f"{layer} | {domain} | {step} | {table} | duration_sec={time}")     
         logging.info("-" * 21)
 
-    except FileNotFoundError as e:
-        logging.error(f"FileNotFoundError: {e}")
-    except ValueError as e:
-        logging.error(f"ValueError: {e}")
-    except KeyError as e:
-        logging.error(f"KeyError: {e}")
-    except AttributeError as e:
-        logging.error(f"AttributeError: {e}")
-    except NameError as e:
-        logging.error(f"NameError: {e}")
+    except Exception as e:
+        logging.exception(
+            f"{layer} | {domain} | {step} | {table} | "
+            f"error_type={type(e).__name__} message={e}"
+        )
 
 
     # ---------------------------------------------------
@@ -374,11 +380,13 @@ if __name__ == "__main__":
         time1 = datetime.datetime.now()
         table = "dim_delivery_partners"
 
-        logging.info(f"GOLD | DIM | LOAD | delivery_partners")
+        step = "LOAD"
+        logging.info(f"{layer} | {domain} | {step} | delivery_partners")
         path = r"Layers/silver/erp/delivery_partners.pkl"
         del_part = pd.read_pickle(path)
 
-        logging.info(f"GOLD | DIM | CREAT | {table}")
+        step = "CREAT"
+        logging.info(f"{layer} | {domain} | {step} | {table}")
         del_part['delivery_partner_key'] = del_part.index + 1
 
         delivery_partner_key = del_part['delivery_partner_key']
@@ -393,42 +401,42 @@ if __name__ == "__main__":
             'vehicle_type':vehicle_type
         })
 
-        logging.info(f"GOLD | DIM | SAVE | {table}")
+        step = "SAVE"
+        logging.info(f"{layer} | {domain} | {step} | {table}")
         dim_delivery_partners.to_pickle(r"Layers/gold/dim_delivery_partners.pkl")
 
+        step = "SHAPE"
         before = dim_delivery_partners.shape
-        logging.info(f"GOLD | DIM | SHAPE | {table} | rows={before[0]} columns={before[1]}")
+        logging.info(f"{layer} | {domain} | {step} | {table} | rows={before[0]} columns={before[1]}")
 
+        step = "TIME"
         time2 = datetime.datetime.now()
         time =  time2 - time1
         time = round(time.total_seconds(), 4)
-        logging.info(f"GOLD | DIM | TIME | {table} | duration_sec={time}")     
+        logging.info(f"{layer} | {domain} | {step} | {table} | duration_sec={time}")     
         logging.info("-" * 21)
         
-    except FileNotFoundError as e:
-        logging.error(f"FileNotFoundError: {e}")
-    except ValueError as e:
-        logging.error(f"ValueError: {e}")
-    except KeyError as e:
-        logging.error(f"KeyError: {e}")
-    except AttributeError as e:
-        logging.error(f"AttributeError: {e}")
-    except NameError as e:
-        logging.error(f"NameError: {e}")
+    except Exception as e:
+        logging.exception(
+            f"{layer} | {domain} | {step} | {table} | "
+            f"error_type={type(e).__name__} message={e}"
+        )
 
     dim_time2 = datetime.datetime.now()
     dim_time =  dim_time2 - dim_time1
     dim_time = round(dim_time.total_seconds(), 4)
-    logging.info(f"GOLD | DIM | DOMAIN_END | duration_sec={dim_time}")
-    logging.info("-" * 5)
+    logging.info(f"{layer} | {domain} | DOMAIN_END | duration_sec={dim_time}")
+
 
 
     # ===================================================
     # ==================== FACT =========================
     # ===================================================
 
-    logging.info(f"GOLD | FACT | DOMAIN_START")  
     logging.info("-" * 21)
+    fact_time1 = datetime.datetime.now()
+    domain = "FACT"
+    logging.info(f"{layer} | {domain} | DOMAIN_START")  
 
     # ---------------------------------------------------
     # ------------------- fact_sales --------------------
@@ -436,10 +444,11 @@ if __name__ == "__main__":
 
     try:
 
-        time1 = datetime.datetime.now()
+        logging.info("-" * 21)
         table = "fact_sales"
-
-        logging.info(f"GOLD | FACT | LOAD | kitchen_logs, order_items, orders")        
+        
+        step = "LOAD"
+        logging.info(f"{layer} | {domain} | {step} | kitchen_logs, order_items, orders")        
         kic_path = r"Layers/silver/crm/kitchen_logs.pkl"
         ord_itm_path = r"Layers/silver/crm/order_items.pkl"
         ordr_path = r"Layers/silver/crm/orders.pkl"
@@ -448,7 +457,8 @@ if __name__ == "__main__":
         ord_itm = pd.read_pickle(ord_itm_path)
         ordr = pd.read_pickle(ordr_path)
 
-        logging.info(f"GOLD | FACT | CREAT | {table}")
+        step = "CREAT"
+        logging.info(f"{layer} | {domain} | {step} | {table}")
         fact_sales = kic.merge(ord_itm, on='order_item_id', how='left')
         fact_sales = fact_sales.merge(ordr, on='order_id', how='left')
 
@@ -517,34 +527,30 @@ if __name__ == "__main__":
             'is_completed':is_completed
         })
 
-        logging.info(f"GOLD | FACT | SAVE | {table}")
+        step = "SAVE"
+        logging.info(f"{layer} | {domain} | {step} | {table}")
         fact_sales.to_pickle(r"Layers/gold/fact_sales.pkl")
 
+        step = "SHAPE"
         before = fact_sales.shape
-        logging.info(f"GOLD | FACT | SHAPE | {table} | rows={before[0]} columns={before[1]}")
+        logging.info(f"{layer} | {domain} | {step} | {table} | rows={before[0]} columns={before[1]}")
 
-        time2 = datetime.datetime.now()
-        time =  time2 - time1
-        time = round(time.total_seconds(), 4)
-        logging.info(f"GOLD | FACT | TIME | {table} | duration_sec={time}")     
         logging.info("-" * 21)
 
-    except FileNotFoundError as e:
-        logging.error(f"FileNotFoundError: {e}")
-    except ValueError as e:
-        logging.error(f"ValueError: {e}")
-    except KeyError as e:
-        logging.error(f"KeyError: {e}")
-    except AttributeError as e:
-        logging.error(f"AttributeError: {e}")
-    except NameError as e:
-        logging.error(f"NameError: {e}")
+    except Exception as e:
+        logging.exception(
+            f"{layer} | {domain} | {step} | {table} | "
+            f"error_type={type(e).__name__} message={e}"
+        )
 
-    logging.info(f"GOLD | FACT | DOMAIN_END")
-    logging.info("-" * 5)
+    fact_time2 = datetime.datetime.now()
+    fact_time =  fact_time2 - fact_time1
+    fact_time = round(fact_time.total_seconds(), 4)
+    logging.info(f"{layer} | {domain} | DOMAIN_END | duration_sec={fact_time}")
+    logging.info("-" * 21)
 
     gold_time2 = datetime.datetime.now()
     gold_time = gold_time2 - gold_time1
     gold_time = round(gold_time.total_seconds(), 4)
-    logging.info(f"GOLD | LAYER_END | duration_sec={gold_time}")
+    logging.info(f"{layer} | LAYER_END | duration_sec={gold_time}")
 
