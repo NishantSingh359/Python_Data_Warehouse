@@ -1,0 +1,13 @@
+# data outputs
+#data/silver/
+#data/gold/
+
+# files
+*.pkl
+*.log
+*.parquet
+*.csv.gz
+*.ipynb
+
+# python
+__pycache__/
