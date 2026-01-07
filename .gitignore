@@ -1,10 +1,7 @@
-# data outputs
-#data/silver/
-#data/gold/
-
 # files
 *.pkl
 *.log
+*.bat
 *.parquet
 *.csv.gz
 *.ipynb
