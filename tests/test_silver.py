@@ -28,12 +28,12 @@ def test_run():
     logging.info("-" * 21)
     domain = "ERP"
     logging.info(f"{layer} | {domain} | DOMAIN_START")
+
     # ---------------------------------------------------
     # ------------------- suppliers ---------------------
     # --------------------------------------------------- 
 
     table = "suppliers"
-
     issues = []
 
     try:
@@ -104,6 +104,75 @@ def test_run():
         inv_email= inv_email.sum()
 
         if inv_email != df.shape[0]:
+            issues.append(f"{column} | invalid_format")
+        else:
+            issues.append(f"{column} | pass")
+
+        for issue in issues:
+            if " pass" in issue.split("|"):
+                logging.info(f"{layer} | {domain} | {step} | {table} | {issue}")
+            else:
+                logging.warning(f"{layer} | {domain} | {step} | {table} | {issue}")
+
+    except Exception as e:
+        logging.exception(
+            f"{layer} | {domain} | {step} | {table} | "
+            f"error_type={type(e).__name__} message={e}"
+        )
+
+    # ---------------------------------------------------
+    # ------------------ ingredients --------------------
+    # --------------------------------------------------- 
+
+    table = "suppliers"
+    issues = []
+
+    try:
+
+        logging.info("-" * 21)
+
+        table = "ingredients"
+        issues = []
+
+        step = "LOAD"
+        logging.info(f"{layer} | {domain} | {step}    | {table}")
+        ing = pd.read_parquet(SILVER_DIR / "erp" / "ingredients.parquet")
+
+        step = "QUALITY"
+        # --------- ingredients_id
+        column = "ingredients_id"
+        inv_id = ing['ingredient_id'].str.match(r'^ING\d{3}$').sum()
+        dup = ing['ingredient_id'].duplicated().sum()
+        null = ing['ingredient_id'][ing['ingredient_id'].isnull()].shape[0]
+
+        check = 0
+        if inv_id != ing.shape[0]:
+            issues.append(f"{column} | invalid_format")
+            check = check + 1
+        if dup != 0:
+            issues.append(f"{column} | duplicate_values")
+            check = check + 1
+        if null != 0:
+            issues.append(f"{column} | null_values")
+            check = check + 1
+        if check == 0:
+            issues.append(f"{column} | pass")
+
+        # --------- ingredient_name 
+        column = "ingredient_name"
+        inv_name = ing['ingredient_name'].str.match(r'^Ingredient_([1-9][0-9]{0,2}|100)$').sum()
+
+        if inv_id != ing.shape[0]:
+            issues.append(f"{column} | invalid_format")
+        else:
+            issues.append(f"{column} | pass")
+
+        # --------- unit
+        column = "unit"
+        valid_unit = {'liter', 'kg', 'pcs', None}
+        unit = ing['unit'].isin(valid_unit).sum()
+
+        if unit != ing.shape[0]:
             issues.append(f"{column} | invalid_format")
         else:
             issues.append(f"{column} | pass")
