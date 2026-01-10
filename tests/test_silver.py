@@ -335,6 +335,83 @@ def test_run():
             f"error_type={type(e).__name__} message={e}"
         )
 
+    # ---------------------------------------------------
+    # --------------------- recipe ----------------------
+    # --------------------------------------------------- 
+
+    try:
+        logging.info("-" * 21)
+
+        table = "recipe"
+        issues = []
+
+        step = "LOAD"
+        logging.info(f"{layer} | {domain} | {step}    | {table}")
+        recp = pd.read_parquet(SILVER_DIR / "erp" / "recipe.parquet")
+
+        step = "QUALITY"
+
+        # --------- item_id
+        column = "items_id"
+        inv_fmt = recp['item_id'].str.match(r'^I\d{4}$').sum()
+        null = recp['item_id'][recp['item_id'].isnull()].sum()
+        menu = pd.read_parquet(SILVER_DIR / "erp" /"menu_items.parquet")
+        inv_id = recp['item_id'].isin(menu['item_id']).sum()
+
+        check = 0
+        if inv_fmt != recp.shape[0]:
+            issues.append(f"{column} | invalid_format")
+            check = check + 1
+        if null != 0:
+            issues.append(f"{column} | null_values")
+            check = check + 1
+        if inv_id != recp.shape[0]:
+            issues.append(f"{column} | invalid")
+            check = check + 1
+        if check == 0:
+            issues.append(f"{column} | pass")
+
+        # --------- ingredient_id
+        column = "ingredient_id"
+        inv_fmt = recp['ingredient_id'].str.match(r'^ING\d{3}$').sum()
+        null = recp['ingredient_id'][recp['ingredient_id'].isnull()].sum()
+        ing = pd.read_parquet(SILVER_DIR / "erp" /"ingredients.parquet")
+        inv_id = recp['ingredient_id'].isin(ing['ingredient_id']).sum()
+
+        check = 0
+        if inv_fmt != recp.shape[0]:
+            issues.append(f"{column} | invalid_format")
+            check = check + 1
+        if null != 0:
+            issues.append(f"{column} | null_values")
+            check = check + 1
+        if inv_id != recp.shape[0]:
+            issues.append(f"{column} | invalid")
+            check = check + 1
+        if check == 0:
+            issues.append(f"{column} | pass")
+
+        # --------- quantity_required
+        column = "selling_price"
+        df = recp[recp['quantity_required'].notna()]
+        quantity = df[(df['quantity_required'] > 0) & (df['quantity_required'] < 1)].shape[0]
+        if quantity != df.shape[0]:
+            issues.append(f"{column} | invalid")
+        else:
+            issues.append(f"{column} | pass")
+
+        for issue in issues:
+            if " pass" in issue.split("|"):
+                logging.info(f"{layer} | {domain} | {step} | {table} | {issue}")
+            else:
+                logging.warning(f"{layer} | {domain} | {step} | {table} | {issue}")
+
+    except Exception as e:
+        logging.exception(
+            f"{layer} | {domain} | {step} | {table} | {column} | "
+            f"error_type={type(e).__name__} message={e}"
+        )
+
 
 
 if __name__ == "__main__":
