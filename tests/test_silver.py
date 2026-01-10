@@ -412,6 +412,91 @@ def test_run():
             f"error_type={type(e).__name__} message={e}"
         )
 
+    # ---------------------------------------------------
+    # ------------------- restaurants -------------------
+    # --------------------------------------------------- 
+
+    try:
+        logging.info("-" * 21)
+
+        table = "restaurants"
+        issues = []
+
+        step = "LOAD"
+        logging.info(f"{layer} | {domain} | {step}    | {table}")
+        res = pd.read_parquet(SILVER_DIR / "erp" / "restaurants.parquet")
+
+        step = "QUALITY"
+
+        # --------- restaurants_id
+        column = "restaurant_id"
+        inv_fmt = res["restaurant_id"].str.match(r'^R\d{3}$').sum()
+        dup = res["restaurant_id"].duplicated().sum()
+        null = res["restaurant_id"][res["restaurant_id"].isnull()].sum()
+
+        check = 0
+        if inv_fmt != res.shape[0]:
+            issues.append(f"{column} | invalid_format")
+            check = check + 1
+        if dup != 0:
+            issues.append(f"{column} | duplicate_values")
+            check = check + 1
+        if null != 0:
+            issues.append(f"{column} | null_values")
+            check = check + 1
+        if check == 0:
+            issues.append(f"{column} | pass")
+
+        # --------- restaurants_name 
+        column = "restaurant_name"
+        inv_fmt = res["restaurant_name"].str.match(r'^Restaurant_([1-9][0-9]{0,2}|500)$').sum()
+
+        if inv_fmt != res.shape[0]:
+            issues.append(f"{column} | invalid_format")
+        else:
+            issues.append(f"{column} | pass")
+
+        # --------- city
+        column = "city"
+        valid_city = {'Delhi', 'Mumbai', 'Bangalore', 'Pune', 'Hyderabad', None}
+        city = res['city'].isin(valid_city).sum()
+        if city != res.shape[0]:
+            issues.append(f"{column} | invalid")
+        else:
+            issues.append(f"{column} | pass")
+
+        # --------- restaurant_type
+        column = "restaurant_type"
+        valid_res_type = {'Fine Dining', 'Cafe', 'Casual Dining', 'Fast Food','Cloud Kitchen', None}
+        res_type = res['restaurant_type'].isin(valid_res_type).sum()
+        if res_type != res.shape[0]:
+            issues.append(f"{column} | invalid")
+        else:
+            issues.append(f"{column} | pass")
+
+        # --------- open_date
+        column = "open_date"
+        df = res[res['open_date'].notna()]
+        min_date = datetime.datetime(2018,1,1)
+        max_date = datetime.datetime.now().strftime("%Y-%m-%d")
+        open_date = df['open_date'][(df['open_date'] > min_date) & (df['open_date'] < max_date)].count()
+        if open_date != df.shape[0]:
+            issues.append(f"{column} | invalid_date")
+        else:
+            issues.append(f"{column} | pass")
+
+        for issue in issues:
+            if " pass" in issue.split("|"):
+                logging.info(f"{layer} | {domain} | {step} | {table} | {issue}")
+            else:
+                logging.warning(f"{layer} | {domain} | {step} | {table} | {issue}")
+
+    except Exception as e:
+        logging.exception(
+            f"{layer} | {domain} | {step} | {table} | {column} | "
+            f"error_type={type(e).__name__} message={e}"
+        )
+
 
 
 if __name__ == "__main__":
