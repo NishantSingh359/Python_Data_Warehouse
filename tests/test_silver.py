@@ -33,14 +33,11 @@ def test_run():
     # ------------------- suppliers ---------------------
     # --------------------------------------------------- 
 
-    table = "suppliers"
-    issues = []
-
     try:
-
         logging.info("-" * 21)
 
         table = "suppliers"
+        column = "----"
         issues = []
 
         step = "LOAD"
@@ -116,7 +113,7 @@ def test_run():
 
     except Exception as e:
         logging.exception(
-            f"{layer} | {domain} | {step} | {table} | "
+            f"{layer} | {domain} | {step} | {table} | {column} |"
             f"error_type={type(e).__name__} message={e}"
         )
 
@@ -124,14 +121,11 @@ def test_run():
     # ------------------ ingredients --------------------
     # --------------------------------------------------- 
 
-    table = "suppliers"
-    issues = []
-
     try:
-
         logging.info("-" * 21)
 
         table = "ingredients"
+        column = "----"
         issues = []
 
         step = "LOAD"
@@ -185,7 +179,76 @@ def test_run():
 
     except Exception as e:
         logging.exception(
-            f"{layer} | {domain} | {step} | {table} | "
+            f"{layer} | {domain} | {step} | {table} | {column} | "
+            f"error_type={type(e).__name__} message={e}"
+        )
+
+    # ---------------------------------------------------
+    # -------------- supplier_ingredients ---------------
+    # --------------------------------------------------- 
+
+    try:
+        logging.info("-" * 21)
+
+        table = "supplier_ingredients"
+        column = "----"
+        issues = []
+
+        step = "LOAD"
+        logging.info(f"{layer} | {domain} | {step}    | {table}")
+        sup_ing = pd.read_parquet(SILVER_DIR / "erp" / "supplier_ingredient.parquet")
+
+        step = "QUALITY"
+
+        # --------- supplier_id
+        column = "supplier_id"
+        inv_fmt = sup_ing['supplier_id'].str.match(r'^S\d{4}$').sum()
+        null = sup_ing['supplier_id'][sup_ing['supplier_id'].isnull()].sum()
+        sup = pd.read_parquet(SILVER_DIR / "erp" / "suppliers.parquet")
+        inv_id = sup_ing['supplier_id'].isin(sup['supplier_id']).sum()
+
+        check = 0
+        if inv_fmt != sup_ing.shape[0]:
+            issues.append(f"{column} | invalid_format")
+            check = check + 1
+        if null != 0:
+            issues.append(f"{column} | null_values")
+            check = check + 1
+        if inv_id != sup_ing.shape[0]:
+            issues.append(f"{column} | invalid")
+            check = check + 1
+        if check == 0:
+            issues.append(f"{column} | pass")
+
+        # --------- ingredient_id
+        column = "ingredient_id"
+        inv_fmt = sup_ing['ingredient_id'].str.match(r'^ING\d{3}$').sum()
+        null = sup_ing['ingredient_id'][sup_ing['ingredient_id'].isnull()].sum()
+        ing = pd.read_parquet(SILVER_DIR / "erp" /"ingredients.parquet")
+        inv_id = sup_ing['ingredient_id'].isin(ing['ingredient_id']).sum()
+
+        check = 0
+        if inv_fmt != sup_ing.shape[0]:
+            issues.append(f"{column} | invalid_format")
+            check = check + 1
+        if null != 0:
+            issues.append(f"{column} | null_values")
+            check = check + 1
+        if inv_id != sup_ing.shape[0]:
+            issues.append(f"{column} | invalid")
+            check = check + 1
+        if check == 0:
+            issues.append(f"{column} | pass")
+
+        for issue in issues:
+            if " pass" in issue.split("|"):
+                logging.info(f"{layer} | {domain} | {step} | {table} | {issue}")
+            else:
+                logging.warning(f"{layer} | {domain} | {step} | {table} | {issue}")
+
+    except Exception as e:
+        logging.exception(
+            f"{layer} | {domain} | {step} | {table} | {column} | "
             f"error_type={type(e).__name__} message={e}"
         )
 
