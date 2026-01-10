@@ -83,7 +83,7 @@ def test_run():
         else:
             issues.append(f"{column} | pass")
 
-        # --------- city
+        # --------- phone
         column = "phone"
         df = sup[sup['phone'].notnull()]['phone']
         inv_phone = df.str.match(r'^\+91\d{10}$')
@@ -196,7 +196,7 @@ def test_run():
 
         step = "LOAD"
         logging.info(f"{layer} | {domain} | {step}    | {table}")
-        sup_ing = pd.read_parquet(SILVER_DIR / "erp" / "supplier_ingredient.parquet")
+        sup_ing = pd.read_parquet(SILVER_DIR / "erp" / "supplier_ingredients.parquet")
 
         step = "QUALITY"
 
@@ -251,6 +251,91 @@ def test_run():
             f"{layer} | {domain} | {step} | {table} | {column} | "
             f"error_type={type(e).__name__} message={e}"
         )
+
+    # ---------------------------------------------------
+    # ------------------- menu_items --------------------
+    # --------------------------------------------------- 
+
+    try:
+        logging.info("-" * 21)
+
+        table = "menu_items"
+        issues = []
+
+        step = "LOAD"
+        logging.info(f"{layer} | {domain} | {step}    | {table}")
+        menu = pd.read_parquet(SILVER_DIR / "erp" / "menu_items.parquet")
+
+        step = "QUALITY"
+
+        # --------- item_id
+        column = "item_id"
+        inv_fmt = menu["item_id"].str.match(r'^I\d{4}$').sum()
+        dup = menu["item_id"].duplicated().sum()
+        null = menu["item_id"][menu["item_id"].isnull()].sum()
+
+        check = 0
+        if inv_fmt != menu.shape[0]:
+            issues.append(f"{column} | invalid_format")
+            check = check + 1
+        if dup != 0:
+            issues.append(f"{column} | duplicate_values")
+            check = check + 1
+        if null != 0:
+            issues.append(f"{column} | null_values")
+            check = check + 1
+        if check == 0:
+            issues.append(f"{column} | pass")
+
+        # --------- item_name 
+        column = "item_name"
+        inv_fmt = menu["item_name"].str.match(r'^Menu_Item_([1-9][0-9]{0,2}|500)$').sum()
+
+        if inv_fmt != menu.shape[0]:
+            issues.append(f"{column} | invalid_format")
+        else:
+            issues.append(f"{column} | pass")
+
+        # --------- category
+        column = "category"
+        valid_category = {'Starter', 'Dessert', 'Beverage', 'Main Course', None}
+        category = menu['category'].isin(valid_category).sum()
+        if category != menu.shape[0]:
+            issues.append(f"{column} | invalid")
+        else:
+            issues.append(f"{column} | pass")
+
+        # --------- cuisine
+        column = "cuisine"
+        valid_cuisine = {'Italian', 'Indian', 'Chinese', 'Fast Food', 'Continental', None}
+        cuisine = menu['cuisine'].isin(valid_cuisine).sum()
+        if cuisine != menu.shape[0]:
+            issues.append(f"{column} | invalid")
+        else:
+            issues.append(f"{column} | pass")
+
+        # --------- selling_price
+        column = "selling_price"
+        df = menu[menu['selling_price'].notna()]
+        price = df[(df['selling_price']> 0) & (df['selling_price']< 600)].shape[0]
+        if price != df.shape[0]:
+            issues.append(f"{column} | invalid")
+        else:
+            issues.append(f"{column} | pass")
+
+        for issue in issues:
+            if " pass" in issue.split("|"):
+                logging.info(f"{layer} | {domain} | {step} | {table} | {issue}")
+            else:
+                logging.warning(f"{layer} | {domain} | {step} | {table} | {issue}")
+
+    except Exception as e:
+        logging.exception(
+            f"{layer} | {domain} | {step} | {table} | {column} | "
+            f"error_type={type(e).__name__} message={e}"
+        )
+
+
 
 if __name__ == "__main__":
     test_run()
