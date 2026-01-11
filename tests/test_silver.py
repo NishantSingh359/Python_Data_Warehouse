@@ -682,5 +682,101 @@ def test_run():
             f"error_type={type(e).__name__} message={e}"
         )
 
+        # ---------------------------------------------------
+    # --------------- delivery_partners -----------------
+    # --------------------------------------------------- 
+
+    try:
+        logging.info("-" * 21)
+
+        table = "employees"
+        issues = []
+
+        step = "LOAD"
+        logging.info(f"{layer} | {domain} | {step}    | {table}")
+        emp = pd.read_parquet(SILVER_DIR / "erp" / "employees.parquet")
+
+        step = "QUALITY"
+
+        # ----------- emp_id
+        column = "emp_id"
+        emp_id = emp['emp_id'].str.match(r'E\d{5}$').sum()
+        null = emp['emp_id'].isnull().sum()
+        dup = emp['emp_id'].duplicated().sum()
+
+        check = 0
+        if emp_id != emp.shape[0]:
+            issues.append(f"{column} | invalid_format")
+            check = check + 1
+        if null != 0:
+            issues.append(f"{column} | null_values")
+            check = check + 1
+        if dup != 0:
+            issues.append(f"{column} | duplicate_values")
+            check = check + 1
+        if check == 0:
+            issues.append(f"{column} | pass")
+
+        # ----------- restaurant_id
+        column = "restaurant_id"
+        rest_id = emp['restaurant_id'][emp['restaurant_id'].notna()]
+        res_id = rest_id.str.match(r'R\d{3}$').sum()
+        res = pd.read_parquet(SILVER_DIR / "erp" / "restaurants.parquet")
+        id_exist = rest_id.isin(res['restaurant_id']).sum()
+
+        check = 0
+        if res_id != rest_id.shape[0]:
+            issues.append(f"{column} | invalid_format")
+            check = check +1
+        if id_exist != rest_id.shape[0]:
+            issues.append(f"{column} | invalid")
+            check = check +1
+        if check == 0:
+            issues.append(f"{column} | pass")
+
+        # ----------- role
+        column = "role"
+        valid_role = {'helper', 'manager', 'cashier', 'chef', None}
+        role = emp['role'].isin(valid_role).sum()
+
+        if role != emp.shape[0]:
+            issues.append(f"{column} | invalid")
+        else:
+            issues.append(f"{column} | pass")
+
+        # ----------- hire_date
+        column = "hire_date"
+        hire_date = emp['hire_date'][emp['hire_date'].notna()]
+        min_date = datetime.datetime(2019, 1, 1)
+        max_date = datetime.datetime.now()
+        date = hire_date[(hire_date > min_date) & (hire_date < max_date)].count()
+
+        if date != hire_date.shape[0]:
+            issues.append(f"{column} | invalid_date")
+        else:
+            issues.append(f"{column} | pass")
+
+        # ----------- salary
+        column = "salary"
+        salary = emp['salary'][emp['salary'].notna()]
+        slry = salary[(salary > 0) & (salary < 1000000)].count()
+
+        if slry != salary.shape[0]:
+            issues.append(f"{column} | invalid_date")
+        else:
+            issues.append(f"{column} | pass")
+
+        for issue in issues:
+            if " pass" in issue.split("|"):
+                logging.info(f"{layer} | {domain} | {step} | {table} | {issue}")
+            else:
+                logging.warning(f"{layer} | {domain} | {step} | {table} | {issue}")
+
+    except Exception as e:
+        logging.exception(
+            f"{layer} | {domain} | {step} | {table} | {column} | "
+            f"error_type={type(e).__name__} message={e}"
+        )
+
 if __name__ == "__main__":
     test_run()
