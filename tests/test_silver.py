@@ -792,6 +792,7 @@ def test_run():
 
     logging.info("-" * 21)
     domain = "CRM"
+    crm_time1 = datetime.datetime.now()
     logging.info(f"{layer} | {domain} | DOMAIN_START")
 
     # ---------------------------------------------------
@@ -1092,7 +1093,7 @@ def test_run():
         logging.info("-" * 21)
 
         layer = "SILVER"
-        domain = "ERP"
+        domain = "CRM"
 
         table = "order_items"
         issues = []
@@ -1198,12 +1199,118 @@ def test_run():
             else:
                 logging.warning(f"{layer} | {domain} | {step} | {table} | {issue}")
 
+    except Exception as e:
+        logging.exception(
+            f"{layer} | {domain} | {step} | {table} | {column} | "
+            f"error_type={type(e).__name__} message={e}"
+        )
+
+
+    # ---------------------------------------------------
+    # ------------------- kitchen_logs ------------------
+    # --------------------------------------------------- 
+
+    try:
+        logging.info("-" * 21)
+
+        layer = "SILVER"
+        domain = "CRM"
+
+        table = "kitchen_logs"
+        issues = []
+
+        step = "LOAD"
+        logging.info(f"{layer} | {domain} | {step}    | {table}")
+        kic = pd.read_parquet(SILVER_DIR / "crm" / "kitchen_logs.parquet")
+
+        step = "QUALITY"
+
+        # ----------- kitchen_log_id
+        column = "kitchen_log_id"
+        fmt = kic['kitchen_log_id'].str.match(r'^K\d{8}$').sum()
+        nul = kic['kitchen_log_id'].isnull().sum()
+        dup = kic['kitchen_log_id'].duplicated().sum()
+
+        check = 0
+        if fmt != kic.shape[0]:
+            issues.append(f"{column} | invalid_format")
+            check = check + 1
+        if nul != 0:
+            issues.append(f"{column} | null_values")
+            check = check + 1
+        if dup != 0:
+            issues.append(f"{column} | duplicate_values")
+            check = check + 1
+        if check == 0:
+            issues.append(f"{column} | pass")
+
+        # ----------- order_item_id
+        column = "order_item_id"
+        ord_itm = pd.read_parquet(SILVER_DIR / "crm" / "order_items.parquet")
+        inv = kic['order_item_id'].isin(ord_itm['order_item_id']).sum()
+        nul = kic['order_item_id'].isnull().sum()
+        dup = kic['order_item_id'].duplicated().sum()
+
+        check = 0
+        if inv != kic.shape[0]:
+            issues.append(f"{column} | invalid_format")
+            check = check + 1
+        if nul != 0:
+            issues.append(f"{column} | null_values")
+            check = check + 1
+        if dup != 0:
+            issues.append(f"{column} | duplicate_values")
+            check = check + 1
+        if check == 0:
+            issues.append(f"{column} | pass")
+
+        # ----------- order_item_id
+        column = "chef_id"
+        emp = pd.read_parquet(SILVER_DIR / "erp" / "employees.parquet")
+        valid_chef_id = emp['emp_id'][emp['role'] == "chef"]
+        chef_ids = kic['chef_id'][kic['chef_id'].notnull()]
+        chef_id = chef_ids.isin(valid_chef_id).sum()
+
+        if chef_id != chef_ids.shape[0]:
+            issues.append(f"{column} | invalid")
+        else:
+            issues.append(f"{column} | pass")
+
+        # ----------- started_at
+        column = "started_at"
+        start_at = kic['started_at'][kic['started_at'] > kic['completed_at']].count()
+
+        if start_at != 0:
+            issues.append(f"{column} | invalid_format")
+        else:
+            issues.append(f"{column} | pass")
+
+        # ----------- completed_at
+        column = "completed_at"
+        comp_at = kic['completed_at'][kic['completed_at'] < kic['started_at']].count()
+
+        if comp_at != 0:
+            issues.append(f"{column} | invalid_format")
+        else:
+            issues.append(f"{column} | pass")
+
+        for issue in issues:
+            if " pass" in issue.split("|"):
+                logging.info(f"{layer} | {domain} | {step} | {table} | {issue}")
+            else:
+                logging.warning(f"{layer} | {domain} | {step} | {table} | {issue}")
 
     except Exception as e:
         logging.exception(
             f"{layer} | {domain} | {step} | {table} | {column} | "
             f"error_type={type(e).__name__} message={e}"
         )
+    
+    logging.info('-' * 21)
+    crm_time2 = datetime.datetime.now()
+    crm_time = crm_time2 - crm_time1
+    crm_time = round(crm_time.total_seconds(),2)
+    logging.info(f"{layer} | {domain} | DOMAIN_END | duration_sec={crm_time}")
 
 if __name__ == "__main__":
     test_run()
