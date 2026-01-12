@@ -1083,5 +1083,127 @@ def test_run():
             f"error_type={type(e).__name__} message={e}"
         )
 
+
+    # ---------------------------------------------------
+    # ------------------- order_items -------------------
+    # --------------------------------------------------- 
+
+    try:
+        logging.info("-" * 21)
+
+        layer = "SILVER"
+        domain = "ERP"
+
+        table = "order_items"
+        issues = []
+
+        step = "LOAD"
+        logging.info(f"{layer} | {domain} | {step}    | {table}")
+        ord_itm = pd.read_parquet(SILVER_DIR / "crm" / "order_items.parquet")
+
+        step = "QUALITY"
+
+        # ----------- review_id
+        column = "order_item_id"
+        fmt = ord_itm['order_item_id'].str.match(r'^OI\d{8}$').sum()
+        nul = ord_itm['order_item_id'].isnull().sum()
+        dup = ord_itm['order_item_id'].duplicated().sum()
+
+        check = 0
+        if fmt != ord_itm.shape[0]:
+            issues.append(f"{column} | invalid_format")
+            check = check + 1
+        if nul != 0:
+            issues.append(f"{column} | null_values")
+            check = check + 1
+        if dup != 0:
+            issues.append(f"{column} | duplicate_values")
+            check = check + 1
+        if check == 0:
+            issues.append(f"{column} | pass")
+
+        # ----------- order_id
+        column = "order_id"
+        ordr = pd.read_parquet(SILVER_DIR / "crm" / "orders.parquet")
+        ordr_ids = ord_itm['order_id'][ord_itm['order_id'].notna()]
+        ordr_id = ordr_ids.isin(ordr['order_id']).sum()
+
+        if ordr_id != ordr_ids.shape[0]:
+            issues.append(f"{column} | invalid")
+        else:
+            issues.append(f"{column} | pass")
+
+        # ----------- item_id
+        column = "item_id"
+        menu = pd.read_parquet(SILVER_DIR / "erp" / "menu_items.parquet")
+        item_ids = menu['item_id'][menu['item_id'].notna()]
+        item_id = item_ids.isin(menu['item_id']).sum()
+
+        if item_id != item_ids.shape[0]:
+            issues.append(f"{column} | invalid")
+        else:
+            issues.append(f"{column} | pass")
+
+        # ----------- quantity
+        column = "quantity"
+        qty = ord_itm['quantity'][ord_itm['quantity'].notna()]
+        vld = qty[(qty <= 0) | (qty > 50)].count()
+        cal = ord_itm['quantity'][ord_itm['quantity'] != ord_itm['line_total']/ord_itm['unit_price']].count()
+
+        check = 0
+        if vld != 0:
+            issues.append(f"{column} | invalid")
+            check = check + 1
+        if cal != 0:
+            issues.append(f"{column} | wrong_values")
+            check = check + 1
+        if check == 0:
+            issues.append(f"{column} | pass")
+
+        # ----------- unit_price
+        column = "unit_price"
+        price = ord_itm['quantity'][ord_itm['quantity'].notna()]
+        price = price[(price <= 0) | (price > 5000)].count()
+        cal = ord_itm['unit_price'][ord_itm['unit_price'] != ord_itm['line_total']/ord_itm['quantity']].count()
+
+        check = 0
+        if price != 0:
+            issues.append(f"{column} | invalid")
+            check = check + 1
+        if cal != 0:
+            issues.append(f"{column} | wrong_values")
+            check = check + 1
+        if check == 0:
+            issues.append(f"{column} | pass")
+
+        # ----------- line_total
+        column = "line_total"
+        total = ord_itm['line_total'][ord_itm['line_total'].notna()]
+        total = total[(total <= 0) | (total > 5000)].count()
+        cal = ord_itm['line_total'][ord_itm['line_total'] != (ord_itm['unit_price'] * ord_itm['quantity'])].count()
+
+        check = 0
+        if total != 0:
+            issues.append(f"{column} | invalid")
+            check = check + 1
+        if cal != 0:
+            issues.append(f"{column} | wrong_values")
+            check = check + 1
+        if check == 0:
+            issues.append(f"{column} | pass")
+
+        for issue in issues:
+            if " pass" in issue.split("|"):
+                logging.info(f"{layer} | {domain} | {step} | {table} | {issue}")
+            else:
+                logging.warning(f"{layer} | {domain} | {step} | {table} | {issue}")
+
+
+    except Exception as e:
+        logging.exception(
+            f"{layer} | {domain} | {step} | {table} | {column} | "
+            f"error_type={type(e).__name__} message={e}"
+        )
+
 if __name__ == "__main__":
     test_run()
