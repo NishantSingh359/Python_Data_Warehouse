@@ -1002,5 +1002,86 @@ def test_run():
             f"error_type={type(e).__name__} message={e}"
         )
 
+    # ---------------------------------------------------
+    # --------------- customer_reviews ------------------
+    # --------------------------------------------------- 
+
+    try:
+        logging.info("-" * 21)
+
+        table = "customer_reviews"
+        issues = []
+
+        step = "LOAD"
+        logging.info(f"{layer} | {domain} | {step}    | {table}")
+        rev = pd.read_parquet(SILVER_DIR / "crm" / "customer_reviews.parquet")
+
+        step = "QUALITY"
+
+        # ----------- review_id
+        column = "review_id"
+        fmt = rev['review_id'].str.match(r'^RV_O\d{7}$').sum()
+        nul = rev['review_id'].isnull().sum()
+        dup = rev['review_id'].duplicated().sum()
+
+        check = 0
+        if fmt != rev.shape[0]:
+            issues.append(f"{column} | invalid_format")
+            check = check +1
+        if nul != 0:
+            issues.append(f"{column} | null_values")
+            check = check +1
+        if dup != 0:
+            issues.append(f"{column} | duplicate_values")
+            check = check +1
+        if check == 0:
+            issues.append(f"{column} | pass")
+
+        # ----------- order_id
+        column = "order_id"
+        ordr = pd.read_parquet(SILVER_DIR / "crm" / "orders.parquet")
+        order_ids = rev['order_id'][rev['order_id'].notna()]
+        order_id = order_ids.isin(ordr['order_id']).count()
+
+        if order_id != order_ids.shape[0]:
+            issues.append(f"{column} | invalid")
+        else:
+            issues.append(f"{column} | pass")
+
+        # ----------- rating
+        column = "rating"
+        rat = rev['rating'][rev['rating'].notna()]
+        valid_rating = {3, 2, 1, 5,4}
+        rating = rat.isin(valid_rating).sum()
+
+        if rating != rat.shape[0]:
+            issues.append(f"{column} | invalid")
+        else:
+            issues.append(f"{column} | pass")
+
+        # ----------- created_at
+        column = "created_at"
+        min_date = datetime.datetime(2018, 1, 1)
+        max_date = datetime.datetime.now()
+        created_at = rev['created_at'][rev['created_at'].notna()]
+        date = created_at[(created_at > min_date) & (created_at < max_date)].count()
+
+        if date != created_at.shape[0]:
+            issues.append(f"{column} | invalid")
+        else:
+            issues.append(f"{column} | pass")
+
+        for issue in issues:
+            if " pass" in issue.split("|"):
+                logging.info(f"{layer} | {domain} | {step} | {table} | {issue}")
+            else:
+                logging.warning(f"{layer} | {domain} | {step} | {table} | {issue}")
+
+    except Exception as e:
+        logging.exception(
+            f"{layer} | {domain} | {step} | {table} | {column} | "
+            f"error_type={type(e).__name__} message={e}"
+        )
+
 if __name__ == "__main__":
     test_run()
