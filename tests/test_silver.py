@@ -883,5 +883,124 @@ def test_run():
             f"error_type={type(e).__name__} message={e}"
         )
 
+
+    # ---------------------------------------------------
+    # -------------------- orders -----------------------
+    # --------------------------------------------------- 
+
+    try:
+        logging.info("-" * 21)
+
+        table = "orders"
+        issues = []
+
+        step = "LOAD"
+        logging.info(f"{layer} | {domain} | {step}    | {table}")
+        ordr = pd.read_parquet(SILVER_DIR / "crm" / "orders.parquet")
+
+        step = "QUALITY"
+
+        # ----------- order_id
+        column = "order_id"
+        fmt = ordr['order_id'].str.match(r'^O\d{7}$').sum()
+        nul = ordr['order_id'].isnull().sum()
+        dup = ordr['order_id'].duplicated().sum()
+
+        check = 0
+        if fmt != ordr.shape[0]:
+            issues.append(f"{column} | invalid_format")
+            check = check + 1
+        if nul != 0:
+            issues.append(f"{column} | null_values")
+            check = check + 1
+        if dup != 0:
+            issues.append(f"{column} | duplicate_values")
+            check = check + 1
+        if check == 0:
+            issues.append(f"{column} | pass")
+
+        # ----------- customer_id
+        column = "customer_id"
+        cust_ids = ordr['customer_id'][ordr['customer_id'].notna()]
+        cust = pd.read_parquet(SILVER_DIR / "crm" / "customers.parquet")
+        cust_id = cust_ids.isin(cust['customer_id']).count()
+
+        if cust_id != cust_ids.shape[0]:
+            issues.append(f"{column} | invalid_format")
+        else:
+            issues.append(f"{column} | pass")
+
+        # ----------- restaurant_id
+        column = "restaurant_id"
+        rest_ids = ordr['restaurant_id'][ordr['restaurant_id'].notna()]
+        res = pd.read_parquet(SILVER_DIR / "erp" / "restaurants.parquet")
+        rest_id = rest_ids.isin(res['restaurant_id']).count()
+
+        if rest_id != rest_ids.shape[0]:
+            issues.append(f"{column} | invalid_format")
+        else:
+            issues.append(f"{column} | pass")
+
+        # ----------- order_datetime
+        column = "order_datetime"
+        ordr_date = ordr['order_datetime'][ordr['order_datetime'].notna()]
+        min_date = datetime.datetime(2018, 1, 1)
+        max_date = datetime.datetime.now()
+        date = ordr_date[(ordr_date > min_date) & (ordr_date < max_date)].count()
+
+        if date != ordr_date.shape[0]:
+            issues.append(f"{column} | invalid_format")
+        else:
+            issues.append(f"{column} | pass")
+
+        # ----------- payment_mode
+        column = "payment_mode"
+        valid_payment_mode = {'wallet', 'upi', 'cash', 'card', None}
+        payment_mode = ordr['payment_mode'].isin(valid_payment_mode).sum()
+        if payment_mode != ordr.shape[0]:
+            issues.append(f"{column} | invalid_format")
+        else:
+            issues.append(f"{column} | pass")
+
+        # ----------- order_status
+        column = "order_status"
+        valid_order_status = {'completed', 'cancelled', None, 'failed'}
+        order_status = ordr['order_status'].isin(valid_order_status).sum()
+        if order_status != ordr.shape[0]:
+            issues.append(f"{column} | invalid_format")
+        else:
+            issues.append(f"{column} | pass")
+
+        # ----------- is_delivery
+        column = "is_delivery"
+        valid_delivery = {'True', 'False', None}
+        delivery = ordr['is_delivery'].isin(valid_delivery).sum()
+        if delivery != ordr.shape[0]:
+            issues.append(f"{column} | invalid_format")
+        else:
+            issues.append(f"{column} | pass")
+
+        # ----------- delivery_partner_id
+        column = "delivery_partner_id"
+        del_part = pd.read_parquet(SILVER_DIR / "erp" / "delivery_partners.parquet")
+        partner_ids = ordr['delivery_partner_id'][(ordr['delivery_partner_id'] != "UNKNOWN") & (ordr['delivery_partner_id'].notna())]
+        partner_id = partner_ids.isin(del_part['delivery_partner_id']).sum()
+        if partner_id != partner_ids.shape[0]:
+            issues.append(f"{column} | invalid_format")
+        else:
+            issues.append(f"{column} | pass")
+
+        for issue in issues:
+            if " pass" in issue.split("|"):
+                logging.info(f"{layer} | {domain} | {step} | {table} | {issue}")
+            else:
+                logging.warning(f"{layer} | {domain} | {step} | {table} | {issue}")
+
+    except Exception as e:
+        logging.exception(
+            f"{layer} | {domain} | {step} | {table} | {column} | "
+            f"error_type={type(e).__name__} message={e}"
+        )
+
 if __name__ == "__main__":
     test_run()
