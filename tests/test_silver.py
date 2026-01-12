@@ -27,6 +27,7 @@ def test_run():
 
     logging.info("-" * 21)
     domain = "ERP"
+    erp_time1 = datetime.datetime.now()
     logging.info(f"{layer} | {domain} | DOMAIN_START")
 
     # ---------------------------------------------------
@@ -682,8 +683,8 @@ def test_run():
             f"error_type={type(e).__name__} message={e}"
         )
 
-        # ---------------------------------------------------
-    # --------------- delivery_partners -----------------
+    # ---------------------------------------------------
+    # ------------------- employees ---------------------
     # --------------------------------------------------- 
 
     try:
@@ -763,6 +764,110 @@ def test_run():
 
         if slry != salary.shape[0]:
             issues.append(f"{column} | invalid_date")
+        else:
+            issues.append(f"{column} | pass")
+
+        for issue in issues:
+            if " pass" in issue.split("|"):
+                logging.info(f"{layer} | {domain} | {step} | {table} | {issue}")
+            else:
+                logging.warning(f"{layer} | {domain} | {step} | {table} | {issue}")
+
+    except Exception as e:
+        logging.exception(
+            f"{layer} | {domain} | {step} | {table} | {column} | "
+            f"error_type={type(e).__name__} message={e}"
+        )
+
+    logging.info("-" * 21)
+    erp_time2 = datetime.datetime.now()
+    erp_time = erp_time2 - erp_time1
+    erp_time = round(erp_time.total_seconds(), 4)
+    logging.info(f"{layer} | {domain} | DOMAIN_END | duration_sec={erp_time}") 
+
+
+    # ===================================================
+    # ===================== CRM =========================
+    # ===================================================
+
+    logging.info("-" * 21)
+    domain = "CRM"
+    logging.info(f"{layer} | {domain} | DOMAIN_START")
+
+    # ---------------------------------------------------
+    # ------------------- customers ---------------------
+    # --------------------------------------------------- 
+
+    try:
+        logging.info("-" * 21)
+
+        table = "customers"
+        issues = []
+
+        step = "LOAD"
+        logging.info(f"{layer} | {domain} | {step}    | {table}")
+        cust = pd.read_parquet(SILVER_DIR / "crm" / "customers.parquet")
+
+        step = "QUALITY"
+
+        # ----------- emp_id
+        column = "customer_id"
+        inv_fmt = cust['customer_id'].str.match(r'^C\d{6}$').sum()
+        null = cust['customer_id'].isnull().sum()
+        dup = cust['customer_id'].duplicated().sum()
+
+        check = 0
+        if inv_fmt != cust.shape[0]:
+            issues.append(f"{column} | invalid_format")
+            check = check + 1
+        if null != 0:
+            issues.append(f"{column} | null_values")
+            check = check + 1
+        if dup != 0:
+            issues.append(f"{column} | duplicate_values")
+            check = check + 1
+        if check == 0:
+            issues.append(f"{column} | pass")
+
+        # ----------- customer_name
+        column = "customer_name"
+        inv_fmt = cust['customer_name'].str.match(r'^Customer_\d+').sum()
+
+        if inv_fmt != cust.shape[0]:
+            issues.append(f"{column} | invalid_format")
+        else:
+            issues.append(f"{column} | pass")
+
+        # ----------- city
+        column = "city"
+        citys = cust['city'][cust['city'].notna()]
+        valid_city = {'hyderabad', 'delhi', 'mumbai', 'bangalore', 'pune', None}
+        city = citys.isin(valid_city).sum()
+
+        if city != citys.shape[0]:
+            issues.append(f"{column} | invalid")
+        else:
+            issues.append(f"{column} | pass")
+
+        # ----------- phone
+        column = "phone"
+        phone_nums = cust['phone'][cust['phone'].notna()]
+        phone_num = phone_nums.str.match(r'^\+91\d{10}$').sum()
+
+        if phone_num != phone_nums.shape[0]:
+            issues.append(f"{column} | invalid")
+        else:
+            issues.append(f"{column} | pass")
+
+        # ----------- created_at
+        column = "created_at"
+        created_at = cust['created_at'][cust['created_at'].notna()]
+        min_date = datetime.datetime(2018, 1, 1)
+        max_date = datetime.datetime.now()
+        date = created_at[(created_at > min_date) & (created_at < max_date)].count()
+
+        if date != created_at.shape[0]:
+            issues.append(f"{column} | invalid")
         else:
             issues.append(f"{column} | pass")
 
