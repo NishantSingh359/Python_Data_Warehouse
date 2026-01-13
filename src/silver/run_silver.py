@@ -5,6 +5,7 @@ import pandas as pd
 import numpy as np
 from pathlib import Path
 
+
 BASE_DIR = Path(__file__).resolve().parents[2]
 RAW_DIR = BASE_DIR / "data" / "raw"
 
@@ -50,7 +51,7 @@ def run():
         table = "suppliers"
 
         step = "LOAD"
-        logging.info(f"{layer} | {domain} | {step} | {table}")
+        logging.info(f"{layer} | {domain} | {step}  | {table}")
         sup = pd.read_csv(RAW_DIR / "erp" / "suppliers.csv.gz")
 
         step = "CLEAN"
@@ -63,12 +64,12 @@ def run():
         supplier_name = supplier_id.replace(r'\D','', regex=True).astype('Int16')
         supplier_name = ('Supplier_' + supplier_name.astype(str)).where(supplier_name.notnull(), np.nan)
 
-        city =          sup['city'].astype(str).str.strip().replace({'nan':np.nan})
+        city =          sup['city'].astype(str).str.strip().str.lower().replace({'nan':np.nan})
 
         phone =         sup['phone'].str.replace('ext.99','').replace(r'\D','', regex=True).str.extract(r'(\d{10}$)')[0].astype('Int64').astype(str)
         phone =         ('+91' + phone).where(phone.str.len()==10, np.nan)
 
-        email =         sup['supplier_name'].str.replace('_','')+'@mail.com'
+        email =         supplier_name.str.lower().str.replace('_','')+'@mail.com'
 
         suppliers = pd.DataFrame({
             'supplier_id':   supplier_id,
@@ -86,14 +87,14 @@ def run():
         logging.info(f"{layer} | {domain} | {step} | {table} | rows_before={before} rows_after={after} dropped={drop} pct={drop_pct}")
 
         step = "SAVE"
-        logging.info(f"{layer} | {domain} | {step} | {table} | target=parquet")
+        logging.info(f"{layer} | {domain} | {step}  | {table} | target=parquet")
         suppliers.to_parquet(SILVER_DIR / "erp" / "suppliers.parquet")
 
         step = "TIME"
         time2 = datetime.datetime.now()
         time = time2 - time1
         time = round(time.total_seconds(), 4)     
-        logging.info(f"{layer} | {domain} | {step} | {table} | duration_sec={time}")        
+        logging.info(f"{layer} | {domain} | {step}  | {table} | duration_sec={time}")        
 
         step = "DQ"
         if drop_pct > 5:
@@ -117,7 +118,7 @@ def run():
         table = "ingredients"
 
         step = "LOAD"
-        logging.info(f"{layer} | {domain} | {step} | {table}")
+        logging.info(f"{layer} | {domain} | {step}  | {table}")
         ing = pd.read_csv(RAW_DIR / "erp" / "ingredients.csv.gz")
 
         step = "CLEAN"
@@ -146,14 +147,14 @@ def run():
         logging.info(f"{layer} | {domain} | {step} | {table} | rows_before={before} rows_after={after} dropped={drop} pct={drop_pct}")
 
         step = "SAVE"
-        logging.info(f"{layer} | {domain} | {step} | {table} | target=parquet")
+        logging.info(f"{layer} | {domain} | {step}  | {table} | target=parquet")
         ingredients.to_parquet(SILVER_DIR / "erp" / "ingredients.parquet")
 
         step = "TIME"
         time2 = datetime.datetime.now()
         time = time2 - time1
         time = round(time.total_seconds(), 4)
-        logging.info(f"{layer} | {domain} | {step} | {table} | duration_sec={time}")
+        logging.info(f"{layer} | {domain} | {step}  | {table} | duration_sec={time}")
 
         step = "DQ"
         if drop_pct > 5:
@@ -177,7 +178,7 @@ def run():
         table = "supplier_ingredients"
 
         step = "LOAD"
-        logging.info(f"{layer} | {domain} | {step} | {table}")
+        logging.info(f"{layer} | {domain} | {step}  | {table}")
         sup_ing = pd.read_csv(RAW_DIR / "erp" / "supplier_ingredients.csv.gz")
 
         step = "CLEAN"
@@ -203,7 +204,7 @@ def run():
             'cost_price':      cost_price
         })
 
-        supplier_ingredients = supplier_ingredients.dropna(subset= 'supplier_id').sort_values(by = 'supplier_id').reset_index().drop('index', axis = 1)
+        supplier_ingredients = supplier_ingredients.dropna(subset= ['supplier_id', 'ingredient_id']).sort_values(by = 'supplier_id').reset_index().drop('index', axis = 1)
 
         before = sup_ing.shape[0]
         after = supplier_ingredients.shape[0]
@@ -212,14 +213,14 @@ def run():
         logging.info(f"{layer} | {domain} | {step} | {table} | rows_before={before} rows_after={after} dropped={drop} pct={drop_pct}")
 
         step = "SAVE"
-        logging.info(f"{layer} | {domain} | {step} | {table} | target=parquet")
+        logging.info(f"{layer} | {domain} | {step}  | {table} | target=parquet")
         supplier_ingredients.to_parquet(SILVER_DIR / "erp" / "supplier_ingredients.parquet")
 
         step = "TIME"
         time2 = datetime.datetime.now()
         time = time2 - time1
         time = round(time.total_seconds(), 4)
-        logging.info(f"{layer} | {domain} | {step} | {table} | duration_sec={time}")
+        logging.info(f"{layer} | {domain} | {step}  | {table} | duration_sec={time}")
 
         step = "DQ"
         if drop_pct > 5:
@@ -243,7 +244,7 @@ def run():
         table = "menu_items"
 
         step = "LOAD"
-        logging.info(f"{layer} | {domain} | {step} | {table}")
+        logging.info(f"{layer} | {domain} | {step}  | {table}")
         menu = pd.read_csv(RAW_DIR / "erp" / "menu_items.csv.gz")
 
         step = "CLEAN"
@@ -257,8 +258,8 @@ def run():
         item_name = item_id.str.replace(r'\D','', regex=True).astype('Int16')
         item_name = ('Menu_Item_' + item_name.astype(str)).where(item_name.notnull(), np.nan)
 
-        category =   menu['category'].str.strip().replace({'nan':np.nan})
-        cuisine =    menu['cuisine'].str.strip().replace({'nan':np.nan})
+        category =   menu['category'].str.strip().replace({'nan':np.nan}).str.lower()
+        cuisine =    menu['cuisine'].str.strip().replace({'nan':np.nan}).str.lower()
 
         selling_price = menu['selling_price'].astype(float)
         selling_price = selling_price.where(selling_price > 0, np.nan)
@@ -280,14 +281,14 @@ def run():
         logging.info(f"{layer} | {domain} | {step} | {table} | rows_before={before} rows_after={after} dropped={drop} pct={drop_pct}")
 
         step = "SAVE"
-        logging.info(f"{layer} | {domain} | {step} | {table} | target=parquet")
+        logging.info(f"{layer} | {domain} | {step}  | {table} | target=parquet")
         menu_items.to_parquet(SILVER_DIR / "erp" / "menu_items.parquet")
 
         step = "TIME"
         time2 = datetime.datetime.now()
         time =  time2 - time1
         time = round(time.total_seconds(), 4)
-        logging.info(f"{layer} | {domain} | {step} | {table} | duration_sec={time}")
+        logging.info(f"{layer} | {domain} | {step}  | {table} | duration_sec={time}")
 
         step = "DQ"
         if drop_pct > 5:
@@ -311,7 +312,7 @@ def run():
         table = "recipe"
 
         step = "LOAD"
-        logging.info(f"{layer} | {domain} | {step} | {table}")
+        logging.info(f"{layer} | {domain} | {step}  | {table}")
         recp = pd.read_csv(RAW_DIR / "erp" / "recipe.csv.gz")
 
         step = "CLEAN"
@@ -338,7 +339,7 @@ def run():
             'quantity_required':quantity_required
         })
 
-        recipe = recipe.dropna(subset = 'item_id').sort_values(by = 'item_id').reset_index().drop('index', axis = 1)
+        recipe = recipe.dropna(subset = ['item_id', 'ingredient_id']).sort_values(by = 'item_id').reset_index().drop('index', axis = 1)
 
         before = recp.shape[0]
         after = recipe.shape[0]
@@ -347,14 +348,14 @@ def run():
         logging.info(f"{layer} | {domain} | {step} | {table} | rows_before={before} rows_after={after} dropped={drop} pct={drop_pct}")
 
         step = "SAVE"
-        logging.info(f"{layer} | {domain} | {step} | {table} | target=parquet")
+        logging.info(f"{layer} | {domain} | {step}  | {table} | target=parquet")
         recipe.to_parquet(SILVER_DIR / "erp" / "recipe.parquet")
 
         step = "TIME"
         time2 = datetime.datetime.now()
         time = time2 - time1
         time = round(time.total_seconds(), 4)
-        logging.info(f"{layer} | {domain} | {step} | {table} | duration_sec={time}")
+        logging.info(f"{layer} | {domain} | {step}  | {table} | duration_sec={time}")
 
         step = "DQ"
         if drop_pct > 5:
@@ -378,7 +379,7 @@ def run():
         table = "restaurants"
 
         step = "LOAD"
-        logging.info(f"{layer} | {domain} | {step} | {table}")
+        logging.info(f"{layer} | {domain} | {step}  | {table}")
         res = pd.read_csv(RAW_DIR / "erp" / "restaurants.csv.gz")
 
         step = "CLEAN"
@@ -392,8 +393,8 @@ def run():
         restaurant_name = restaurant_id.replace(r'\D','',regex=True).astype('Int16')
         restaurant_name = ('Restaurant_'+restaurant_name.astype(str)).where(restaurant_id.notnull(),np.nan)
 
-        city =            res['city'].str.strip()
-        restaurant_type = res['restaurant_type'].str.strip()
+        city =            res['city'].str.strip().str.lower()
+        restaurant_type = res['restaurant_type'].str.strip().str.lower()
         open_date =       pd.to_datetime(res['open_date'], format= '%Y-%m-%d %H:%M:%S', errors= 'coerce')
 
         restaurants = pd.DataFrame({
@@ -413,14 +414,14 @@ def run():
         logging.info(f"{layer} | {domain} | {step} | {table} | rows_before={before} rows_after={after} dropped={drop} pct={drop_pct}")
 
         step = "SAVE"
-        logging.info(f"{layer} | {domain} | {step} | {table} | target=parquet")
+        logging.info(f"{layer} | {domain} | {step}  | {table} | target=parquet")
         restaurants.to_parquet(SILVER_DIR / "erp" / "restaurants.parquet")
 
         step = "TIME"
         time2 = datetime.datetime.now()
         time = time2 - time1
         time = round(time.total_seconds(), 4)
-        logging.info(f"{layer} | {domain} | {step} | {table} | duration_sec={time}")
+        logging.info(f"{layer} | {domain} | {step}  | {table} | duration_sec={time}")
 
         step = "DQ"        
         if drop_pct > 5:
@@ -444,7 +445,7 @@ def run():
         table = "inventory"
 
         step = "LOAD"
-        logging.info(f"{layer} | {domain} | {step} | {table}")
+        logging.info(f"{layer} | {domain} | {step}  | {table}")
         inv = pd.read_csv(RAW_DIR / "erp" / "inventory.csv.gz")
 
         step = "CLEAN"
@@ -463,7 +464,7 @@ def run():
         ingredient_id =   ingredient_id.where(ingredient_id.isin(ingredients['ingredient_id']), np.nan)
 
         stock_qty =       inv['stock_qty'].astype(str).str.strip().astype(float)
-        stock_qty =       stock_qty.where(stock_qty > 0, np.nan)
+        stock_qty =       stock_qty.where((stock_qty > 0) & (stock_qty < 1000), np.nan)
 
         reorder_level =   inv['reorder_level'].astype(str).str.strip().astype(float)
         reorder_level =   reorder_level.where(reorder_level > 0, np.nan)
@@ -488,14 +489,14 @@ def run():
         logging.info(f"{layer} | {domain} | {step} | {table} | rows_before={before} rows_after={after} dropped={drop} pct={drop_pct}")
 
         step = "SAVE"
-        logging.info(f"{layer} | {domain} | {step} | {table} | target=parquet")
+        logging.info(f"{layer} | {domain} | {step}  | {table} | target=parquet")
         inventory.to_parquet(SILVER_DIR / "erp" / "inventory.parquet")
 
         step = "TIME"
         time2 = datetime.datetime.now()
         time = time2 - time1
         time = round(time.total_seconds(), 4)
-        logging.info(f"{layer} | {domain} | {step} | {table} | duration_sec={time}")
+        logging.info(f"{layer} | {domain} | {step}  | {table} | duration_sec={time}")
 
         step = "DQ"
         if drop_pct > 5:
@@ -519,7 +520,7 @@ def run():
         table = "delivery_partners"
 
         step = "LOAD"
-        logging.info(f"{layer} | {domain} | {step} | {table}")
+        logging.info(f"{layer} | {domain} | {step}  | {table}")
         del_part = pd.read_csv(RAW_DIR / "erp" / "delivery_partners.csv.gz")
 
         step = "CLEAN"
@@ -557,14 +558,14 @@ def run():
         logging.info(f"{layer} | {domain} | {step} | {table} | rows_before={before} rows_after={after} dropped={drop} pct={drop_pct}")
 
         step = "SAVE"
-        logging.info(f"{layer} | {domain} | {step} | {table} | target=parquet")
+        logging.info(f"{layer} | {domain} | {step}  | {table} | target=parquet")
         delivery_partners.to_parquet(SILVER_DIR / "erp" / "delivery_partners.parquet")
 
         step = "TIME"
         time2 = datetime.datetime.now()
         time = time2 - time1
         time = round(time.total_seconds(), 4)
-        logging.info(f"{layer} | {domain} | {step} | {table} | duration_sec={time}")
+        logging.info(f"{layer} | {domain} | {step}  | {table} | duration_sec={time}")
 
         step = "DQ"
         if drop_pct > 5:
@@ -588,7 +589,7 @@ def run():
         table = "employees"
 
         step = "LOAD"
-        logging.info(f"{layer} | {domain} | {step} | {table}")
+        logging.info(f"{layer} | {domain} | {step}  | {table}")
         emp = pd.read_csv(RAW_DIR / "erp" / "employees.csv.gz")
 
         step = "CLEAN"
@@ -626,15 +627,15 @@ def run():
         drop_pct = round((before - after) / before * 100, 2)
         logging.info(f"{layer} | {domain} | {step} | {table} | rows_before={before} rows_after={after} dropped={drop} pct={drop_pct}")
 
-        step = "SAVE"
-        logging.info(f"{layer} | {domain} | {step} | {table} | target=parquet")
+        step = "SAVE" 
+        logging.info(f"{layer} | {domain} | {step}  | {table} | target=parquet")
         employees.to_parquet(SILVER_DIR / "erp" / "employees.parquet")
 
         step = "TIME"
         time2 = datetime.datetime.now()
         time =  time2 - time1
         time = round(time.total_seconds(), 4)
-        logging.info(f"{layer} | {domain} | {step} | {table} | duration_sec={time}")
+        logging.info(f"{layer} | {domain} | {step}  | {table} | duration_sec={time}")
         
         step = "DQ"
         if drop_pct > 5:
@@ -675,7 +676,7 @@ def run():
         table = "customers"
 
         step = "LOAD"
-        logging.info(f"{layer} | {domain} | {step} | {table}")
+        logging.info(f"{layer} | {domain} | {step}  | {table}")
         cust = pd.read_csv(RAW_DIR / "crm" / "customers.csv.gz")
 
         step = "CLEAN"
@@ -688,7 +689,7 @@ def run():
         customer_name = customer_id.str.replace(r'\D','', regex=True).astype('Int32')
         customer_name = ('Customer_' + customer_name.astype(str)).where(customer_name.notnull(), np.nan)
 
-        city =          cust['city'].str.strip().str.title().replace({'nan':np.nan})
+        city =          cust['city'].str.strip().replace({'nan':np.nan}).str.lower()
 
         phone =         cust['phone'].str.replace('ext.99','').replace(r'\D','', regex=True).str.extract(r'(\d{10}$)')[0].astype('Int64').astype(str)
         phone =         ('+91' + phone).where(phone.str.len() == 10, np.nan)
@@ -713,14 +714,14 @@ def run():
         logging.info(f"{layer} | {domain} | {step} | {table} | rows_before={before} rows_after={after} dropped={drop} pct={drop_pct}")
 
         step = "SAVE"
-        logging.info(f"{layer} | {domain} | {step} | {table} | target=parquet")
+        logging.info(f"{layer} | {domain} | {step}  | {table} | target=parquet")
         customers.to_parquet(SILVER_DIR / "crm" / "customers.parquet")
 
         step = "TIME"
         time2 = datetime.datetime.now()
         time =  time2 - time1
         time = round(time.total_seconds(), 4)
-        logging.info(f"{layer} | {domain} | {step} | {table} | duration_sec={time}")
+        logging.info(f"{layer} | {domain} | {step}  | {table} | duration_sec={time}")
 
         step = "DQ"
         if drop_pct > 5:
@@ -744,7 +745,7 @@ def run():
         table = "orders"
 
         step = "LOAD"
-        logging.info(f"{layer} | {domain} | {step} | {table}")
+        logging.info(f"{layer} | {domain} | {step}  | {table}")
         orde = pd.read_csv(RAW_DIR / "crm" / "orders.csv.gz")
 
         step = "CLEAN"
@@ -796,14 +797,14 @@ def run():
         logging.info(f"{layer} | {domain} | {step} | {table} | rows_before={before} rows_after={after} dropped={drop} pct={drop_pct}")
 
         step = "SAVE"
-        logging.info(f"{layer} | {domain} | {step} | {table} | target=parquet")
+        logging.info(f"{layer} | {domain} | {step}  | {table} | target=parquet")
         orders.to_parquet(SILVER_DIR / "crm" / "orders.parquet")
 
         step = "TIME"
         time2 = datetime.datetime.now()
         time =  time2 - time1
         time = round(time.total_seconds(), 4)
-        logging.info(f"{layer} | {domain} | {step} | {table} | duration_sec={time}")
+        logging.info(f"{layer} | {domain} | {step}  | {table} | duration_sec={time}")
 
         step = "DQ"            
         if drop_pct > 5:
@@ -826,7 +827,7 @@ def run():
         table = "customer_reviews"
 
         step = "LOAD"
-        logging.info(f"{layer} | {domain} | {step} | {table}")
+        logging.info(f"{layer} | {domain} | {step}  | {table}")
         rev = pd.read_csv(RAW_DIR / "crm" / "customer_reviews.csv.gz")
 
         step = "CLEAN"
@@ -842,16 +843,17 @@ def run():
         review_id =   ('RV_O'+review_id).where(review_id.notnull() == True, np.nan)
 
         rating =      pd.to_numeric(rev['rating'].str.strip().replace({'nan':np.nan}), errors= 'coerce').astype('Int16')
-        review_text = rev['review_text'].str.strip().replace({'nan':np.nan,'':np.nan}).str.title().unique()
+        review_text = rev['review_text'].str.strip().replace({'nan':np.nan,'':np.nan}).str.lower()
 
         created_at =  rev['created_at'].str.strip()
         created_at =  pd.to_datetime(created_at, format= '%Y-%m-%d %H:%M:%S.%f', errors='coerce')
 
         review = pd.DataFrame({
-            'review_id':      review_id,
-            'order_id':       order_id,
-            'rating':         rating,
-            'created_at':     created_at
+            'review_id':review_id,
+            'order_id':order_id,
+            'rating':rating,
+            'review_text':review_text,
+            'created_at':created_at
         })
 
         review = review.dropna(subset='review_id').drop_duplicates(subset='review_id').sort_values(by='review_id').reset_index().drop('index', axis=1)
@@ -863,14 +865,14 @@ def run():
         logging.info(f"{layer} | {domain} | {step} | {table} | rows_before={before} rows_after={after} dropped={drop} pct={drop_pct}")
 
         step = "SAVE"
-        logging.info(f"{layer} | {domain} | {step} | {table} | target=parquet")
+        logging.info(f"{layer} | {domain} | {step}  | {table} | target=parquet")
         review.to_parquet(SILVER_DIR / "crm" / "customer_reviews.parquet")
 
         step = "TIME"
         time2 = datetime.datetime.now()
         time =  time2 - time1
         time = round(time.total_seconds(), 4)
-        logging.info(f"{layer} | {domain} | {step} | {table} | duration_sec={time}")
+        logging.info(f"{layer} | {domain} | {step}  | {table} | duration_sec={time}")
 
         step = "DQ"            
         if drop_pct > 5:
@@ -894,7 +896,7 @@ def run():
         table = "order_items"
 
         step = "LOAD"
-        logging.info(f"{layer} | {domain} | {step} | {table}")
+        logging.info(f"{layer} | {domain} | {step}  | {table}")
         ord_itm = pd.read_csv(RAW_DIR / "crm" / "order_items.csv.gz")
 
         step = "CLEAN"
@@ -966,14 +968,14 @@ def run():
         logging.info(f"{layer} | {domain} | {step} | {table} | rows_before={before} rows_after={after} dropped={drop} pct={drop_pct}")
 
         step = "SAVE"
-        logging.info(f"{layer} | {domain} | {step} | {table} | target=parquet")
+        logging.info(f"{layer} | {domain} | {step}  | {table} | target=parquet")
         order_items.to_parquet(SILVER_DIR / "crm" / "order_items.parquet")
 
         step = "TIME"
         time2 = datetime.datetime.now()
         time = time2 - time1
         time = round(time.total_seconds(), 4)
-        logging.info(f"{layer} | {domain} | {step} | {table} | duration_sec={time}")
+        logging.info(f"{layer} | {domain} | {step}  | {table} | duration_sec={time}")
 
         step = "DQ"          
         if drop_pct > 5:
@@ -996,8 +998,8 @@ def run():
         time1 = datetime.datetime.now()
         table = "kitchen_logs"
 
-        step = "LOAD"
-        logging.info(f"{layer} | {domain} | {step} | {table}")
+        step = "LOAD" 
+        logging.info(f"{layer} | {domain} | {step}  | {table}")
         kic = pd.read_csv(RAW_DIR / "crm" / "kitchen_logs.csv.gz")
 
         step = "CLEAN"
@@ -1014,7 +1016,7 @@ def run():
         chef_id =        kic['chef_id'].str.replace(r'\D','',regex=True).replace({'':np.nan,'nan':np.nan})
         chef_id =        pd.to_numeric(chef_id, errors= 'coerce').astype('Int64')
         chef_id =        ('E'+chef_id.astype(str).str.zfill(5)).where(chef_id.notnull(),np.nan)
-        chef_id =        chef_id.where(chef_id.isin(emp['emp_id']), np.nan)
+        chef_id =        chef_id.where(chef_id.isin(chef), np.nan)
 
         started_at =     kic['started_at'].str.strip()
         started_at =     pd.to_datetime(started_at, format = '%Y-%m-%d %H:%M:%S', errors='coerce')
@@ -1022,7 +1024,7 @@ def run():
         completed_at =   kic['completed_at'].str.strip()
         completed_at =   pd.to_datetime(completed_at, format = '%Y-%m-%d %H:%M:%S', errors='coerce')
 
-        status =         kic['status'].str.strip().replace({'nan':np.nan,'':np.nan})
+        status =         kic['status'].str.strip().replace({'nan':np.nan,'':np.nan}).str.lower()
 
         kitchen_logs = pd.DataFrame({
             'order_item_id':order_item_id,
@@ -1042,14 +1044,14 @@ def run():
         logging.info(f"{layer} | {domain} | {step} | {table} | rows_before={before} rows_after={after} dropped={drop} pct={drop_pct}")
 
         step = "SAVE"
-        logging.info(f"{layer} | {domain} | {step} | {table} | target=parquet")
+        logging.info(f"{layer} | {domain} | {step}  | {table} | target=parquet")
         kitchen_logs.to_parquet(SILVER_DIR / "crm" / "kitchen_logs.parquet")
 
         step = "TIME"
         time2 = datetime.datetime.now()
         time = time2 - time1
         time = round(time.total_seconds(), 4)
-        logging.info(f"{layer} | {domain} | {step} | {table} | duration_sec={time}")
+        logging.info(f"{layer} | {domain} | {step}  | {table} | duration_sec={time}")
 
         step = "DQ"
         if drop_pct > 5:
