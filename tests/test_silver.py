@@ -1060,6 +1060,16 @@ def test_run():
         else:
             issues.append(f"{column} | pass")
 
+        # ----------- review_text
+        column = "review_text"
+        valid_text = {'good', 'average', 'late delivery', None, 'excellent'}
+        rev_text = rev['review_text'].isin(valid_text).sum() 
+
+        if rev_text != rev.shape[0]:
+            issues.append(f"{column} | invalid")
+        else:
+            issues.append(f"{column} | pass")
+
         # ----------- created_at
         column = "created_at"
         min_date = datetime.datetime(2018, 1, 1)
@@ -1311,6 +1321,9 @@ def test_run():
     crm_time = crm_time2 - crm_time1
     crm_time = round(crm_time.total_seconds(),2)
     logging.info(f"{layer} | {domain} | DOMAIN_END | duration_sec={crm_time}")
+
+    logging.info('-' * 21)
+    logging.info(f"{layer} | LAYER_END")
 
 if __name__ == "__main__":
     test_run()
