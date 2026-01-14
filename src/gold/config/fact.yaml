@@ -1,0 +1,17 @@
+domain: FACT
+
+tables:
+  fact_sales:
+    silver_path:
+      kitchen_logs: data/silver/crm/kitchen_logs.parquet
+      order_items: data/silver/crm/order_items.parquet
+      orders: data/silver/crm/orders.parquet
+
+    gold_path: data/gold/fact_sales.parquet
+
+    dim_path:
+      payment_mode: data/gold/dim_payment_mode.parquet
+      order_status: data/gold/dim_order_status.parquet
+      customers: data/gold/dim_customers.parquet
+      restaurants: data/gold/dim_restaurants.parquet
+      menu_items: data/gold/dim_menu_items.parquet

@@ -1,0 +1,34 @@
+domain: DIM
+
+tables:
+  dim_date:
+    gold_path: data/gold/dim_date.parquet
+    silver_path: 
+
+  dim_payment_mode:
+    gold_path: data/gold/dim_payment_mode.parquet
+    silver_path:
+
+  dim_order_status:
+    gold_path: data/gold/dim_order_status.parquet
+    silver_path:
+
+  dim_restaurants:
+    silver_path: data/silver/erp/restaurants.parquet
+    gold_path: data/gold/dim_restaurants.parquet
+  
+  dim_employees:
+    silver_path: data/silver/erp/employees.parquet
+    gold_path: data/gold/dim_employees.parquet
+
+  dim_customers:
+    silver_path: data/silver/crm/customers.parquet
+    gold_path: data/gold/dim_customers.parquet
+  
+  dim_menu_items:
+    silver_path: data/silver/erp/menu_items.parquet
+    gold_path: data/gold/dim_menu_items.parquet
+
+  dim_delivery_partners:
+    silver_path: data/silver/erp/delivery_partners.parquet
+    gold_path: data/gold/dim_delivery_partners.parquet
