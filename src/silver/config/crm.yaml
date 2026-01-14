@@ -1,0 +1,35 @@
+domain: "CRM"
+
+tables:
+  customers:
+    raw_path: data/raw/crm/customers.csv.gz
+    silver_path: data/silver/crm/customers.parquet
+    dq_threshold: 5
+
+  orders:
+    raw_path: data/raw/crm/orders.csv.gz
+    customers_path: data/silver/crm/customers.parquet
+    restaurants_path: data/silver/erp/restaurants.parquet
+    delivery_partners_path: data/silver/erp/delivery_partners.parquet
+    silver_path: data/silver/crm/orders.parquet
+    dq_threshold: 5
+
+  customer_reviews:
+    raw_path: data/raw/crm/customer_reviews.csv.gz
+    orders_path: data/silver/crm/orders.parquet
+    silver_path: data/silver/crm/customer_reviews.parquet
+    dq_threshold: 5
+  
+  order_items:
+    raw_path: data/raw/crm/order_items.csv.gz
+    orders_path: data/silver/crm/orders.parquet
+    menu_items_path: data/silver/erp/menu_items.parquet
+    silver_path: data/silver/crm/order_items.parquet
+    dq_threshold: 5
+
+  kitchen_logs:
+    raw_path: data/raw/crm/kitchen_logs.csv.gz
+    order_items_path: data/silver/crm/order_items.parquet
+    employees_path: data/silver/erp/employees.parquet
+    silver_path: data/silver/crm/kitchen_logs.parquet
+    dq_threshold: 5  

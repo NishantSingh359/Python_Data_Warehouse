@@ -1,0 +1,55 @@
+domain: ERP
+
+tables:
+  suppliers:
+    raw_path: data/raw/erp/suppliers.csv.gz
+    silver_path: data/silver/erp/suppliers.parquet
+    dq_threshold: 5
+
+  ingredients:
+    raw_path: data/raw/erp/ingredients.csv.gz
+    silver_path: data/silver/erp/ingredients.parquet
+    dq_threshold: 5
+
+  supplier_ingredients:
+    raw_path: data/raw/erp/supplier_ingredients.csv.gz
+    suppliers_path: data/silver/erp/suppliers.parquet
+    ingredients_path: data/silver/erp/ingredients.parquet
+    silver_path: data/silver/erp/supplier_ingredients.parquet 
+    dq_threshold: 5
+
+  menu_items:
+    raw_path: data/raw/erp/menu_items.csv.gz
+    silver_path: data/silver/erp/menu_items.parquet
+    dq_threshold: 5
+
+  recipe:
+    raw_path: data/raw/erp/recipe.csv.gz
+    menu_items_path: data/silver/erp/menu_items.parquet
+    ingredients_path: data/silver/erp/ingredients.parquet
+    silver_path: data/silver/erp/recipe.parquet
+    dq_threshold: 5
+
+  restaurants:
+    raw_path: data/raw/erp/restaurants.csv.gz
+    silver_path: data/silver/erp/restaurants.parquet
+    dq_threshold: 5
+
+  inventory:
+    raw_path: data/raw/erp/inventory.csv.gz
+    restaurants_path: data/silver/erp/restaurants.parquet
+    ingredients_path: data/silver/erp/ingredients.parquet
+    silver_path: data/silver/erp/inventory.parquet
+    dq_threshold: 5
+
+  delivery_partners:
+    raw_path: data/raw/erp/delivery_partners.csv.gz
+    silver_path: data/silver/erp/delivery_partners.parquet
+    dq_threshold: 5
+
+  employees:
+    raw_path: data/raw/erp/employees.csv.gz
+    restaurants_path: data/silver/erp/restaurants.parquet
+    silver_path: data/silver/erp/employees.parquet
+    dq_threshold: 5
+
