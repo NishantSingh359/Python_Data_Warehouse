@@ -1,6 +1,7 @@
 # files
 *.pkl
 *.log
+*.bat
 *.parquet
 *.csv.gz
 *.ipynb
