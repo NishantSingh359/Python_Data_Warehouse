@@ -1,4 +1,5 @@
 import pandas as pd
+import datetime
 from base.base_gold_pipeline import BaseGoldPipeline
 
 class DimDate(BaseGoldPipeline):
@@ -12,14 +13,14 @@ class DimDate(BaseGoldPipeline):
 
         df = pd.DataFrame({"date": date_range})
 
-        df["date_key"] = df["date"].dt.strftime("%Y%m%d").astype(int)
-        df["day"] = df["date"].dt.day
-        df["month"] = df["date"].dt.month
-        df["month_name"] = df["date"].dt.month_name()
-        df["quarter"] = df["date"].dt.quarter
-        df["year"] = df["date"].dt.year
-        df["week_of_year"] = df["date"].dt.isocalendar().week
-        df["is_weekend"] = df["date"].dt.weekday >= 5
+        df["date_key"] = df["date"].dt.strftime("%Y%m%d").astype(int) # type: ignore
+        df["day"] = df["date"].dt.day # type: ignore
+        df["month"] = df["date"].dt.month # type: ignore
+        df["month_name"] = df["date"].dt.month_name() # type: ignore
+        df["quarter"] = df["date"].dt.quarter # type: ignore
+        df["year"] = df["date"].dt.year # type: ignore
+        df["week_of_year"] = df["date"].dt.isocalendar().week # type: ignore
+        df["is_weekend"] = df["date"].dt.weekday >= 5 # type: ignore
 
         return df[
             ["date_key","date","day","month","month_name",
