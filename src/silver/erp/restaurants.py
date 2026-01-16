@@ -4,19 +4,19 @@ from base.base_silver_pipeline import BaseSilverPipeline
 
 class RestaurantsSilver(BaseSilverPipeline):
 
-    def clean(self, res: pd.DataFrame) -> pd.DataFrame:
+    def clean(self, df: pd.DataFrame) -> pd.DataFrame:
 
-        restaurant_id =   res['restaurant_id'].str.replace(r'\D','',regex=True).replace({'':np.nan})
+        restaurant_id =   df['restaurant_id'].str.replace(r'\D','',regex=True).replace({'':np.nan})
         restaurant_id =   pd.to_numeric(restaurant_id, errors='coerce').replace(0,np.nan).astype('Int16')
-        restaurant_id =   restaurant_id.fillna(res['restaurant_name'].replace(r'\D','',regex=True).replace({'':np.nan}))
+        restaurant_id =   restaurant_id.fillna(df['restaurant_name'].replace(r'\D','',regex=True).replace({'':np.nan}))
         restaurant_id =   ('R'+restaurant_id.astype(str).str.zfill(3)).where(restaurant_id.notnull(), np.nan)
 
         restaurant_name = restaurant_id.replace(r'\D','',regex=True).astype('Int16')
         restaurant_name = ('Restaurant_'+restaurant_name.astype(str)).where(restaurant_id.notnull(),np.nan)
 
-        city =            res['city'].str.strip().str.lower()
-        restaurant_type = res['restaurant_type'].str.strip().str.lower()
-        open_date =       pd.to_datetime(res['open_date'], format= '%Y-%m-%d %H:%M:%S', errors= 'coerce')
+        city =            df['city'].str.strip().str.lower()
+        restaurant_type = df['restaurant_type'].str.strip().str.lower()
+        open_date =       pd.to_datetime(df['open_date'], format= '%Y-%m-%d %H:%M:%S', errors= 'coerce')
 
         df = pd.DataFrame({
             'restaurant_id':restaurant_id,
