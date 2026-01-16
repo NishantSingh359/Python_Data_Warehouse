@@ -10,21 +10,21 @@ with open("src/silver/config/crm.yaml") as f:
 
 class Customer_reviewsSilver(BaseSilverPipeline):
 
-    def clean(self, rev: pd.DataFrame) -> pd.DataFrame:
+    def clean(self, df: pd.DataFrame) -> pd.DataFrame:
 
         orders =      pd.read_parquet(path['orders_path'])
-        order_id =    rev['order_id'].str.replace(r'\D','',regex=True).replace({'':np.nan})
-        order_id =    order_id.fillna(rev['review_id'].str.replace(r'\D','',regex=True).replace({'':np.nan}))
+        order_id =    df['order_id'].str.replace(r'\D','',regex=True).replace({'':np.nan})
+        order_id =    order_id.fillna(df['review_id'].str.replace(r'\D','',regex=True).replace({'':np.nan}))
         order_id =    ('O'+ order_id.astype('Int32').astype(str).str.zfill(7)).where(order_id.notnull(), np.nan)
         order_id =    order_id.where(order_id.isin(orders['order_id']), np.nan)
 
         review_id =   order_id.str.replace(r'\D','',regex=True).replace({'':np.nan})
         review_id =   ('RV_O'+review_id).where(review_id.notnull() == True, np.nan)
 
-        rating =      pd.to_numeric(rev['rating'].str.strip().replace({'nan':np.nan}), errors= 'coerce').astype('Int16')
-        review_text = rev['review_text'].str.strip().replace({'nan':np.nan,'':np.nan}).str.lower()
+        rating =      pd.to_numeric(df['rating'].str.strip().replace({'nan':np.nan}), errors= 'coerce').astype('Int16')
+        review_text = df['review_text'].str.strip().replace({'nan':np.nan,'':np.nan}).str.lower()
 
-        created_at =  rev['created_at'].str.strip()
+        created_at =  df['created_at'].str.strip()
         created_at =  pd.to_datetime(created_at, format= '%Y-%m-%d %H:%M:%S.%f', errors='coerce')
 
         df = pd.DataFrame({
