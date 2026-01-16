@@ -56,7 +56,7 @@ class FactSales(BaseGoldPipeline):
 
         fact["date_key"] = (
             fact["order_datetime"]
-            .dt.strftime("%Y%m%d")
+            .dt.strftime("%Y%m%d") # type: ignore
             .astype("Int64")
         )
 
