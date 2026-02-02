@@ -1,9 +1,6 @@
 # 🏗️ Python Data Warehouse (Medallion Architecture)
 
 A **production‑style Python Data Warehouse** implementing the **Medallion Architecture (Raw → Silver → Gold)** with **class‑based pipelines**, **config‑driven processing**, **logging**, and **batch automation**.
-
-This project is designed to look and behave like a **real industry data platform**, suitable for **portfolio, internships, and interviews**.
-
 ---
 
 ## 📁 Recommended GitHub Folder Structure
@@ -280,6 +277,7 @@ Ready for:
 
 **Nishant Singh**  
 Data Analytics
+
 
 
 
