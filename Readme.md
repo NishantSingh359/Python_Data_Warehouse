@@ -3,7 +3,7 @@
 A **Python Data Warehouse** implementing the **Medallion Architecture (Raw → Silver → Gold)** with **class‑based pipelines**, **config‑driven processing**, **logging**, and **batch automation**.
 ---
 
-## 📁 Recommended GitHub Folder Structure
+## 📁 Folder Structure
 
 ```text
 PYTHON_DATA_WAREHOUSE/
@@ -86,60 +86,6 @@ PYTHON_DATA_WAREHOUSE/
 ---
 
 ## 🧠 Architecture Overview
-
-## 📂 Data Folder Structure (Detailed)
-
-```text
-data/
-├── raw/                          # Source data (as-is)
-│   ├── crm/                      # Customer-facing systems
-│   │   ├── customers.csv.gz
-│   │   ├── orders.csv.gz
-│   │   ├── order_items.csv.gz
-│   │   ├── kitchen_logs.csv.gz
-│   │   └── customer_reviews.csv.gz
-│   │
-│   └── erp/                      # Backend / operations systems
-│       ├── suppliers.csv.gz
-│       ├── supplier_ingredients.csv.gz
-│       ├── ingredients.csv.gz
-│       ├── inventory.csv.gz
-│       ├── employees.csv.gz
-│       ├── delivery_partners.csv.gz
-│       ├── restaurants.csv.gz
-│       ├── menu_items.csv.gz
-│       └── recipe.csv.gz
-│
-├── silver/                       # Cleaned & standardized (Parquet)
-│   ├── crm/
-│   │   ├── customers.parquet
-│   │   ├── orders.parquet
-│   │   ├── order_items.parquet
-│   │   ├── kitchen_logs.parquet
-│   │   └── customer_reviews.parquet
-│   │
-│   └── erp/
-│       ├── suppliers.parquet
-│       ├── supplier_ingredients.parquet
-│       ├── ingredients.parquet
-│       ├── inventory.parquet
-│       ├── employees.parquet
-│       ├── delivery_partners.parquet
-│       ├── restaurants.parquet
-│       ├── menu_items.parquet
-│       └── recipe.parquet
-│
-└── gold/                         # Analytics-ready (Star Schema)
-    ├── dim_customers.parquet
-    ├── dim_date.parquet
-    ├── dim_restaurants.parquet
-    ├── dim_employees.parquet
-    ├── dim_delivery_partners.parquet
-    ├── dim_menu_items.parquet
-    ├── dim_payment_mode.parquet
-    ├── dim_order_status.parquet
-    └── fact_sales.parquet
-```
 
 ### 🔹 Raw Layer
 - Stores **as‑received source data**
@@ -225,7 +171,7 @@ Benefits:
 
 Sample log:
 ```text
-08:55:56 | INFO | SILVER | CUSTOMERS | rows=100 | nulls=2 | dup_customer_id=0 | invalid_phone=98
+16:53:57 | WARNING | SILVER | ERP | QUALITY | restaurants | restaurant_type | invalid
 ```
 
 ---
@@ -277,6 +223,7 @@ Ready for:
 
 **Nishant Singh**  
 Data Analytics
+
 
 
 
