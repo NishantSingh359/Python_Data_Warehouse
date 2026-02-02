@@ -144,15 +144,6 @@ data/
     └── fact_sales.parquet
 ```
 
-### Why this design works
-- Raw data remains **immutable (बदला नहीं जाता)**
-- Silver layer ensures **clean, typed, deduplicated** data
-- Gold layer follows **Star Schema** for BI tools
-
----
-
-
-
 ### 🔹 Raw Layer
 - Stores **as‑received source data**
 - No transformations
@@ -289,5 +280,6 @@ Ready for:
 
 **Nishant Singh**  
 Data Analytics
+
 
 
