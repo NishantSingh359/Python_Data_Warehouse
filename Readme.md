@@ -147,17 +147,17 @@ Same concept applies to **Gold pipelines**.
 
 Example: `crm.yaml`
 ```yaml
-customers:
-  primary_key: customer_id
-  required_columns:
-    - customer_id
-    - name
-    - phone
+domain: CRM
+tables:
+  customers:
+    raw_path: data/raw/crm/customers.csv.gz
+    silver_path: data/silver/crm/customers.parquet
+    dq_threshold: 5
 ```
 
 Benefits:
 - No hardcoding ❌
-- Easy schema change ✔️
+- Easy changes ✔️
 - Production‑like design ✔️
 
 ---
@@ -223,6 +223,7 @@ Ready for:
 
 **Nishant Singh**  
 Data Analytics
+
 
 
 
