@@ -1,4 +1,4 @@
-domain: "CRM"
+domain: CRM
 
 tables:
   customers:
