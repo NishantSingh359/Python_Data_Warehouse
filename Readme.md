@@ -113,7 +113,6 @@ PYTHON_DATA_WAREHOUSE/
 - ✅ Centralized logging (no print spam)
 - ✅ Data quality checks
 - ✅ Batch automation using `.bat` files
-- ✅ Scalable & interview‑ready design
 
 ---
 
@@ -122,17 +121,23 @@ PYTHON_DATA_WAREHOUSE/
 ### Silver Pipeline
 ```python
 class BaseSilverPipeline(ABC):
-    @abstractmethod
-    def extract(self): ...
+  def run(self):
+    try:
+      df_raw = self.load()
+      df_clean = self.clean(df_raw)
+      self.save(df_clean)
+      self.run_dq(df_raw, df_clean)
+
+    except Exception as e:
+      logging.exception(...)
+
+    def load(self): ...
+    def save(self, df): ...
+    def run_dq(self, df1, df2): ...
 
     @abstractmethod
-    def clean(self, df): ...
-
-    @abstractmethod
-    def validate(self, df): ...
-
-    @abstractmethod
-    def load(self, df): ...
+       def clean(self, df):
+        pass
 ```
 
 Each table pipeline:
@@ -158,7 +163,6 @@ tables:
 Benefits:
 - No hardcoding ❌
 - Easy changes ✔️
-- Production‑like design ✔️
 
 ---
 
@@ -199,6 +203,11 @@ scripts\run_gold.bat
 
 - `dim_customers`
 - `dim_date`
+- `dim_delivery_partners`
+- `dim_employees`
+- `dim_menu_items`
+- `dim_order_status`
+- `dim_payment_mode`
 - `dim_restaurants`
 - `fact_sales`
 
@@ -222,7 +231,6 @@ Ready for:
 ## 👤 Author
 
 **Nishant Singh**  
-Data Analytics
 
 
 
