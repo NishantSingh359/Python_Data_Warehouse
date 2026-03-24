@@ -110,7 +110,7 @@ data/
 - Acts as **system of record**
 
 ### 🔸 Silver Layer
-- Data **cleaning (सफाई)**
+- Data **cleaning**
 - Standardization (data types, formats)
 - Deduplication & validation
 - **Class‑based pipelines with inheritance**
