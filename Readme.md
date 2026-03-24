@@ -84,7 +84,24 @@ PYTHON_DATA_WAREHOUSE/
 ```
 
 ---
+## 📌 Dataset
 
+Raw data files are not included in this repository due to size constraints.
+
+### Download Dataset
+
+| Source | Link |
+|--------|------|
+| 🔗 CRM Dataset | [Restaurant CRM Raw Dataset](https://www.kaggle.com/datasets/nishantsinghpro/restaurant-crm-raw-dataset) |
+| 🔗 ERP Dataset | [Restaurant ERP Raw Dataset](https://www.kaggle.com/datasets/nishantsinghpro/restaurant-erp-raw-dataset) |
+
+### After Downloading Place Files Here
+```text
+data/ 
+└── raw/ 
+    ├── crm/          ← CRM dataset files here 
+    └── erp/          ← ERP dataset files here
+```
 ## 🧠 Architecture Overview
 
 ### 🔹 Raw Layer
