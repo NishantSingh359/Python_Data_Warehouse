@@ -5,6 +5,7 @@
 *.parquet
 *.csv.gz
 *.ipynb
+.vscode
 
 # python
 __pycache__/
