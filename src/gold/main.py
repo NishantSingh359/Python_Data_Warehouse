@@ -2,10 +2,7 @@ import yaml
 import logging
 
 from dim.dim_date import DimDate
-from dim.dim_payment_mode import DimPayment_mode
-from dim.dim_order_status import DimOrder_status
 from dim.dim_restaurants import DimRestaurants
-from dim.dim_employees import DimEmployees
 from dim.dim_customers import DimCustomers
 from dim.dim_menu_items import DimMenu_items
 from dim.dim_delivery_partners import DimDelivery_partners
@@ -22,10 +19,7 @@ logging.basicConfig(
 
 DIM_MAP = {
     "dim_date": DimDate,
-    "dim_payment_mode": DimPayment_mode,
-    "dim_order_status": DimOrder_status,
     "dim_restaurants": DimRestaurants,
-    "dim_employees": DimEmployees,
     "dim_customers": DimCustomers,
     "dim_menu_items": DimMenu_items,
     "dim_delivery_partners": DimDelivery_partners
