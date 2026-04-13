@@ -15,6 +15,7 @@ from crm.orders import OrdersSilver
 from crm.customer_reviews import Customer_reviewsSilver
 from crm.order_items import Order_itemsSilver
 from crm.kitchen_logs import Kitchen_logsSilver
+from crm.delivery_logs import Delivery_logsSilver
 
 logging.basicConfig(
     level=logging.INFO,
@@ -39,9 +40,10 @@ ERP_PIPELINE_MAP = {
 CRM_PIPELINE_MAP = {
     "customers": CustomersSilver,
     "orders": OrdersSilver,
-    "customer_reviews": Customer_reviewsSilver,
     "order_items": Order_itemsSilver,
-    "kitchen_logs": Kitchen_logsSilver
+    "customer_reviews": Customer_reviewsSilver,
+    "kitchen_logs": Kitchen_logsSilver,
+    "delivery_logs": Delivery_logsSilver
 }
 
 def run_domain(config_path, pipeline_map):
