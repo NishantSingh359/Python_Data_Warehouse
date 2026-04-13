@@ -8,6 +8,7 @@ tables:
 
   orders:
     raw_path: data/raw/crm/orders.csv.gz
+    order_items_path: data/silver/crm/order_items.parquet
     customers_path: data/silver/crm/customers.parquet
     restaurants_path: data/silver/erp/restaurants.parquet
     delivery_partners_path: data/silver/erp/delivery_partners.parquet
@@ -30,6 +31,14 @@ tables:
   kitchen_logs:
     raw_path: data/raw/crm/kitchen_logs.csv.gz
     order_items_path: data/silver/crm/order_items.parquet
+    orders_path: data/silver/crm/orders.parquet
     employees_path: data/silver/erp/employees.parquet
     silver_path: data/silver/crm/kitchen_logs.parquet
+    dq_threshold: 5  
+
+  delivery_logs:
+    raw_path: data/raw/crm/delivery_logs.csv.gz
+    orders_path: data/silver/crm/orders.parquet
+    delivery_partners_path: data/silver/erp/delivery_partners.parquet
+    silver_path: data/silver/crm/delivery_logs.parquet
     dq_threshold: 5  

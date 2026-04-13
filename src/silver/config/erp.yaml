@@ -21,6 +21,7 @@ tables:
   menu_items:
     raw_path: data/raw/erp/menu_items.csv.gz
     silver_path: data/silver/erp/menu_items.parquet
+    order_items: data/raw/erp/order_items.csv.gz
     dq_threshold: 5
 
   recipe:
