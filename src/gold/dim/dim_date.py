@@ -7,8 +7,8 @@ class DimDate(BaseGoldPipeline):
     def build(self) -> pd.DataFrame:
 
         date_range = pd.date_range(
-            start="2023-01-01",
-            end="2024-05-31"
+            start="2021-01-01",
+            end="2025-01-31"
         )
 
         df = pd.DataFrame({"date": date_range})
@@ -22,7 +22,4 @@ class DimDate(BaseGoldPipeline):
         df["week_of_year"] = df["date"].dt.isocalendar().week # type: ignore
         df["is_weekend"] = df["date"].dt.weekday >= 5 # type: ignore
 
-        return df[
-            ["date_key","date","day","month","month_name",
-             "quarter","year","week_of_year","is_weekend"]
-        ]
+        return df
