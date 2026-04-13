@@ -5,21 +5,9 @@ tables:
     gold_path: data/gold/dim_date.parquet
     silver_path: 
 
-  dim_payment_mode:
-    gold_path: data/gold/dim_payment_mode.parquet
-    silver_path:
-
-  dim_order_status:
-    gold_path: data/gold/dim_order_status.parquet
-    silver_path:
-
   dim_restaurants:
     silver_path: data/silver/erp/restaurants.parquet
     gold_path: data/gold/dim_restaurants.parquet
-  
-  dim_employees:
-    silver_path: data/silver/erp/employees.parquet
-    gold_path: data/gold/dim_employees.parquet
 
   dim_customers:
     silver_path: data/silver/crm/customers.parquet
