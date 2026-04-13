@@ -2,6 +2,7 @@ import yaml
 import numpy as np
 import pandas as pd
 from pathlib import Path
+from common.common import clean_id
 from base.base_silver_pipeline import BaseSilverPipeline
 
 with open("src/silver/config/erp.yaml") as f:
@@ -12,20 +13,11 @@ class RecipeSilver(BaseSilverPipeline):
 
     def clean(self, df: pd.DataFrame) -> pd.DataFrame:
 
-        menu_items =        pd.read_parquet(path['menu_items_path'])
-        item_id =           df['item_id'].str.replace(r'\D','', regex=True).replace({'':np.nan})
-        item_id =           pd.to_numeric(item_id, errors = 'coerce').replace(0,np.nan).astype('Int16')
-        item_id =           ('I' + item_id.astype(str).str.zfill(4)).where(item_id.notnull(), np.nan)
-        item_id =           item_id.where(item_id.isin(menu_items['item_id']), np.nan)
+        item_id  = clean_id(df['item_id'], 'I', 4)
 
-        ingredients =       pd.read_parquet(path['ingredients_path'])
-        ingredient_id =     df['ingredient_id'].str.replace(r'\D','', regex=True).replace({'':np.nan})
-        ingredient_id =     pd.to_numeric(ingredient_id, errors='coerce').replace(0,np.nan).astype('Int16')
-        ingredient_id =     ('ING' + ingredient_id.astype(str).str.zfill(3)).where(ingredient_id.notnull(), np.nan)
-        ingredient_id =     ingredient_id.where(ingredient_id.isin(ingredients['ingredient_id']), np.nan)
+        ingredient_id = clean_id(df['ingredient_id'], 'ING', 3)
 
-        quantity_required = df['quantity_required'].astype(str).str.strip().astype(float)
-        quantity_required = quantity_required.where(quantity_required > 0, np.nan)
+        quantity_required = df['quantity_required'].where((df['quantity_required'] > 0) & (df['quantity_required'] < 1))
 
         df = pd.DataFrame({
             'item_id':item_id,

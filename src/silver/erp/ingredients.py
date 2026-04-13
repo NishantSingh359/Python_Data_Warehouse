@@ -1,20 +1,17 @@
 import numpy as np
 import pandas as pd
+from common.common import clean_id
 from base.base_silver_pipeline import BaseSilverPipeline
 
 class IngredientsSilver(BaseSilverPipeline):
 
     def clean(self, df: pd.DataFrame) -> pd.DataFrame:
 
-        ingredient_id =   df['ingredient_id'].str.replace(r'\D', '', regex=True).replace({'':np.nan})
-        ingredient_id =   pd.to_numeric(ingredient_id, errors='coerce').replace(0,np.nan).astype('Int16')
-        ingredient_id =   ingredient_id.fillna(df['ingredient_name'].replace(r'\D', '', regex=True).replace({'':np.nan}))
-        ingredient_id =   ('ING' + ingredient_id.astype(str).str.zfill(3)).where(ingredient_id.notnull(), np.nan)
+        ingredient_id =   clean_id(df['ingredient_id'], 'ING', 3)
 
-        ingredient_name = ingredient_id.str.replace(r'\D', '', regex=True).astype('Int16')
-        ingredient_name = ('Ingredient_' + ingredient_name.astype(str)).where(ingredient_id.notnull(), np.nan)
+        ingredient_name = df['ingredient_name'].str.strip().replace({'':np.nan})
 
-        unit =            df['unit'].astype(str).str.strip().str.lower().replace({'nan': np.nan})
+        unit =            df['unit'].str.lower()
 
         df = pd.DataFrame({
             'ingredient_id':ingredient_id,

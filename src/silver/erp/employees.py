@@ -1,7 +1,9 @@
 import yaml
 import numpy as np
 import pandas as pd
+import datetime
 from pathlib import Path
+from common.common import clean_id
 from base.base_silver_pipeline import BaseSilverPipeline
 
 with open("src/silver/config/erp.yaml") as f:
@@ -12,24 +14,24 @@ class EmployeesSilver(BaseSilverPipeline):
 
     def clean(self, df: pd.DataFrame) -> pd.DataFrame:
 
-        emp_id =        df['emp_id'].str.replace(r'\D', '', regex=True).astype('Int16')
-        emp_id =        ('E' + emp_id.astype(str).str.zfill(5)).where(emp_id.notnull() == True, np.nan) 
+        emp_id =        clean_id(df['emp_id'], 'E', 5)
+
+        name =          df['name'].str.strip().str.title() 
 
         restaurants =   pd.read_parquet(path['restaurants_path'])
-        restaurant_id = pd.to_numeric(df['restaurant_id'].str.replace(r'\D', '', regex=True), errors= 'coerce')
-        restaurant_id = ('R' + restaurant_id.astype('Int16').astype(str).str.zfill(3)).where(restaurant_id.notnull() == True, np.nan)
-        restaurant_id = restaurant_id.where(restaurant_id.isin(restaurants['restaurant_id']), np.nan)
+        restaurant_id = clean_id(df['restaurant_id'], 'R', 3)
+        restaurant_id = restaurant_id.where(restaurant_id.isin(restaurants['restaurant_id']))
 
-        role =          df['role'].str.strip().replace({'nan':np.nan})
+        role =          df['role'].str.strip().str.title()
 
-        hire_date =     df['hire_date'].str.strip()
-        hire_date =     pd.to_datetime(hire_date, format= '%Y-%m-%d %H:%M:%S', errors= 'coerce')
+        hire_date =     pd.to_datetime(df['hire_date'], format= '%Y-%m-%d %H:%M:%S', errors= 'coerce')
+        hire_date =     hire_date.where((hire_date >= '2021-01-01') & (hire_date <= '2025-12-31'))
 
-        salary =        pd.to_numeric(df['salary'], errors= 'coerce').astype('Int64')
-        salary =        salary.where(salary > 0, np.nan)
+        salary =        df['salary'].where((df['salary'] > 0) & (df['salary']  < 500000), np.nan)
 
         df = pd.DataFrame({
             'emp_id':emp_id,
+            'name':name,
             'restaurant_id':restaurant_id,
             'role':role,
             'hire_date':hire_date,

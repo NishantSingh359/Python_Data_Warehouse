@@ -1,25 +1,21 @@
 import numpy as np
 import pandas as pd
+from common.common import clean_id, clean_phone_n
 from base.base_silver_pipeline import BaseSilverPipeline
 
 class Delivery_partnersSilver(BaseSilverPipeline):
 
     def clean(self, df: pd.DataFrame) -> pd.DataFrame:
 
-        partner_id =   df['delivery_partner_id'].str.replace(r'\D', '', regex=True).replace({'':np.nan})
-        partner_id =   pd.to_numeric(partner_id, errors='coerce').replace(0, np.nan).astype('Int16')
-        partner_id =   partner_id.fillna(df['name'].replace(r'\D', '', regex=True).replace({'':np.nan}))
-        partner_id =   ('D'+partner_id.astype(str).str.zfill(4).where(partner_id.notnull(), np.nan))
+        partner_id =    clean_id(df['delivery_partner_id'], 'D', 4)
 
-        
-        name =         partner_id.str.replace(r'\D', '',regex=True).astype('Int16')
-        name =         ('Rider_' + name.astype(str)).where(name.notnull(), np.nan)
+        name =          df['name'].str.strip().str.title()
 
-        partner_type = df['partner_type'].str.strip().str.lower().replace({'nan':np.nan})
-        vehicle_type = df['vehicle_type'].str.strip().str.lower().replace({'nan':np.nan})
+        partner_type =  df['partner_type'].str.strip().str.title()
+        vehicle_type =  df['vehicle_type'].str.strip().str.title()
 
-        phone =         df['phone'].str.replace('ext.99','').replace(r'\D','', regex= True).str.extract(r'(\d{10}$)')[0].astype('Int64').astype(str)
-        phone =         ('+91' + phone).where(phone.str.len() == 10, np.nan)
+        phone =         clean_phone_n(df['phone'])
+
 
         df = pd.DataFrame({
             'delivery_partner_id':partner_id,
