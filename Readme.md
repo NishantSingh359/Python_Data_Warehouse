@@ -221,10 +221,7 @@ scripts\run_gold.bat
 - `dim_customers`
 - `dim_date`
 - `dim_delivery_partners`
-- `dim_employees`
 - `dim_menu_items`
-- `dim_order_status`
-- `dim_payment_mode`
 - `dim_restaurants`
 - `fact_sales`
 
