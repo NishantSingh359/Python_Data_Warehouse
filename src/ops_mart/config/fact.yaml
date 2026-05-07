@@ -1,0 +1,14 @@
+domain: FACT
+
+tables:
+  fact_kitchen:
+    silver_path:
+      kitchen_logs: data/silver/erp/kitchen_logs.parquet
+      order_items: data/silver/crm/order_items.parquet
+      orders: data/silver/crm/orders.parquet
+    gold_path: data/ops/fact_delivery.parquet
+
+    dim_path:
+      items: data/ops/dim_items.parquet
+      restaurants: data/ops/dim_restaurants.parquet
+      chef: data/ops/dim_chef.parquet
