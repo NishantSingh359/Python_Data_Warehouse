@@ -1,11 +1,12 @@
 # files
 *.pkl
 *.log
-*.bat
-*.parquet
-*.csv.gz
 *.ipynb
 .vscode
+
+#folder
+tests
+data
 
 # python
 __pycache__/
