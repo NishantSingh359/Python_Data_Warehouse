@@ -19,20 +19,23 @@ class BaseSilverPipeline(ABC):
         try:
             logging.info('-' * 21)
             
-            self.log("LOAD")
+            self.log("LOAD ")
             df_raw = self.load()
 
             self.log("CLEAN", "| started")
-            df_clean = self.clean(df_raw)
+            df1, df2, df3 = self.clean(df_raw)
 
-            self.log_stats(df_raw, df_clean)
+            self.log_stats(df_raw, df3)
 
-            self.log("SAVE", " | target=parquet")
-            self.save(df_clean)
+            self.drop_status(df1, df2, df3)
+
+            self.log("SAVE ", "| target=parquet")
+
+            self.save(df3)
 
             self.log_time(start)
 
-            self.run_dq(df_raw, df_clean)
+            self.run_dq(df_raw, df3)
 
         except Exception as e:
             logging.exception(
@@ -66,6 +69,16 @@ class BaseSilverPipeline(ABC):
 
         self.drop_pct = drop_pct
 
+    def drop_status(self, df1:pd.DataFrame, df2:pd.DataFrame, df3:pd.DataFrame):
+        if df1.shape[0] != df3.shape[0]:
+            null:int =      df1.shape[0]-df2.shape[0]
+            duplicate:int = df2.shape[0]-df3.shape[0]
+
+            logging.info(
+                f"{self.layer} | {self.domain} | CLEAN | {self.table} | "
+                f"null_rows={null} duplicate={duplicate}"
+            )
+
     def run_dq(self, before_df, after_df):
         if self.drop_pct > self.dq_threshold:
             logging.warning(
@@ -76,10 +89,10 @@ class BaseSilverPipeline(ABC):
     def log_time(self, start):
         duration = round((datetime.datetime.now() - start).total_seconds(), 4)
         logging.info(
-            f"{self.layer} | {self.domain} | TIME | {self.table} | duration_sec={duration}"
+            f"{self.layer} | {self.domain} | TIME  | {self.table} | duration_sec={duration}"
         )
 
     # ---------- Mandatory override ----------
     @abstractmethod
-    def clean(self, df: pd.DataFrame) -> pd.DataFrame:
+    def clean(self, df: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
         pass
