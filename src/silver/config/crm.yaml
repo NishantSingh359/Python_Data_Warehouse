@@ -6,39 +6,42 @@ tables:
     silver_path: data/silver/crm/customers.parquet
     dq_threshold: 5
 
+  promotions:
+    raw_path: data/raw/crm/promotions.csv.gz
+    silver_path: data/silver/crm/promotions.parquet
+    dq_threshold: 5
+
   orders:
     raw_path: data/raw/crm/orders.csv.gz
-    order_items_path: data/silver/crm/order_items.parquet
     customers_path: data/silver/crm/customers.parquet
     restaurants_path: data/silver/erp/restaurants.parquet
+    promotions_path: data/silver/crm/promotions.parquet
     delivery_partners_path: data/silver/erp/delivery_partners.parquet
     silver_path: data/silver/crm/orders.parquet
     dq_threshold: 5
 
-  customer_reviews:
-    raw_path: data/raw/crm/customer_reviews.csv.gz
-    orders_path: data/silver/crm/orders.parquet
-    silver_path: data/silver/crm/customer_reviews.parquet
-    dq_threshold: 5
-  
   order_items:
     raw_path: data/raw/crm/order_items.csv.gz
     orders_path: data/silver/crm/orders.parquet
     menu_items_path: data/silver/erp/menu_items.parquet
     silver_path: data/silver/crm/order_items.parquet
     dq_threshold: 5
-
-  kitchen_logs:
-    raw_path: data/raw/crm/kitchen_logs.csv.gz
-    order_items_path: data/silver/crm/order_items.parquet
+    
+  customer_reviews:
+    raw_path: data/raw/crm/customer_reviews.csv.gz
     orders_path: data/silver/crm/orders.parquet
-    employees_path: data/silver/erp/employees.parquet
-    silver_path: data/silver/crm/kitchen_logs.parquet
-    dq_threshold: 5  
+    silver_path: data/silver/crm/customer_reviews.parquet
+    dq_threshold: 5
 
   delivery_logs:
     raw_path: data/raw/crm/delivery_logs.csv.gz
     orders_path: data/silver/crm/orders.parquet
     delivery_partners_path: data/silver/erp/delivery_partners.parquet
     silver_path: data/silver/crm/delivery_logs.parquet
+    dq_threshold: 5  
+
+  refunds:
+    raw_path: data/raw/crm/refunds.csv.gz
+    orders_path: data/silver/crm/orders.parquet
+    silver_path: data/silver/crm/refunds.parquet
     dq_threshold: 5  
