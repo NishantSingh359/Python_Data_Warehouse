@@ -1,0 +1,13 @@
+domain: FACT
+
+tables:
+  fact_delivery:
+    silver_path:
+      delivery_logs: data/silver/crm/delivery_logs.parquet
+      orders: data/silver/crm/orders.parquet
+    gold_path: data/logistics/fact_delivery.parquet
+
+    dim_path:
+      customers: data/logistics/dim_customers.parquet
+      restaurants: data/logistics/dim_restaurants.parquet
+      delivery_partners: data/logistics/dim_delivery_partners.parquet

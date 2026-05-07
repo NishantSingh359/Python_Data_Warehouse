@@ -1,0 +1,18 @@
+domain: DIM
+
+tables:
+  dim_date:
+    silver_path: 
+    gold_path: data/logistics/dim_date.parquet
+
+  dim_delivery_partners:
+    silver_path: data/silver/erp/delivery_partners.parquet
+    gold_path: data/logistics/dim_delivery_partners.parquet
+
+  dim_customers:
+    silver_path: data/silver/crm/customers.parquet
+    gold_path: data/logistics/dim_customers.parquet
+  
+  dim_restaurants:
+    silver_path: data/silver/erp/restaurants.parquet
+    gold_path: data/logistics/dim_restaurants.parquet
