@@ -17,5 +17,6 @@ class DimMenu_items(BaseGoldPipeline):
             'item_name',
             'category',
             'cuisine',
-            #'is_veg',
+            'is_veg',
+            'added_date'
         ]]
