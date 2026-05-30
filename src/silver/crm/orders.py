@@ -67,7 +67,6 @@ class OrdersSilver(BaseSilverPipeline):
             'cancel_reason':cancel_reason,
             'delivery_partner_id':partner_id,
             'promo_id':promo_id,
-            'discount_amount':dis_amount,
             'delivery_fee':delivery_fee
         })
 
@@ -99,11 +98,14 @@ class OrdersSilver(BaseSilverPipeline):
         df['promo_id'] =   df['promo_id'].where(df['item_total'] >= df['min_order_value'], 'not_apply')
         
         # ADD DISCOUNT AMOUNT
-        df.loc[df['discount_type'] == 'percent', 'discount_amount'] = df['item_total'] / df['discount_value']
-        df.loc[df['discount_type'] == 'flat', 'discount_amount'] = df['discount_value'] 
+        df.loc[df['discount_type'] == 'percent', 'discount_value'] =  df['item_total'] / df['discount_value']
+        df.loc[df['discount_type'] == 'flat', 'discount_value'] = df['discount_value'] 
+        df.loc[df['promo_id'] == 'not_apply', 'discount_value'] = 0
 
         # CREATE COLUMN
-        df['order_total'] = df['item_total'] - df['discount_amount'] + df['delivery_fee']
+        df['order_total'] = df['item_total'] - df['discount_value'] + df['delivery_fee']
+
+        df.rename(columns={'discount_value':'discount_amount'}, inplace=True)
 
         df1 = df[[
             'order_id',
