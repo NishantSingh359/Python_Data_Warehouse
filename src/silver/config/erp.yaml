@@ -1,9 +1,10 @@
 domain: ERP
 
 tables:
+
   menu_items:
     raw_path: data/raw/erp/menu_items.csv.gz
-    order_items_path: data/raw/crm/order_items.csv.gz
+    order_items: data/raw/crm/order_items.csv.gz
     silver_path: data/silver/erp/menu_items.parquet
     dq_threshold: 5
 
