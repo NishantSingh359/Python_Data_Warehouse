@@ -10,6 +10,7 @@ with open("src/silver/config/erp.yaml") as f:
 
 class Menu_itemsSilver(BaseSilverPipeline):
 
+    mapping = {1:'Veg', 0:'Non-Veg'}
     def clean(self, df: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
 
         item_id =         clean_id(df['item_id'], 'I', 4)
@@ -24,6 +25,7 @@ class Menu_itemsSilver(BaseSilverPipeline):
 
         is_veg =          pd.to_numeric(df['is_veg'], errors='coerce')
         is_veg =          is_veg.where(is_veg.isin([0,1]))
+        is_veg =          is_veg.map(self.mapping)
 
         selling_price =   pd.to_numeric(df['selling_price'], errors='coerce')
         selling_price =   selling_price.where((selling_price >= 50) & (selling_price <= 500))
