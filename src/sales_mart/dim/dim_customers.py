@@ -18,6 +18,8 @@ class DimCustomers(BaseGoldPipeline):
                 'customer_name',
                 'city',
                 'gender',
-                'age_group'
+                'age_group',
+                'tier',
+                'created_at'
             ]]
         )
