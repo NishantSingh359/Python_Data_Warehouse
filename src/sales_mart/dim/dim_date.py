@@ -13,7 +13,7 @@ class DimDate(BaseGoldPipeline):
 
         df = pd.DataFrame({"date": date_range})
 
-        df["date_key"] = df["date"].dt.strftime("%Y%m%d").astype(int) # type: ignore
+        df["date_key"] = df["date"].dt.strftime("%Y%m%d") # type: ignore
         df["day"] = df["date"].dt.day # type: ignore
         df["month"] = df["date"].dt.month # type: ignore
         df["month_name"] = df["date"].dt.month_name() # type: ignore
