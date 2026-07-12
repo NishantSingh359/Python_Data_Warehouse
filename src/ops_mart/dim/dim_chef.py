@@ -9,8 +9,8 @@ class DimChef(BaseGoldPipeline):
             self.silver_path
         )
 
-        dim = dim[dim['role'] == 'chef']
-
+        dim  = pd.read_parquet(r"data/silver/erp/employees.parquet")
+        dim = dim[dim['role'] == 'chef'].reset_index(drop=True)
         dim['chef_key'] = dim.index + 1
         dim = dim.rename(columns={'emp_id':'chef_id'})
 
@@ -19,4 +19,4 @@ class DimChef(BaseGoldPipeline):
             'chef_id',
             'name',
             'restaurant_id'
-            ]]
+        ]]
