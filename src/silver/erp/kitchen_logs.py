@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 import datetime
 from pathlib import Path
-from common.common import clean_id, completed_order, wasted, prepared
+from common.common import clean_id, completed_order, wasted, prepared, clean_text
 from base.base_silver_pipeline import BaseSilverPipeline
 
 with open("src/silver/config/erp.yaml") as f:
@@ -31,7 +31,7 @@ class Kitchen_logsSilver(BaseSilverPipeline):
         completed_at =   completed_at.where((completed_at >= '2021-01-01') & (completed_at <= '2025-12-31')) #type:ignore
         completed_at =   completed_at.where(completed_at > started_at)
 
-        status =         df['status'].str.strip().replace({'nan':np.nan}).str.replace('@','').str.title()
+        status =         clean_text(df['status']).str.title()
 
         prep_time_mins =      (completed_at - started_at).dt.total_seconds() / 60
 
