@@ -28,10 +28,10 @@ class FactKitchen(BaseGoldPipeline):
         fact = fact.merge(chef[['chef_id', 'chef_key']], on='chef_id', how='left')
 
         fact['assigned_at'] =   fact['order_datetime'].dt.strftime('%H:%M:%S')
-        fact['is_wasted'] =     (fact['status'] == 'wasted').astype(int)
-        fact['is_prepared'] =   (fact['status'] == 'prepared').astype(int)
+        fact['is_wasted'] =     fact['status'] == 'Wasted'
+        fact['is_prepared'] =   fact['status'] == 'Prepared'
 
-        fact.rename(columns={'started_at':'prep_start_at', 'completed_at': 'prep_end_at', 'status': 'kitchen_status'}, inplace=True)
+        fact = fact.rename(columns={'started_at':'prep_start_at', 'completed_at': 'prep_end_at', 'status': 'kitchen_status'})
     
         fact['kitchen_id'] =  fact.index + 1
 
