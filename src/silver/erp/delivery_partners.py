@@ -1,4 +1,3 @@
-import numpy as np
 import pandas as pd
 from common.common import clean_id, clean_text, clean_phone_n
 from base.base_silver_pipeline import BaseSilverPipeline
