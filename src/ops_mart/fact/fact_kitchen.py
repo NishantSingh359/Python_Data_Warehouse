@@ -1,6 +1,5 @@
 import yaml
 import pandas as pd
-import datetime
 from base.base_gold_pipeline import BaseGoldPipeline
 
 with open("src/ops_mart/config/fact.yaml") as f:
