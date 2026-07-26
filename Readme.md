@@ -1,6 +1,6 @@
-# 🏗️ Food Delivery Data Warehouse
+# 🏗️ Python Data Warehouse
 
-A **Food Delivery Data Warehouse** implementing the **Medallion Architecture (Raw → Silver → Gold)** with **class‑based pipelines**, **config‑driven processing**, **logging**, and **batch automation**.
+A **Python Data Warehouse** implementing the **Medallion Architecture (Raw → Silver → Gold)** with **class‑based pipelines**, **config‑driven processing**, **logging**, and **batch automation**.
 ---
 
 ## 🧠 Architecture Overview
