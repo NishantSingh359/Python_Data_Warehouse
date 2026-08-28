@@ -90,11 +90,10 @@ def clean_phone_n(series:pd.Series) -> pd.Series:
 # ============ HELPERS
 
 def item_total() -> pd.DataFrame:
-        
         "Return order_id with item_total"
 
-        df =           pd.read_csv(r"C:\Users\TUF\OneDrive\Documents\Code\Vs Code\Python_Data_Warehouse\data\raw\crm\order_items.csv.gz")
-        menu =         pd.read_parquet(r"C:\Users\TUF\OneDrive\Documents\Code\Vs Code\Python_Data_Warehouse\data\silver\erp\menu_items.parquet")
+        df =           pd.read_csv(r".\.\.\data\raw\crm\order_items.csv.gz")
+        menu =         pd.read_parquet(r".\.\.\data\silver\erp\menu_items.parquet")
         
         order_id =      clean_id(df['order_id'], 'O', 7)
 
@@ -135,9 +134,9 @@ def completed_order() -> pd.Series:
 
     "Return order_item_id of those order that order cancel_stage is after_prepare or not_cancelled or out_of_delivery"
 
-    order =   pd.read_parquet(r"C:\Users\TUF\OneDrive\Documents\Code\Vs Code\Python_Data_Warehouse\data\silver\crm\orders.parquet")
+    order =   pd.read_parquet(r".\.\.\data\silver\crm\orders.parquet")
     order =   order[(order['cancel_stage'] != 'order_failed') | (order['cancel_stage'] !=  'before_prepare')]
-    ord_itm = pd.read_parquet(r"C:\Users\TUF\OneDrive\Documents\Code\Vs Code\Python_Data_Warehouse\data\silver\crm\order_items.parquet")
+    ord_itm = pd.read_parquet(r".\.\.\data\silver\crm\order_items.parquet")
 
     return order.merge(ord_itm, on='order_id', how='left')['order_item_id']
 
@@ -145,9 +144,9 @@ def wasted() -> pd.Series:
 
     "Return order_item_id of those order that user cancelled after_prepare"
 
-    order =   pd.read_parquet(r"C:\Users\TUF\OneDrive\Documents\Code\Vs Code\Python_Data_Warehouse\data\silver\crm\orders.parquet")
+    order =   pd.read_parquet(r".\.\.\data\silver\crm\orders.parquet")
     order =   order[order['cancel_stage'] == 'after_prepare']
-    ord_itm = pd.read_parquet(r"C:\Users\TUF\OneDrive\Documents\Code\Vs Code\Python_Data_Warehouse\data\silver\crm\order_items.parquet")
+    ord_itm = pd.read_parquet(r".\.\.\data\silver\crm\order_items.parquet")
 
     return order.merge(ord_itm, on='order_id', how='left')['order_item_id']
 
@@ -155,8 +154,8 @@ def prepared() -> pd.Series:
 
     "Return order_item_id of those order that order cancel_stage is not_cancelled or out_of_delivery"
 
-    order =   pd.read_parquet(r"C:\Users\TUF\OneDrive\Documents\Code\Vs Code\Python_Data_Warehouse\data\silver\crm\orders.parquet")
+    order =   pd.read_parquet(r".\.\.\data\silver\crm\orders.parquet")
     order =   order[(order['cancel_stage'] == 'not_cancelled') | (order['cancel_stage'] == 'out_of_delivery')]
-    ord_itm = pd.read_parquet(r"C:\Users\TUF\OneDrive\Documents\Code\Vs Code\Python_Data_Warehouse\data\silver\crm\order_items.parquet")
+    ord_itm = pd.read_parquet(r".\.\.\data\silver\crm\order_items.parquet")
 
     return order.merge(ord_itm, on='order_id', how='left')['order_item_id']
