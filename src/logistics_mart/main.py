@@ -1,12 +1,12 @@
 import yaml
 import logging
 
-from dim.dim_date import DimDate
-from dim.dim_delivery_partners import DimDelivery_Partners
-from dim.dim_customers import DimCustomers
-from dim.dim_restaurants import DimRestaurants
+from transforms.dim.dim_date import DimDate
+from transforms.dim.dim_delivery_partners import DimDelivery_Partners
+from transforms.dim.dim_customers import DimCustomers
+from transforms.dim.dim_restaurants import DimRestaurants
 
-from fact.fact_delivery import FactDelivery
+from transforms.fact.fact_delivery import FactDelivery
 
 logging.basicConfig(
     level=logging.INFO,

@@ -1,0 +1,44 @@
+import yaml
+import numpy as np
+import pandas as pd
+from common.common import clean_id, clean_text
+from base.base_silver_pipeline import BaseSilverPipeline
+
+with open("src/silver_layer/config/erp.yaml") as f:
+    cfg = yaml.full_load(f)
+    path = cfg['tables']['employees']
+
+class EmployeesSilver(BaseSilverPipeline):
+
+    def clean(self, df: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+
+        emp_id =        clean_id(df['emp_id'], 'E', 5)
+
+        name =          clean_text(df['name']).str.title() 
+
+        restaurants =   pd.read_parquet(path['restaurants_path'])
+        restaurant_id = clean_id(df['restaurant_id'], 'R', 3)
+        restaurant_id = restaurant_id.where(restaurant_id.isin(restaurants['restaurant_id']))
+
+        role =          clean_text(df['role']).str.lower()
+        role =          role.where(role.isin(['manager', 'helper', 'chef', 'cashier']), np.nan)
+
+        hire_date =     pd.to_datetime(df['hire_date'], format= '%Y-%m-%d %H:%M:%S', errors= 'coerce')
+        hire_date =     hire_date.where((hire_date >= '2021-01-01') & (hire_date <= '2025-12-31'))
+
+        salary =        df['salary'].where((df['salary'] > 0) & (df['salary']  < 500000), np.nan)
+
+        df1 = pd.DataFrame({
+            'emp_id':emp_id,
+            'name':name,
+            'restaurant_id':restaurant_id,
+            'role':role,
+            'hire_date':hire_date,
+            'salary':salary
+        })
+
+        df2 = df1.dropna(subset='emp_id')
+
+        df3 = df2.drop_duplicates(subset= 'emp_id').sort_values(by = 'emp_id').reset_index(drop=True)
+
+        return df1, df2, df3
