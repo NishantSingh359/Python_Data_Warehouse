@@ -2,7 +2,7 @@ import yaml
 import numpy as np
 import pandas as pd
 from pathlib import Path
-from common.common import clean_id, clean_text, item_total
+from common.common import clean_id, clean_text, subtotal
 from base.base_silver_pipeline import BaseSilverPipeline
 
 with open("src/silver_layer/config/crm.yaml") as f:
@@ -94,16 +94,16 @@ class OrdersSilver(BaseSilverPipeline):
         df['promo_id'] =   df['promo_id'].where((df['order_datetime'].dt.strftime('%Y-%m-%d')  >=  df['valid_from'].dt.strftime('%Y-%m-%d')) &
                           (df['order_datetime'].dt.strftime('%Y-%m-%d')  <=  df['valid_to'].dt.strftime('%Y-%m-%d')), 'not_apply')
 
-        df =               df.merge(item_total(), how='left', on='order_id')
-        df['promo_id'] =   df['promo_id'].where(df['item_total'] >= df['min_order_value'], 'not_apply')
+        df =               df.merge(subtotal(), how='left', on='order_id')
+        df['promo_id'] =   df['promo_id'].where(df['subtotal'] >= df['min_order_value'], 'not_apply')
         
         # ADD DISCOUNT AMOUNT
-        df.loc[df['discount_type'] == 'percent', 'discount_value'] =  df['item_total'] / df['discount_value']
+        df.loc[df['discount_type'] == 'percent', 'discount_value'] =  df['subtotal'] / df['discount_value']
         df.loc[df['discount_type'] == 'flat', 'discount_value'] = df['discount_value'] 
         df.loc[df['promo_id'] == 'not_apply', 'discount_value'] = 0
 
         # CREATE COLUMN
-        df['order_total'] = df['item_total'] - df['discount_value'] + df['delivery_fee']
+        df['grand_total'] = df['subtotal'] - df['discount_value'] + df['delivery_fee']
 
         df.rename(columns={'discount_value':'discount_amount'}, inplace=True)
 
@@ -117,11 +117,11 @@ class OrdersSilver(BaseSilverPipeline):
             'cancel_stage', 
             'cancel_reason', 
             'delivery_partner_id', 
-            'promo_id', 
+            'promo_id',  
+            'subtotal',
             'discount_amount', 
             'delivery_fee', 
-            'item_total', 
-            'order_total']]
+            'grand_total']]
 
         
         df2 = df1.dropna(subset=['order_id', 'customer_id', 'restaurant_id'])

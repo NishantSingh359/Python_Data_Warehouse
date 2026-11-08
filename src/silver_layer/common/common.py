@@ -89,8 +89,8 @@ def clean_phone_n(series:pd.Series) -> pd.Series:
 
 # ============ HELPERS
 
-def item_total() -> pd.DataFrame:
-        "Return order_id with item_total"
+def subtotal() -> pd.DataFrame:
+        "Return order_id with subtotal"
 
         df =           pd.read_csv(r".\.\.\data\raw\crm\order_items.csv.gz")
         menu =         pd.read_parquet(r".\.\.\data\silver\erp\menu_items.parquet")
@@ -125,7 +125,7 @@ def item_total() -> pd.DataFrame:
         df.loc[df['line_total'].isna(), 'line_total'] = df['unit_price'] * df['quantity']
 
         order_amt = df.groupby('order_id')['line_total'].sum().reset_index()
-        order_amt.rename(columns={'line_total':'item_total'}, inplace=True)
+        order_amt.rename(columns={'line_total':'subtotal'}, inplace=True)
         
         return order_amt
 

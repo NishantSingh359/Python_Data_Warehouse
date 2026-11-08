@@ -16,3 +16,15 @@ tables:
   dim_menu_items:
     silver_path: data/silver/erp/menu_items.parquet
     gold_path: data/sales/dim_menu_items.parquet
+
+  dim_order_status:
+    silver_path: data/silver/crm/orders.parquet
+    gold_path: data/sales/dim_order_status.parquet
+
+  dim_payment_mode:
+    silver_path: data/silver/crm/orders.parquet
+    gold_path: data/sales/dim_payment_mode.parquet
+
+  dim_refund:
+    silver_path: data/silver/crm/refunds.parquet
+    gold_path: data/sales/dim_refunds.parquet

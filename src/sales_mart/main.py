@@ -5,6 +5,9 @@ from transforms.dim.dim_date import DimDate
 from transforms.dim.dim_restaurants import DimRestaurants
 from transforms.dim.dim_customers import DimCustomers
 from transforms.dim.dim_items import DimMenu_items
+from transforms.dim.dim_order_status import DimOrderStatus
+from transforms.dim.dim_payment_mode import DimPaymentMode
+from transforms.dim.dim_refund import DimRefund
 
 from transforms.fact.fact_sales import FactSales
 
@@ -21,6 +24,9 @@ DIM_MAP = {
     "dim_restaurants": DimRestaurants,
     "dim_customers": DimCustomers,
     "dim_menu_items": DimMenu_items,
+    "dim_order_status": DimOrderStatus,
+    "dim_payment_mode": DimPaymentMode,
+    "dim_refund": DimRefund
 }
 
 FACT_MAP = {

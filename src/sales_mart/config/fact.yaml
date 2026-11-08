@@ -5,10 +5,13 @@ tables:
     silver_path:
       order_items: data/silver/crm/order_items.parquet
       orders: data/silver/crm/orders.parquet
-      refunds: data/silver/crm/refunds.parquet
     gold_path: data/sales/fact_sales.parquet
 
     dim_path:
       customers: data/sales/dim_customers.parquet
       restaurants: data/sales/dim_restaurants.parquet
       menu_items: data/sales/dim_menu_items.parquet
+      order_status: data/sales/dim_order_status.parquet
+      payment_mode: data/sales/dim_payment_mode.parquet
+      refund: data/sales/dim_refunds.parquet
+

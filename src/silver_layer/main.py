@@ -16,7 +16,7 @@ from transforms.crm.refunds import RefundsSilver
 
 logging.basicConfig(
     level=logging.INFO,
-    filename="log/silver.log",
+    filename="log/silver_layer.log",
     filemode="w",
     format="%(asctime)s | %(levelname)s | %(message)s",
     datefmt="%Y-%m-%d %H:%M:%S"
